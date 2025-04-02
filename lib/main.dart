@@ -25,10 +25,14 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
+      backgroundColor: Colors.white, // Set scaffold background to white
       endDrawer: _buildSidebar(context),
-      body: Builder(
-        builder:
-            (context) => Column(
+      body: Stack(
+        // Use Stack to keep some elements static
+        children: [
+          SingleChildScrollView(
+            child: Column(
               children: [
                 // Purple header section
                 Container(
@@ -47,6 +51,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      SizedBox(height: 50), // Space for the menu icon
+                      Spacer(), // Add spacer to push text to bottom
                       Align(
                         alignment: Alignment.topRight,
                         child: IconButton(
@@ -78,253 +84,269 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
 
                 // White content section
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 30,
-                      vertical: 30,
-                    ),
-                    decoration: const BoxDecoration(color: Colors.white),
-                    child: Column(
-                      children: [
-                        // User/Admin Login Tabs with Underline Indicator
-                        Row(
-                          children: [
-                            Expanded(
-                              child: InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    isUserLogin = true;
-                                  });
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        "User Login",
-                                        style: TextStyle(
-                                          color: isUserLogin
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 30,
+                  ),
+                  decoration: const BoxDecoration(color: Colors.white),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // User/Admin Login Tabs with Underline Indicator
+                      Row(
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  isUserLogin = true;
+                                });
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0,
+                                ),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      "User Login",
+                                      style: TextStyle(
+                                        color:
+                                            isUserLogin
+                                                ? Color.fromARGB(
+                                                  255,
+                                                  88,
+                                                  13,
+                                                  218,
+                                                )
+                                                : Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Container(
+                                      height: 3,
+                                      color:
+                                          isUserLogin
                                               ? Color.fromARGB(255, 88, 13, 218)
-                                              : Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                      SizedBox(height: 10),
-                                      Container(
-                                        height: 3,
-                                        color: isUserLogin
-                                            ? Color.fromARGB(255, 88, 13, 218)
-                                            : Colors.transparent,
-                                      ),
-                                    ],
-                                  ),
+                                              : Colors.transparent,
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                            Expanded(
-                              child: InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    isUserLogin = false;
-                                  });
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        "Admin Login",
-                                        style: TextStyle(
-                                          color: !isUserLogin
+                          ),
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  isUserLogin = false;
+                                });
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0,
+                                ),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      "Admin Login",
+                                      style: TextStyle(
+                                        color:
+                                            !isUserLogin
+                                                ? Color.fromARGB(
+                                                  255,
+                                                  88,
+                                                  13,
+                                                  218,
+                                                )
+                                                : Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Container(
+                                      height: 3,
+                                      color:
+                                          !isUserLogin
                                               ? Color.fromARGB(255, 88, 13, 218)
-                                              : Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                      SizedBox(height: 10),
-                                      Container(
-                                        height: 3,
-                                        color: !isUserLogin
-                                            ? Color.fromARGB(255, 88, 13, 218)
-                                            : Colors.transparent,
-                                      ),
-                                    ],
+                                              : Colors.transparent,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 30),
+
+                      // Conditional form fields based on selected tab
+                      if (isUserLogin) ...[
+                        // User Login Form
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 8),
+                            TextField(
+                              decoration: InputDecoration(
+                                hintText: "Enter your Student ID",
+                                hintStyle: TextStyle(color: Colors.grey),
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 88, 13, 218),
+                                  ),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 88, 13, 218),
+                                  ),
+                                ),
+                                labelText: "Student ID",
+                                labelStyle: TextStyle(color: Colors.grey),
+                                floatingLabelStyle: TextStyle(
+                                  color: Color.fromARGB(255, 88, 13, 218),
+                                ),
+                              ),
+                            ),
+
+                            SizedBox(height: 30),
+                            Center(
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color.fromARGB(
+                                    255,
+                                    88,
+                                    13,
+                                    218,
+                                  ),
+                                  minimumSize: Size(double.infinity, 50),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                onPressed: () {},
+                                child: Text(
+                                  "Login",
+                                  style: GoogleFonts.inter(
+                                    fontSize: 18,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
                             ),
                           ],
                         ),
-                        SizedBox(height: 30),
-
-                        // Conditional form fields based on selected tab
-                        if (isUserLogin) ...[
-                          // User Login Form
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: 8),
-                              TextField(
-                                decoration: InputDecoration(
-                                  hintText: "Enter your Student ID",
-                                  hintStyle: TextStyle(color: Colors.grey),
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color.fromARGB(255, 88, 13, 218),
-                                    ),
-                                  ),
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color.fromARGB(255, 88, 13, 218),
-                                    ),
-                                  ),
-                                  labelText: "Student ID",
-                                  labelStyle: TextStyle(color: Colors.grey),
-                                  floatingLabelStyle: TextStyle(
-                                    color: Color.fromARGB(255, 88, 13, 218),
-                                  ),
-                                ),
-                              ),
-
-                              SizedBox(height: 30),
-                              Center(
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color.fromARGB(
-                                      255,
-                                      88,
-                                      13,
-                                      218,
-                                    ),
-                                    minimumSize: Size(double.infinity, 50),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  onPressed: () {},
-                                  child: Text(
-                                    "Login",
-                                    style: GoogleFonts.inter(
-                                      fontSize: 18,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ] else ...[
-                          // Admin Login Form
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: 8),
-                              TextField(
-                                decoration: InputDecoration(
-                                  hintText: "Enter your username",
-                                  hintStyle: TextStyle(color: Colors.grey),
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color.fromARGB(255, 88, 13, 218),
-                                    ),
-                                  ),
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color.fromARGB(255, 88, 13, 218),
-                                    ),
-                                  ),
-                                  labelText: "Username",
-                                  labelStyle: TextStyle(color: Colors.grey),
-                                  floatingLabelStyle: TextStyle(
-                                    color: Color.fromARGB(255, 88, 13, 218),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                              TextField(
-                                obscureText: true,
-                                decoration: InputDecoration(
-                                  hintText: "••••••••••••••",
-                                  hintStyle: TextStyle(color: Colors.grey),
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color.fromARGB(255, 88, 13, 218),
-                                    ),
-                                  ),
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color.fromARGB(255, 88, 13, 218),
-                                    ),
-                                  ),
-                                  labelText: "Password",
-                                  labelStyle: TextStyle(color: Colors.grey),
-                                  floatingLabelStyle: TextStyle(
-                                    color: Color.fromARGB(255, 88, 13, 218),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 30),
-                              Center(
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color.fromARGB(
-                                      255,
-                                      88,
-                                      13,
-                                      218,
-                                    ),
-                                    minimumSize: Size(double.infinity, 50),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  onPressed: () {},
-                                  child: Text(
-                                    "Login",
-                                    style: GoogleFonts.inter(
-                                      fontSize: 18,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-
-                        // Footer
-                        Spacer(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                      ] else ...[
+                        // Admin Login Form
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              "Made with ",
-                              style: GoogleFonts.inter(fontSize: 12),
+                            SizedBox(height: 8),
+                            TextField(
+                              decoration: InputDecoration(
+                                hintText: "Enter your username",
+                                hintStyle: TextStyle(color: Colors.grey),
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 88, 13, 218),
+                                  ),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 88, 13, 218),
+                                  ),
+                                ),
+                                labelText: "Username",
+                                labelStyle: TextStyle(color: Colors.grey),
+                                floatingLabelStyle: TextStyle(
+                                  color: Color.fromARGB(255, 88, 13, 218),
+                                ),
+                              ),
                             ),
-                            Icon(Icons.favorite, color: Colors.red, size: 12),
-                            Text(
-                              " by ",
-                              style: GoogleFonts.inter(fontSize: 12),
+                            SizedBox(height: 20),
+                            TextField(
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                hintText: "••••••••••••••",
+                                hintStyle: TextStyle(color: Colors.grey),
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 88, 13, 218),
+                                  ),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 88, 13, 218),
+                                  ),
+                                ),
+                                labelText: "Password",
+                                labelStyle: TextStyle(color: Colors.grey),
+                                floatingLabelStyle: TextStyle(
+                                  color: Color.fromARGB(255, 88, 13, 218),
+                                ),
+                              ),
                             ),
-                            Text(
-                              "MarsLab",
-                              style: GoogleFonts.inter(
-                                color: Color.fromARGB(255, 88, 13, 218),
-                                fontSize: 12,
+                            SizedBox(height: 30),
+                            Center(
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color.fromARGB(
+                                    255,
+                                    88,
+                                    13,
+                                    218,
+                                  ),
+                                  minimumSize: Size(double.infinity, 50),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                onPressed: () {},
+                                child: Text(
+                                  "Login",
+                                  style: GoogleFonts.inter(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ],
-                    ),
+
+                      // Footer
+                      SizedBox(height: 40),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Made with ",
+                            style: GoogleFonts.inter(fontSize: 12),
+                          ),
+                          Icon(Icons.favorite, color: Colors.red, size: 12),
+                          Text(" by ", style: GoogleFonts.inter(fontSize: 12)),
+                          Text(
+                            "MarsLab",
+                            style: GoogleFonts.inter(
+                              color: Color.fromARGB(255, 88, 13, 218),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
+          ),
+        ],
       ),
     );
   }
@@ -336,7 +358,8 @@ class _LoginScreenState extends State<LoginScreen> {
           // Purple header with app description
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 50),
+            height: 200,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
             color: const Color.fromARGB(255, 88, 13, 218),
             child: Text(
               'DIU Route Explorers is a university bus schedule app that allows students to check bus routes, start and departure times, and important notes for a smooth commuting experience.',
