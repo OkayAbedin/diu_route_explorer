@@ -56,13 +56,20 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      Text(
-                        "\nDIU\nROUTE\nEXPLORER",
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontSize: 60,
-                          fontWeight: FontWeight.bold,
+                      Spacer(), // Add spacer to push text to bottom
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 0),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "DIU\nROUTE\nEXPLORER",
+                            style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontSize: 60,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -339,7 +346,7 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 50),
             color: const Color.fromARGB(255, 88, 13, 218),
             child: Text(
-              '\n\n\n\n\n\nDIU Route Explorers is a university bus schedule app that allows students to check bus routes, start and departure times, and important notes for a smooth commuting experience.',
+              'DIU Route Explorers is a university bus schedule app that allows students to check bus routes, start and departure times, and important notes for a smooth commuting experience.',
               style: GoogleFonts.inter(
                 color: Colors.white,
                 fontSize: 16,
@@ -427,7 +434,6 @@ class _LoginScreenState extends State<LoginScreen> {
               'Logout',
               style: GoogleFonts.inter(color: Colors.red, fontSize: 16),
             ),
-            trailing: Icon(Icons.arrow_forward, color: Colors.red),
             onTap: () {
               Navigator.pop(context);
             },
