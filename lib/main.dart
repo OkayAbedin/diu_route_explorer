@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+// Add this import at the top of the file
+import 'screens/bus_schedule_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -205,7 +207,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BusScheduleScreen(),
+                                    ),
+                                  );
+                                },
                                 child: Text(
                                   "Login",
                                   style: GoogleFonts.inter(
@@ -319,7 +328,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           
-          // Removing the static footer
+          // Removing the static credit footer
           // Positioned(
           //   bottom: 0,
           //   left: 0,
@@ -385,6 +394,12 @@ class _LoginScreenState extends State<LoginScreen> {
             title: Text('Bus Schedule', style: GoogleFonts.inter(fontSize: 16)),
             onTap: () {
               Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BusScheduleScreen(),
+                ),
+              );
             },
           ),
 
