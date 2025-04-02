@@ -23,6 +23,17 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool isUserLogin = true; // Track active tab
+  final TextEditingController studentIdController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    studentIdController.dispose();
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,9 +116,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                     Text(
                                       "User Login",
                                       style: TextStyle(
-                                        color: isUserLogin
-                                            ? Color.fromARGB(255, 88, 13, 218)
-                                            : Colors.black,
+                                        color:
+                                            isUserLogin
+                                                ? Color.fromARGB(
+                                                  255,
+                                                  88,
+                                                  13,
+                                                  218,
+                                                )
+                                                : Colors.black,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
                                       ),
@@ -115,9 +132,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                     SizedBox(height: 10),
                                     Container(
                                       height: 3,
-                                      color: isUserLogin
-                                          ? Color.fromARGB(255, 88, 13, 218)
-                                          : Colors.transparent,
+                                      color:
+                                          isUserLogin
+                                              ? Color.fromARGB(255, 88, 13, 218)
+                                              : Colors.transparent,
                                     ),
                                   ],
                                 ),
@@ -140,9 +158,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                     Text(
                                       "Admin Login",
                                       style: TextStyle(
-                                        color: !isUserLogin
-                                            ? Color.fromARGB(255, 88, 13, 218)
-                                            : Colors.black,
+                                        color:
+                                            !isUserLogin
+                                                ? Color.fromARGB(
+                                                  255,
+                                                  88,
+                                                  13,
+                                                  218,
+                                                )
+                                                : Colors.black,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
                                       ),
@@ -150,9 +174,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                     SizedBox(height: 10),
                                     Container(
                                       height: 3,
-                                      color: !isUserLogin
-                                          ? Color.fromARGB(255, 88, 13, 218)
-                                          : Colors.transparent,
+                                      color:
+                                          !isUserLogin
+                                              ? Color.fromARGB(255, 88, 13, 218)
+                                              : Colors.transparent,
                                     ),
                                   ],
                                 ),
@@ -171,6 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: [
                             SizedBox(height: 8),
                             TextField(
+                              controller: studentIdController,
                               decoration: InputDecoration(
                                 hintText: "Enter your Student ID",
                                 hintStyle: TextStyle(color: Colors.grey),
@@ -208,12 +234,33 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                                 onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => BusScheduleScreen(),
-                                    ),
+                                  // Validate using regex pattern: 3 digits-2 digits-4 or 5 digits
+                                  RegExp regExp = RegExp(
+                                    r'^\d{3}-\d{2}-\d{4,5}$',
                                   );
+
+                                  if (regExp.hasMatch(
+                                    studentIdController.text,
+                                  )) {
+                                    // Valid format, navigate to BusScheduleScreen
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) => BusScheduleScreen(),
+                                      ),
+                                    );
+                                  } else {
+                                    // Show error message for invalid format
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Please enter a valid Student ID',
+                                        ),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
                                 },
                                 child: Text(
                                   "Login",
@@ -304,7 +351,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                       ],
-                      
+
                       // Add space at the bottom for the footer
                       SizedBox(height: 60),
                     ],
@@ -313,21 +360,22 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
           ),
-          
+
           // Static menu icon
           Positioned(
             top: 40,
             right: 40,
             child: Builder(
-              builder: (context) => IconButton(
-                icon: Icon(Icons.menu, color: Colors.white, size: 30),
-                onPressed: () {
-                  Scaffold.of(context).openEndDrawer();
-                },
-              ),
+              builder:
+                  (context) => IconButton(
+                    icon: Icon(Icons.menu, color: Colors.white, size: 30),
+                    onPressed: () {
+                      Scaffold.of(context).openEndDrawer();
+                    },
+                  ),
             ),
           ),
-          
+
           // Removing the static credit footer
           // Positioned(
           //   bottom: 0,
@@ -430,7 +478,6 @@ class _LoginScreenState extends State<LoginScreen> {
           //     Navigator.pop(context);
           //   },
           // ),
-
           Divider(height: 1, thickness: 0.5),
 
           ListTile(
