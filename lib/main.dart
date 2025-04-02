@@ -68,6 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: Colors.white,
                               fontSize: 60,
                               fontWeight: FontWeight.bold,
+                              height: 1.2,
                             ),
                           ),
                         ),
@@ -91,76 +92,68 @@ class _LoginScreenState extends State<LoginScreen> {
                         Row(
                           children: [
                             Expanded(
-                              child: GestureDetector(
+                              child: InkWell(
                                 onTap: () {
                                   setState(() {
                                     isUserLogin = true;
                                   });
                                 },
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      "User Login",
-                                      style: TextStyle(
-                                        color:
-                                            isUserLogin
-                                                ? Color.fromARGB(
-                                                  255,
-                                                  88,
-                                                  13,
-                                                  218,
-                                                )
-                                                : Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    SizedBox(height: 10),
-                                    Container(
-                                      height: 3,
-                                      color:
-                                          isUserLogin
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        "User Login",
+                                        style: TextStyle(
+                                          color: isUserLogin
                                               ? Color.fromARGB(255, 88, 13, 218)
-                                              : Colors.transparent,
-                                    ),
-                                  ],
+                                              : Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      Container(
+                                        height: 3,
+                                        color: isUserLogin
+                                            ? Color.fromARGB(255, 88, 13, 218)
+                                            : Colors.transparent,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                             Expanded(
-                              child: GestureDetector(
+                              child: InkWell(
                                 onTap: () {
                                   setState(() {
                                     isUserLogin = false;
                                   });
                                 },
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      "Admin Login",
-                                      style: TextStyle(
-                                        color:
-                                            !isUserLogin
-                                                ? Color.fromARGB(
-                                                  255,
-                                                  88,
-                                                  13,
-                                                  218,
-                                                )
-                                                : Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    SizedBox(height: 10),
-                                    Container(
-                                      height: 3,
-                                      color:
-                                          !isUserLogin
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        "Admin Login",
+                                        style: TextStyle(
+                                          color: !isUserLogin
                                               ? Color.fromARGB(255, 88, 13, 218)
-                                              : Colors.transparent,
-                                    ),
-                                  ],
+                                              : Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      Container(
+                                        height: 3,
+                                        color: !isUserLogin
+                                            ? Color.fromARGB(255, 88, 13, 218)
+                                            : Colors.transparent,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
