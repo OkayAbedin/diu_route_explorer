@@ -42,7 +42,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
     try {
       // Load the JSON file from assets
       final String response = await rootBundle.loadString(
-        'assets/database.json',
+        'database.json',
       );
       final data = await json.decode(response);
 
