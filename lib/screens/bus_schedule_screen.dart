@@ -10,7 +10,6 @@ class BusScheduleScreen extends StatefulWidget {
 }
 
 class _BusScheduleScreenState extends State<BusScheduleScreen> {
-
   String currentTime = '';
   Timer? _timer;
 
@@ -26,8 +25,8 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
   List<Map<String, dynamic>> departureTimes = [];
   bool isLoading = true;
   String selectedSchedule = 'Regular';
-  String selectedRoute = '';  // Will be set to R1 after data loads
-  
+  String selectedRoute = ''; // Will be set to R1 after data loads
+
   @override
   void initState() {
     super.initState();
@@ -69,16 +68,19 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
           }
         }
 
+        // Remove R1 - DSC <> Dhanmondi from the routes
+        for (var key in scheduleRoutes.keys) {
+          scheduleRoutes[key] =
+              scheduleRoutes[key]!
+                  .where((route) => !route.contains("R1 - DSC <> Dhanmondi"))
+                  .toList();
+        }
+
         // Set available routes based on default selected schedule
         availableRoutes = scheduleRoutes[selectedSchedule] ?? [];
-        
-        // Find and set R1 as the default route if available
-        String r1Route = availableRoutes.firstWhere(
-          (route) => route.startsWith('R1 '),
-          orElse: () => availableRoutes.isNotEmpty ? availableRoutes[0] : '',
-        );
-        
-        selectedRoute = r1Route;
+
+        // Set default route to first available route
+        selectedRoute = availableRoutes.isNotEmpty ? availableRoutes[0] : '';
         _updateScheduleData();
 
         isLoading = false;
@@ -550,7 +552,6 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
     );
   }
 
-
   Widget _buildSidebar(BuildContext context) {
     return Drawer(
       child: Column(
@@ -583,9 +584,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => BusScheduleScreen(),
-                ),
+                MaterialPageRoute(builder: (context) => BusScheduleScreen()),
               );
             },
           ),
