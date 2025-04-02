@@ -41,9 +41,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
   Future<void> _loadBusData() async {
     try {
       // Load the JSON file from assets
-      final String response = await rootBundle.loadString(
-        'database.json',
-      );
+      final String response = await rootBundle.loadString('database.json');
       final data = await json.decode(response);
 
       setState(() {
@@ -564,7 +562,8 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
             color: const Color.fromARGB(255, 88, 13, 218),
             child: SafeArea(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.end, // Align content to the bottom
+                mainAxisAlignment:
+                    MainAxisAlignment.end, // Align content to the bottom
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
