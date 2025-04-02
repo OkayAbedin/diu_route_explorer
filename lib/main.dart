@@ -478,7 +478,7 @@ class _LoginScreenState extends State<LoginScreen> {
           //     Navigator.pop(context);
           //   },
           // ),
-          Divider(height: 1, thickness: 0.5),
+          //Divider(height: 1, thickness: 0.5),
 
           ListTile(
             contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
