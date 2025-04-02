@@ -26,11 +26,11 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white, // Set scaffold background to white
+      backgroundColor: Colors.white,
       endDrawer: _buildSidebar(context),
       body: Stack(
-        // Use Stack to keep some elements static
         children: [
+          // Scrollable content
           SingleChildScrollView(
             child: Column(
               children: [
@@ -52,16 +52,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 50), // Space for the menu icon
-                      Spacer(), // Add spacer to push text to bottom
-                      Align(
-                        alignment: Alignment.topRight,
-                        child: IconButton(
-                          icon: Icon(Icons.menu, color: Colors.white, size: 30),
-                          onPressed: () {
-                            Scaffold.of(context).openEndDrawer();
-                          },
-                        ),
-                      ),
                       Spacer(), // Add spacer to push text to bottom
                       Padding(
                         padding: const EdgeInsets.only(bottom: 0),
@@ -113,15 +103,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     Text(
                                       "User Login",
                                       style: TextStyle(
-                                        color:
-                                            isUserLogin
-                                                ? Color.fromARGB(
-                                                  255,
-                                                  88,
-                                                  13,
-                                                  218,
-                                                )
-                                                : Colors.black,
+                                        color: isUserLogin
+                                            ? Color.fromARGB(255, 88, 13, 218)
+                                            : Colors.black,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
                                       ),
@@ -129,10 +113,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     SizedBox(height: 10),
                                     Container(
                                       height: 3,
-                                      color:
-                                          isUserLogin
-                                              ? Color.fromARGB(255, 88, 13, 218)
-                                              : Colors.transparent,
+                                      color: isUserLogin
+                                          ? Color.fromARGB(255, 88, 13, 218)
+                                          : Colors.transparent,
                                     ),
                                   ],
                                 ),
@@ -155,15 +138,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     Text(
                                       "Admin Login",
                                       style: TextStyle(
-                                        color:
-                                            !isUserLogin
-                                                ? Color.fromARGB(
-                                                  255,
-                                                  88,
-                                                  13,
-                                                  218,
-                                                )
-                                                : Colors.black,
+                                        color: !isUserLogin
+                                            ? Color.fromARGB(255, 88, 13, 218)
+                                            : Colors.black,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
                                       ),
@@ -171,10 +148,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     SizedBox(height: 10),
                                     Container(
                                       height: 3,
-                                      color:
-                                          !isUserLogin
-                                              ? Color.fromARGB(255, 88, 13, 218)
-                                              : Colors.transparent,
+                                      color: !isUserLogin
+                                          ? Color.fromARGB(255, 88, 13, 218)
+                                          : Colors.transparent,
                                     ),
                                   ],
                                 ),
@@ -319,33 +295,61 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                       ],
-
-                      // Footer
-                      SizedBox(height: 40),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Made with ",
-                            style: GoogleFonts.inter(fontSize: 12),
-                          ),
-                          Icon(Icons.favorite, color: Colors.red, size: 12),
-                          Text(" by ", style: GoogleFonts.inter(fontSize: 12)),
-                          Text(
-                            "MarsLab",
-                            style: GoogleFonts.inter(
-                              color: Color.fromARGB(255, 88, 13, 218),
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
+                      
+                      // Add space at the bottom for the footer
+                      SizedBox(height: 60),
                     ],
                   ),
                 ),
               ],
             ),
           ),
+          
+          // Static menu icon
+          Positioned(
+            top: 40,
+            right: 40,
+            child: Builder(
+              builder: (context) => IconButton(
+                icon: Icon(Icons.menu, color: Colors.white, size: 30),
+                onPressed: () {
+                  Scaffold.of(context).openEndDrawer();
+                },
+              ),
+            ),
+          ),
+          
+          // Removing the static footer
+          // Positioned(
+          //   bottom: 0,
+          //   left: 0,
+          //   right: 0,
+          //   child: Container(
+          //     color: Colors.white,
+          //     padding: EdgeInsets.only(
+          //       bottom: MediaQuery.of(context).padding.bottom + 10,
+          //       top: 10,
+          //     ),
+          //     child: Row(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       children: [
+          //         Text(
+          //           "Made with ",
+          //           style: GoogleFonts.inter(fontSize: 12),
+          //         ),
+          //         Icon(Icons.favorite, color: Colors.red, size: 12),
+          //         Text(" by ", style: GoogleFonts.inter(fontSize: 12)),
+          //         Text(
+          //           "MarsLab",
+          //           style: GoogleFonts.inter(
+          //             color: Color.fromARGB(255, 88, 13, 218),
+          //             fontSize: 12,
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
