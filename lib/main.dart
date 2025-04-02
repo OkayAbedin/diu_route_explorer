@@ -419,23 +419,30 @@ class _LoginScreenState extends State<LoginScreen> {
           // Purple header with app description
           Container(
             width: double.infinity,
-            height: 200,
+            height: 240,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
             color: const Color.fromARGB(255, 88, 13, 218),
-            child: Text(
-              'DIU Route Explorers is a university bus schedule app that allows students to check bus routes, start and departure times, and important notes for a smooth commuting experience.',
-              style: GoogleFonts.inter(
-                color: Colors.white,
-                fontSize: 16,
-                height: 1.6,
-                letterSpacing: 0.2,
+            child: SafeArea(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end, // Align content to the bottom
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'DIU Route Explorers is a university bus schedule app that allows students to check bus routes, start and departure times, and important notes for a smooth commuting experience.',
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontSize: 16,
+                      height: 1.2,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
 
           // Menu items with improved spacing
-          SizedBox(height: 10),
-
+          SizedBox(height: 30),
           // ListTile(
           //   contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
           //   leading: Icon(Icons.schedule),
@@ -444,9 +451,7 @@ class _LoginScreenState extends State<LoginScreen> {
           //     Navigator.pop(context);
           //     Navigator.push(
           //       context,
-          //       MaterialPageRoute(
-          //         builder: (context) => BusScheduleScreen(),
-          //       ),
+          //       MaterialPageRoute(builder: (context) => BusScheduleScreen()),
           //     );
           //   },
           // ),
@@ -478,7 +483,8 @@ class _LoginScreenState extends State<LoginScreen> {
           //     Navigator.pop(context);
           //   },
           // ),
-          //Divider(height: 1, thickness: 0.5),
+
+          // Divider(height: 1, thickness: 0.5),
 
           ListTile(
             contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
@@ -518,9 +524,9 @@ class _LoginScreenState extends State<LoginScreen> {
           //   ),
           //   onTap: () {
           //     Navigator.pop(context);
+          //     Navigator.pushReplacementNamed(context, '/');
           //   },
           // ),
-
           // Version and footer
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 20.0),
