@@ -550,63 +550,144 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
     );
   }
 
-  // Implement the sidebar method
+
   Widget _buildSidebar(BuildContext context) {
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
+      child: Column(
         children: [
-          DrawerHeader(
-            decoration: BoxDecoration(color: Color.fromARGB(255, 88, 13, 218)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'DIU Route Explorer',
-                  style: GoogleFonts.inter(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Navigate your campus journey',
-                  style: GoogleFonts.inter(color: Colors.white, fontSize: 14),
-                ),
-              ],
+          // Purple header with app description
+          Container(
+            width: double.infinity,
+            height: 200,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            color: const Color.fromARGB(255, 88, 13, 218),
+            child: Text(
+              'DIU Route Explorers is a university bus schedule app that allows students to check bus routes, start and departure times, and important notes for a smooth commuting experience.',
+              style: GoogleFonts.inter(
+                color: Colors.white,
+                fontSize: 16,
+                height: 1.6,
+                letterSpacing: 0.2,
+              ),
             ),
           ),
+
+          // Menu items with improved spacing
+          SizedBox(height: 10),
+
           ListTile(
-            leading: Icon(Icons.home),
-            title: Text('Home'),
+            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            leading: Icon(Icons.schedule),
+            title: Text('Bus Schedule', style: GoogleFonts.inter(fontSize: 16)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BusScheduleScreen(),
+                ),
+              );
+            },
+          ),
+
+          Divider(height: 1, thickness: 0.5),
+
+          ListTile(
+            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            leading: Icon(Icons.route),
+            title: Text(
+              'Route Information',
+              style: GoogleFonts.inter(fontSize: 16),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+
+          Divider(height: 1, thickness: 0.5),
+
+          ListTile(
+            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            leading: Icon(Icons.notifications),
+            title: Text(
+              'Notifications',
+              style: GoogleFonts.inter(fontSize: 16),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+
+          Divider(height: 1, thickness: 0.5),
+
+          ListTile(
+            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            leading: Icon(Icons.settings),
+            title: Text('Settings', style: GoogleFonts.inter(fontSize: 16)),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+
+          Divider(height: 1, thickness: 0.5),
+
+          ListTile(
+            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            leading: Icon(Icons.help),
+            title: Text(
+              'Help and Support',
+              style: GoogleFonts.inter(fontSize: 16),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+
+          Divider(height: 1, thickness: 0.5),
+
+          // Logout at the bottom with red text
+          Spacer(),
+          Divider(height: 1, thickness: 0.5),
+
+          ListTile(
+            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            leading: Icon(Icons.logout, color: Colors.red),
+            title: Text(
+              'Logout',
+              style: GoogleFonts.inter(color: Colors.red, fontSize: 16),
+            ),
             onTap: () {
               Navigator.pop(context);
               Navigator.pushReplacementNamed(context, '/');
             },
           ),
-          ListTile(
-            leading: Icon(Icons.directions_bus),
-            title: Text('Bus Schedule'),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.map),
-            title: Text('Route Map'),
-            onTap: () {
-              Navigator.pop(context);
-              // Navigate to route map screen
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.info),
-            title: Text('About'),
-            onTap: () {
-              Navigator.pop(context);
-              // Navigate to about screen
-            },
+          // Version and footer
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0),
+            child: Column(
+              children: [
+                Text(
+                  'Version 1.0.1',
+                  style: GoogleFonts.inter(color: Colors.grey, fontSize: 12),
+                ),
+                SizedBox(height: 6),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Made with ", style: GoogleFonts.inter(fontSize: 12)),
+                    Icon(Icons.favorite, color: Colors.red, size: 12),
+                    Text(" by ", style: GoogleFonts.inter(fontSize: 12)),
+                    Text(
+                      "MarsLab",
+                      style: GoogleFonts.inter(
+                        color: Color.fromARGB(255, 88, 13, 218),
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
