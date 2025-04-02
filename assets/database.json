@@ -462,86 +462,6 @@
   {
     "Route": "R11",
     "Schedule": "Shuttle",
-    "Route Name": "Tongi station route <> Daffodil Smart City",
-    "Trip Direction": "To DSC",
-    "Time": "7:00 AM",
-    "Stops": "Tongi station route, Kamar Para, Dhour, Birulia, Daffodil Smart City",
-    "Note": "",
-    "Route Map": ""
-  },
-  {
-    "Route": "R11",
-    "Schedule": "Shuttle",
-    "Route Name": "Tongi station route <> Daffodil Smart City",
-    "Trip Direction": "To DSC",
-    "Time": "8:30 AM",
-    "Stops": "Tongi station route, Kamar Para, Dhour, Birulia, Daffodil Smart City",
-    "Note": "",
-    "Route Map": ""
-  },
-  {
-    "Route": "R11",
-    "Schedule": "Shuttle",
-    "Route Name": "Tongi station route <> Daffodil Smart City",
-    "Trip Direction": "To DSC",
-    "Time": "10:00 AM",
-    "Stops": "Tongi station route, Kamar Para, Dhour, Birulia, Daffodil Smart City",
-    "Note": "",
-    "Route Map": ""
-  },
-  {
-    "Route": "R11",
-    "Schedule": "Shuttle",
-    "Route Name": "Tongi station route <> Daffodil Smart City",
-    "Trip Direction": "To DSC",
-    "Time": "12:00 PM",
-    "Stops": "Tongi station route, Kamar Para, Dhour, Birulia, Daffodil Smart City",
-    "Note": "",
-    "Route Map": ""
-  },
-  {
-    "Route": "R11",
-    "Schedule": "Shuttle",
-    "Route Name": "Tongi station route <> Daffodil Smart City",
-    "Trip Direction": "From DSC",
-    "Time": "11:00 AM",
-    "Stops": "Tongi station route, Kamar Para, Dhour, Birulia, Daffodil Smart City",
-    "Note": "",
-    "Route Map": ""
-  },
-  {
-    "Route": "R11",
-    "Schedule": "Shuttle",
-    "Route Name": "Tongi station route <> Daffodil Smart City",
-    "Trip Direction": "From DSC",
-    "Time": "1:30 PM",
-    "Stops": "Tongi station route, Kamar Para, Dhour, Birulia, Daffodil Smart City",
-    "Note": "",
-    "Route Map": ""
-  },
-  {
-    "Route": "R11",
-    "Schedule": "Shuttle",
-    "Route Name": "Tongi station route <> Daffodil Smart City",
-    "Trip Direction": "From DSC",
-    "Time": "4:20 PM",
-    "Stops": "Tongi station route, Kamar Para, Dhour, Birulia, Daffodil Smart City",
-    "Note": "",
-    "Route Map": ""
-  },
-  {
-    "Route": "R11",
-    "Schedule": "Shuttle",
-    "Route Name": "Tongi station route <> Daffodil Smart City",
-    "Trip Direction": "From DSC",
-    "Time": "6:10 PM",
-    "Stops": "Tongi station route, Kamar Para, Dhour, Birulia, Daffodil Smart City",
-    "Note": "",
-    "Route Map": ""
-  },
-  {
-    "Route": "R12",
-    "Schedule": "Shuttle",
     "Route Name": "Mirpur-1, Sony Cinema Hall <> DSC",
     "Trip Direction": "To DSC",
     "Time": "7:00 AM",
@@ -550,7 +470,7 @@
     "Route Map": ""
   },
   {
-    "Route": "R12",
+    "Route": "R11",
     "Schedule": "Shuttle",
     "Route Name": "Mirpur-1, Sony Cinema Hall <> DSC",
     "Trip Direction": "To DSC",
@@ -560,7 +480,7 @@
     "Route Map": ""
   },
   {
-    "Route": "R12",
+    "Route": "R11",
     "Schedule": "Shuttle",
     "Route Name": "Mirpur-1, Sony Cinema Hall <> DSC",
     "Trip Direction": "To DSC",
@@ -570,7 +490,7 @@
     "Route Map": ""
   },
   {
-    "Route": "R12",
+    "Route": "R11",
     "Schedule": "Shuttle",
     "Route Name": "Mirpur-1, Sony Cinema Hall <> DSC",
     "Trip Direction": "To DSC",
@@ -580,7 +500,7 @@
     "Route Map": ""
   },
   {
-    "Route": "R12",
+    "Route": "R11",
     "Schedule": "Shuttle",
     "Route Name": "Mirpur-1, Sony Cinema Hall <> DSC",
     "Trip Direction": "From DSC",
@@ -590,7 +510,7 @@
     "Route Map": ""
   },
   {
-    "Route": "R12",
+    "Route": "R11",
     "Schedule": "Shuttle",
     "Route Name": "Mirpur-1, Sony Cinema Hall <> DSC",
     "Trip Direction": "From DSC",
@@ -600,7 +520,7 @@
     "Route Map": ""
   },
   {
-    "Route": "R13",
+    "Route": "R12",
     "Schedule": "Shuttle",
     "Route Name": "Uttara Moylar Mor <> Uttara Metro rail Center<> DSC",
     "Trip Direction": "To DSC",
@@ -610,7 +530,7 @@
     "Route Map": ""
   },
   {
-    "Route": "R13",
+    "Route": "R12",
     "Schedule": "Shuttle",
     "Route Name": "Uttara Moylar Mor <> Uttara Metro rail Center<> DSC",
     "Trip Direction": "To DSC",
@@ -620,7 +540,7 @@
     "Route Map": ""
   },
   {
-    "Route": "R13",
+    "Route": "R12",
     "Schedule": "Shuttle",
     "Route Name": "Uttara Moylar Mor <> Uttara Metro rail Center<> DSC",
     "Trip Direction": "To DSC",
@@ -630,7 +550,7 @@
     "Route Map": ""
   },
   {
-    "Route": "R13",
+    "Route": "R12",
     "Schedule": "Shuttle",
     "Route Name": "Uttara Moylar Mor <> Uttara Metro rail Center<> DSC",
     "Trip Direction": "To DSC",
@@ -640,7 +560,7 @@
     "Route Map": ""
   },
   {
-    "Route": "R13",
+    "Route": "R12",
     "Schedule": "Shuttle",
     "Route Name": "Uttara Moylar Mor <> Uttara Metro rail Center<> DSC",
     "Trip Direction": "From DSC",
@@ -650,7 +570,7 @@
     "Route Map": ""
   },
   {
-    "Route": "R13",
+    "Route": "R12",
     "Schedule": "Shuttle",
     "Route Name": "Uttara Moylar Mor <> Uttara Metro rail Center<> DSC",
     "Trip Direction": "From DSC",
