@@ -388,48 +388,48 @@ class _LoginScreenState extends State<LoginScreen> {
           // Menu items with improved spacing
           SizedBox(height: 10),
 
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.schedule),
-            title: Text('Bus Schedule', style: GoogleFonts.inter(fontSize: 16)),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => BusScheduleScreen(),
-                ),
-              );
-            },
-          ),
+          // ListTile(
+          //   contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+          //   leading: Icon(Icons.schedule),
+          //   title: Text('Bus Schedule', style: GoogleFonts.inter(fontSize: 16)),
+          //   onTap: () {
+          //     Navigator.pop(context);
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (context) => BusScheduleScreen(),
+          //       ),
+          //     );
+          //   },
+          // ),
 
-          Divider(height: 1, thickness: 0.5),
+          // Divider(height: 1, thickness: 0.5),
 
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.route),
-            title: Text(
-              'Route Information',
-              style: GoogleFonts.inter(fontSize: 16),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
+          // ListTile(
+          //   contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+          //   leading: Icon(Icons.route),
+          //   title: Text(
+          //     'Route Information',
+          //     style: GoogleFonts.inter(fontSize: 16),
+          //   ),
+          //   onTap: () {
+          //     Navigator.pop(context);
+          //   },
+          // ),
 
-          Divider(height: 1, thickness: 0.5),
+          // Divider(height: 1, thickness: 0.5),
 
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.notifications),
-            title: Text(
-              'Notifications',
-              style: GoogleFonts.inter(fontSize: 16),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
+          // ListTile(
+          //   contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+          //   leading: Icon(Icons.notifications),
+          //   title: Text(
+          //     'Notifications',
+          //     style: GoogleFonts.inter(fontSize: 16),
+          //   ),
+          //   onTap: () {
+          //     Navigator.pop(context);
+          //   },
+          // ),
 
           Divider(height: 1, thickness: 0.5),
 
@@ -462,17 +462,17 @@ class _LoginScreenState extends State<LoginScreen> {
           Spacer(),
           Divider(height: 1, thickness: 0.5),
 
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.logout, color: Colors.red),
-            title: Text(
-              'Logout',
-              style: GoogleFonts.inter(color: Colors.red, fontSize: 16),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
+          // ListTile(
+          //   contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+          //   leading: Icon(Icons.logout, color: Colors.red),
+          //   title: Text(
+          //     'Logout',
+          //     style: GoogleFonts.inter(color: Colors.red, fontSize: 16),
+          //   ),
+          //   onTap: () {
+          //     Navigator.pop(context);
+          //   },
+          // ),
 
           // Version and footer
           Padding(
