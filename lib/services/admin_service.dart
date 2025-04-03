@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminService {
-  // URL to your GitHub Gist containing admin credentials
+  // URL to JSONBin.io containing admin credentials
   final String _credentialsUrl =
-      'https://gist.githubusercontent.com/diuRouteExplorer/c3211f4e5df4a10929c429ef10802b96/raw/cred.json';
+      'https://api.jsonbin.io/v3/b/67eee4d28a456b7966820659/latest';
 
   // Token storage key
   final String _tokenKey = 'admin_auth_token';
@@ -17,7 +17,12 @@ class AdminService {
       print('Fetching credentials from: $_credentialsUrl');
 
       // Fetch credentials from remote source
-      final response = await http.get(Uri.parse(_credentialsUrl));
+      final response = await http.get(
+        Uri.parse(_credentialsUrl),
+        headers: {
+          'X-Bin-Meta': 'false', // To get only the JSON data without metadata
+        },
+      );
 
       print('Response status code: ${response.statusCode}');
 

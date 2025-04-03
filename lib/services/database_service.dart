@@ -4,49 +4,66 @@ import '../services/route_service.dart';
 
 class DatabaseService {
   final RouteService _routeService = RouteService();
-  
-  // GitHub API endpoint for updating Gist
-  // Note: You'll need to use a GitHub token with Gist permissions
-  final String _githubApiUrl = 'https://api.github.com/gists/51bef3438ba8e7e1056d2f902670bfe9';
-  final String _githubToken = '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'; // Store this securely in production
-  
+
+  // JSONBin.io API endpoints and key
+  final String _jsonBinUrl =
+      'https://api.jsonbin.io/v3/b/67eee4bd8561e97a50f83b09';
+  // Fixed API key format by escaping the dollar sign
+  final String _jsonBinApiKey =
+      r'$2a$10$R5e8yO0TEYXKSwWV4cRHXuA2J/iIpNp5fo.KzfV4ygmR8IT99TQdG';
+
   // Get current database
   Future<List<Map<String, dynamic>>> getDatabase() async {
     return await _routeService.getRoutes();
   }
-  
+
   // Update database
   Future<bool> updateDatabase(List<Map<String, dynamic>> newData) async {
     try {
       // Convert data to JSON string
       final String jsonData = json.encode(newData);
+
+      print('Updating database with data length: ${newData.length}');
+      print('Request URL: $_jsonBinUrl');
+
+      // Send PUT request to update JSONBin
+      final response = await http
+          .put(
+            Uri.parse(_jsonBinUrl),
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Master-Key': _jsonBinApiKey,
+              'X-Bin-Versioning': 'false', // Overwrite the current version
+            },
+            body: jsonData,
+          )
+          .timeout(Duration(seconds: 15));
+
+      print('Response status code: ${response.statusCode}');
       
-      // Prepare request body for GitHub API
-      final Map<String, dynamic> requestBody = {
-        'files': {
-          'database.json': {
-            'content': jsonData
-          }
-        }
-      };
-      
-      // Send PATCH request to update Gist
-      final response = await http.patch(
-        Uri.parse(_githubApiUrl),
-        headers: {
-          'Authorization': 'token $_githubToken',
-          'Content-Type': 'application/json',
-        },
-        body: json.encode(requestBody),
-      );
-      
-      return response.statusCode == 200;
+      // For debugging, print a shorter version of the response body
+      if (response.body.length > 100) {
+        print('Response body (truncated): ${response.body.substring(0, 100)}...');
+      } else {
+        print('Response body: ${response.body}');
+      }
+
+      // JSONBin.io returns 200 status code on success
+      if (response.statusCode == 200) {
+        // The response contains a "record" field with the updated data
+        // We consider it a success if we get a 200 status code
+        print('Update successful based on status code 200');
+        return true;
+      } else {
+        print('Failed to update database. Status code: ${response.statusCode}');
+        return false;
+      }
     } catch (e) {
       print('Error updating database: $e');
       return false;
     }
   }
-  
+
   // Add a new route
   Future<bool> addRoute(Map<String, dynamic> newRoute) async {
     try {
@@ -58,22 +75,26 @@ class DatabaseService {
       return false;
     }
   }
-  
+
   // Update an existing route
   Future<bool> updateRoute(int index, Map<String, dynamic> updatedRoute) async {
     try {
       final database = await getDatabase();
+      print('Database size: ${database.length}, Updating index: $index');
+
       if (index >= 0 && index < database.length) {
         database[index] = updatedRoute;
         return await updateDatabase(database);
+      } else {
+        print('Invalid index: $index for database of size ${database.length}');
+        return false;
       }
-      return false;
     } catch (e) {
       print('Error updating route: $e');
       return false;
     }
   }
-  
+
   // Delete a route
   Future<bool> deleteRoute(int index) async {
     try {
