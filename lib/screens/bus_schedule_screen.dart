@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/services.dart';
+// Import the route service
+import '../route_service.dart';
 
 class BusScheduleScreen extends StatefulWidget {
   @override
@@ -12,6 +14,9 @@ class BusScheduleScreen extends StatefulWidget {
 class _BusScheduleScreenState extends State<BusScheduleScreen> {
   String currentTime = '';
   Timer? _timer;
+  
+  // Create an instance of the RouteService
+  final RouteService _routeService = RouteService();
 
   // Data from JSON
   List<dynamic> busData = [];
@@ -40,9 +45,8 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
 
   Future<void> _loadBusData() async {
     try {
-      // Load the JSON file from assets
-      final String response = await rootBundle.loadString('database.json');
-      final data = await json.decode(response);
+      // Use the RouteService to fetch data instead of loading from local assets
+      final data = await _routeService.getRoutes();
 
       setState(() {
         busData = data;
@@ -151,6 +155,14 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
     });
   }
 
+  // Add this method to refresh data
+  Future<void> _refreshData() async {
+    setState(() {
+      isLoading = true;
+    });
+    await _loadBusData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -195,14 +207,22 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                       ),
                     ],
                   ),
-                  Builder(
-                    builder:
-                        (context) => IconButton(
+                  Row(
+                    children: [
+                      // Add refresh button
+                      IconButton(
+                        icon: Icon(Icons.refresh, color: Colors.white, size: 26),
+                        onPressed: _refreshData,
+                      ),
+                      Builder(
+                        builder: (context) => IconButton(
                           icon: Icon(Icons.menu, color: Colors.white, size: 30),
                           onPressed: () {
                             Scaffold.of(context).openEndDrawer();
                           },
                         ),
+                      ),
+                    ],
                   ),
                 ],
               ),
