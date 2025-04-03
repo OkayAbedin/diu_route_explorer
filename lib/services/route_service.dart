@@ -3,14 +3,18 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 class RouteService {
-  // URL to your GitHub Gist raw file
-  final String _jsonUrl = 'https://gist.githubusercontent.com/OkayAbedin/f102235c6d63b9d9552e194b414de91b/raw/6cef2524c32ced44ac38946d420c092d67d1edf6/database.json';
-  
-  Future<List<Map<String, dynamic>>> getRoutes() async {
+  // URL to your GitHub Gist raw file with cache-busting
+  String get _jsonUrl {
+    // Add timestamp to prevent caching
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    return 'https://gist.githubusercontent.com/diuRouteExplorer/51bef3438ba8e7e1056d2f902670bfe9/raw/database.json?timestamp=$timestamp';
+  }
+
+  Future<List<Map<String, dynamic>>> getRoutes({bool forceRefresh = false}) async {
     try {
       // Try to fetch from remote source first
       final response = await http.get(Uri.parse(_jsonUrl));
-      
+
       if (response.statusCode == 200) {
         print('Successfully loaded routes from remote source');
         final List<dynamic> data = json.decode(response.body);
@@ -26,7 +30,7 @@ class RouteService {
       return await _getLocalRoutes();
     }
   }
-  
+
   // Fallback method to load local data
   Future<List<Map<String, dynamic>>> _getLocalRoutes() async {
     print('Loading routes from local assets');

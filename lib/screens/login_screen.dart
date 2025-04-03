@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'bus_schedule_screen.dart';
+import '../services/admin_service.dart';
+import 'admin_dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -266,6 +268,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: [
                             SizedBox(height: 8),
                             TextField(
+                              controller: usernameController,  // Add this line
                               decoration: InputDecoration(
                                 hintText: "Enter your username",
                                 hintStyle: TextStyle(color: Colors.grey),
@@ -288,9 +291,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             SizedBox(height: 20),
                             TextField(
+                              controller: passwordController,  // Add this line
                               obscureText: true,
                               decoration: InputDecoration(
-                                hintText: "••••••••••••••",
+                                hintText: "Enter admin password",
                                 hintStyle: TextStyle(color: Colors.grey),
                                 enabledBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
@@ -324,12 +328,60 @@ class _LoginScreenState extends State<LoginScreen> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
-                                onPressed: () {},
+                                onPressed: () async {
+                                  if (usernameController.text.isEmpty || 
+                                      passwordController.text.isEmpty) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Please enter both username and password'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                  
+                                  // Show loading indicator
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (BuildContext context) {
+                                      return Center(
+                                        child: CircularProgressIndicator(
+                                          color: Color.fromARGB(255, 88, 13, 218),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                  
+                                  final success = await AdminService().login(
+                                    usernameController.text,
+                                    passwordController.text,
+                                  );
+                                  
+                                  // Close loading dialog
+                                  Navigator.of(context).pop();
+                                  
+                                  if (success) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => AdminDashboardScreen(),
+                                      ),
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Invalid admin credentials'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                },
                                 child: Text(
                                   "Login",
-                                  style: GoogleFonts.inter(
-                                    fontSize: 18,
+                                  style: TextStyle(
                                     color: Colors.white,
+                                    fontSize: 16,
                                   ),
                                 ),
                               ),

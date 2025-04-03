@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
-// Import the route service
-import '../route_service.dart';
+import '../services/route_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class BusScheduleScreen extends StatefulWidget {
   @override
@@ -13,9 +14,12 @@ class BusScheduleScreen extends StatefulWidget {
 class _BusScheduleScreenState extends State<BusScheduleScreen> {
   String currentTime = '';
   Timer? _timer;
-  
+
   // Create an instance of the RouteService
   final RouteService _routeService = RouteService();
+  
+  // Add a key for caching
+  final String _cacheKey = 'cached_bus_data';
 
   // Data from JSON
   List<dynamic> busData = [];
@@ -44,8 +48,11 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
 
   Future<void> _loadBusData() async {
     try {
-      // Use the RouteService to fetch data instead of loading from local assets
+      // Use the RouteService to fetch data
       final data = await _routeService.getRoutes();
+      
+      // Cache the data
+      _cacheData(data);
 
       setState(() {
         busData = data;
@@ -88,9 +95,86 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
       });
     } catch (e) {
       print('Error loading bus data: $e');
+      
+      // Try to load from cache if network fetch fails
+      _loadFromCache();
+      
       setState(() {
         isLoading = false;
       });
+    }
+  }
+
+  // Add method to cache data
+  Future<void> _cacheData(List<dynamic> data) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonString = json.encode(data);
+      await prefs.setString(_cacheKey, jsonString);
+      print('Bus data cached successfully');
+    } catch (e) {
+      print('Error caching bus data: $e');
+    }
+  }
+  
+  // Add method to load from cache
+  Future<void> _loadFromCache() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonString = prefs.getString(_cacheKey);
+      
+      if (jsonString != null) {
+        final data = json.decode(jsonString);
+        
+        setState(() {
+          busData = List<dynamic>.from(data);
+          
+          // Clear existing route mappings
+          scheduleRoutes = {
+            'Regular': [],
+            'Shuttle': [],
+            'Friday': [],
+          };
+          
+          // Group routes by schedule type
+          for (var item in busData) {
+            String routeCode = item['Route'];
+            String routeName = "${routeCode} - ${item['Route Name']}";
+            String schedule = item['Schedule'];
+
+            // Map route codes to schedule types
+            if (schedule == 'Regular' &&
+                !scheduleRoutes['Regular']!.contains(routeName)) {
+              scheduleRoutes['Regular']!.add(routeName);
+            } else if (schedule == 'Shuttle' &&
+                !scheduleRoutes['Shuttle']!.contains(routeName)) {
+              scheduleRoutes['Shuttle']!.add(routeName);
+            } else if (schedule == 'Friday' &&
+                !scheduleRoutes['Friday']!.contains(routeName)) {
+              scheduleRoutes['Friday']!.add(routeName);
+            }
+          }
+
+          // Remove R1 - DSC <> Dhanmondi from the routes
+          for (var key in scheduleRoutes.keys) {
+            scheduleRoutes[key] =
+                scheduleRoutes[key]!
+                    .where((route) => !route.contains("R1 - DSC <> Dhanmondi"))
+                    .toList();
+          }
+
+          // Set available routes based on selected schedule
+          availableRoutes = scheduleRoutes[selectedSchedule] ?? [];
+
+          // Set default route to first available route
+          selectedRoute = availableRoutes.isNotEmpty ? availableRoutes[0] : '';
+          _updateScheduleData();
+        });
+        
+        print('Loaded bus data from cache');
+      }
+    } catch (e) {
+      print('Error loading from cache: $e');
     }
   }
 
@@ -118,13 +202,13 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
       if (item['Trip Direction'] == 'To DSC') {
         newStartTimes.add({
           'time': item['Time'],
-          'note': item['Note'] ?? 'No additional information',
+          'note': item['Note'] ?? '', // Changed from 'No additional information' to empty string
           'stops': item['Stops'],
         });
       } else if (item['Trip Direction'] == 'From DSC') {
         newDepartureTimes.add({
           'time': item['Time'],
-          'note': item['Note'] ?? 'No additional information',
+          'note': item['Note'] ?? '', // Changed from 'No additional information' to empty string
           'stops': item['Stops'],
         });
       }
@@ -154,12 +238,89 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
     });
   }
 
-  // Add this method to refresh data
+  // Update this method to refresh data
   Future<void> _refreshData() async {
     setState(() {
       isLoading = true;
     });
-    await _loadBusData();
+    
+    try {
+      // Force fetch from network
+      final data = await _routeService.getRoutes(forceRefresh: true);
+      
+      // Cache the new data
+      _cacheData(data);
+      
+      setState(() {
+        busData = data;
+
+        // Clear existing route mappings
+        scheduleRoutes = {
+          'Regular': [],
+          'Shuttle': [],
+          'Friday': [],
+        };
+        
+        // Group routes by schedule type
+        for (var item in busData) {
+          String routeCode = item['Route'];
+          String routeName = "${routeCode} - ${item['Route Name']}";
+          String schedule = item['Schedule'];
+
+          // Map route codes to schedule types
+          if (schedule == 'Regular' &&
+              !scheduleRoutes['Regular']!.contains(routeName)) {
+            scheduleRoutes['Regular']!.add(routeName);
+          } else if (schedule == 'Shuttle' &&
+              !scheduleRoutes['Shuttle']!.contains(routeName)) {
+            scheduleRoutes['Shuttle']!.add(routeName);
+          } else if (schedule == 'Friday' &&
+              !scheduleRoutes['Friday']!.contains(routeName)) {
+            scheduleRoutes['Friday']!.add(routeName);
+          }
+        }
+
+        // Remove R1 - DSC <> Dhanmondi from the routes
+        for (var key in scheduleRoutes.keys) {
+          scheduleRoutes[key] =
+              scheduleRoutes[key]!
+                  .where((route) => !route.contains("R1 - DSC <> Dhanmondi"))
+                  .toList();
+        }
+
+        // Set available routes based on selected schedule
+        availableRoutes = scheduleRoutes[selectedSchedule] ?? [];
+
+        // Set default route to first available route
+        selectedRoute = availableRoutes.isNotEmpty ? availableRoutes[0] : '';
+        _updateScheduleData();
+        
+        isLoading = false;
+      });
+      
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Schedule data updated successfully'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      print('Error refreshing data: $e');
+      setState(() {
+        isLoading = false;
+      });
+      
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to update schedule data'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   @override
@@ -210,16 +371,25 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                     children: [
                       // Add refresh button
                       IconButton(
-                        icon: Icon(Icons.refresh, color: Colors.white, size: 26),
+                        icon: Icon(
+                          Icons.refresh,
+                          color: Colors.white,
+                          size: 26,
+                        ),
                         onPressed: _refreshData,
                       ),
                       Builder(
-                        builder: (context) => IconButton(
-                          icon: Icon(Icons.menu, color: Colors.white, size: 30),
-                          onPressed: () {
-                            Scaffold.of(context).openEndDrawer();
-                          },
-                        ),
+                        builder:
+                            (context) => IconButton(
+                              icon: Icon(
+                                Icons.menu,
+                                color: Colors.white,
+                                size: 30,
+                              ),
+                              onPressed: () {
+                                Scaffold.of(context).openEndDrawer();
+                              },
+                            ),
                       ),
                     ],
                   ),
@@ -422,7 +592,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                                 Padding(
                                                   padding: EdgeInsets.all(12),
                                                   child: Text(
-                                                    time['note'].isEmpty
+                                                    time['note'] == null || time['note'].isEmpty
                                                         ? 'No additional information'
                                                         : time['note'],
                                                     style: GoogleFonts.inter(
@@ -493,7 +663,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                                 Padding(
                                                   padding: EdgeInsets.all(12),
                                                   child: Text(
-                                                    time['note'].isEmpty
+                                                    time['note'] == null || time['note'].isEmpty
                                                         ? 'No additional information'
                                                         : time['note'],
                                                     style: GoogleFonts.inter(
@@ -515,63 +685,72 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                     children: [
                                       SizedBox(height: 20),
                                       Container(
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                        color: Color.fromARGB(
-                                        255,
-                                        88,
-                                        13,
-                                        218,
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                          color: Color.fromARGB(
+                                            255,
+                                            88,
+                                            13,
+                                            218,
+                                          ),
                                         ),
-                                        borderRadius: BorderRadius.circular(
-                                        4,
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 12,
                                         ),
-                                      ),
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: 12,
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                        'Route Stops',
-                                        style: GoogleFonts.inter(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
+                                        child: Center(
+                                          child: Text(
+                                            'Route Stops',
+                                            style: GoogleFonts.inter(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
                                         ),
-                                        ),
-                                      ),
                                       ),
                                       Padding(
-                                      padding: EdgeInsets.all(12),
-                                      child: Wrap(
-                                        spacing: 8,
-                                        runSpacing: 8,
-                                        children: (startTimes.isNotEmpty
-                                            ? startTimes[0]['stops']
-                                            : (departureTimes.isNotEmpty
-                                              ? departureTimes[0]['stops']
-                                              : 'No stops information available'))
-                                          .split(',')
-                                          .map<Widget>((stop) => Container(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: 12,
-                                              vertical: 6,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                              color: Colors.grey.shade300,
-                                              ),
-                                              borderRadius: BorderRadius.circular(4),
-                                            ),
-                                            child: Text(
-                                              '$stop',
-                                              style: GoogleFonts.inter(
-                                              fontSize: 12,
-                                              ),
-                                            ),
-                                            ))
-                                          .toList(),
-                                      ),
+                                        padding: EdgeInsets.all(12),
+                                        child: Wrap(
+                                          spacing: 8,
+                                          runSpacing: 8,
+                                          children:
+                                              (startTimes.isNotEmpty
+                                                      ? startTimes[0]['stops']
+                                                      : (departureTimes
+                                                              .isNotEmpty
+                                                          ? departureTimes[0]['stops']
+                                                          : 'No stops information available'))
+                                                  .split(',')
+                                                  .map<Widget>(
+                                                    (stop) => Container(
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                            horizontal: 12,
+                                                            vertical: 6,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                          color:
+                                                              Colors
+                                                                  .grey
+                                                                  .shade300,
+                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              4,
+                                                            ),
+                                                      ),
+                                                      child: Text(
+                                                        '$stop',
+                                                        style:
+                                                            GoogleFonts.inter(
+                                                              fontSize: 12,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                  )
+                                                  .toList(),
+                                        ),
                                       ),
                                     ],
                                   ),
