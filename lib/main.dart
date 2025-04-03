@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/services.dart';
 import 'screens/login_screen.dart';
 
-Future<void> main() async {
-  // Load environment variables before running the app
-  await dotenv.load(fileName: ".env");
-  
+void main() async {
+  // Ensure Flutter is initialized before using platform plugins
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Run the app
   runApp(MyApp());
 }
 
