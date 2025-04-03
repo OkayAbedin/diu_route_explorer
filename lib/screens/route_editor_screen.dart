@@ -107,6 +107,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
         SnackBar(
           content: Text(widget.isNewRoute ? 'Route added successfully' : 'Route updated successfully'),
           backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
         ),
       );
       Navigator.pop(context, true);
@@ -115,6 +116,7 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
         SnackBar(
           content: Text(widget.isNewRoute ? 'Failed to add route' : 'Failed to update route'),
           backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
         ),
       );
     }
@@ -123,182 +125,362 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.isNewRoute ? 'Add New Route' : 'Edit Route',
-          style: GoogleFonts.inter(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: Color.fromARGB(255, 88, 13, 218),
-      ),
-      body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-                color: Color.fromARGB(255, 88, 13, 218),
+      backgroundColor: Color.fromARGB(255, 88, 13, 218),
+      body: Stack(
+        children: [
+          // Fixed purple header
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              width: double.infinity,
+              color: Color.fromARGB(255, 88, 13, 218),
+              padding: EdgeInsets.only(
+                top: 60,
+                bottom: 15,
+                left: 20,
+                right: 20,
               ),
-            )
-          : SingleChildScrollView(
-              padding: EdgeInsets.all(16),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Route Code
-                    TextFormField(
-                      controller: _routeCodeController,
-                      decoration: InputDecoration(
-                        labelText: 'Route Code (e.g., R1, F1)',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter a route code';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 16),
-                    
-                    // Schedule Type
-                    Text('Schedule Type', style: GoogleFonts.inter(fontSize: 16)),
-                    SizedBox(height: 8),
-                    DropdownButtonFormField<String>(
-                      value: _schedule,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                      ),
-                      items: ['Regular', 'Shuttle', 'Friday']
-                          .map((schedule) => DropdownMenuItem(
-                                value: schedule,
-                                child: Text(schedule),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          _schedule = value!;
-                        });
-                      },
-                    ),
-                    SizedBox(height: 16),
-                    
-                    // Route Name
-                    TextFormField(
-                      controller: _routeNameController,
-                      decoration: InputDecoration(
-                        labelText: 'Route Name',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter a route name';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 16),
-                    
-                    // Trip Direction
-                    Text('Trip Direction', style: GoogleFonts.inter(fontSize: 16)),
-                    SizedBox(height: 8),
-                    DropdownButtonFormField<String>(
-                      value: _tripDirection,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                      ),
-                      items: ['To DSC', 'From DSC']
-                          .map((direction) => DropdownMenuItem(
-                                value: direction,
-                                child: Text(direction),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          _tripDirection = value!;
-                        });
-                      },
-                    ),
-                    SizedBox(height: 16),
-                    
-                    // Time
-                    TextFormField(
-                      controller: _timeController,
-                      decoration: InputDecoration(
-                        labelText: 'Time (e.g., 7:00 AM)',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter a time';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 16),
-                    
-                    // Stops
-                    TextFormField(
-                      controller: _stopsController,
-                      decoration: InputDecoration(
-                        labelText: 'Stops (comma separated)',
-                        border: OutlineInputBorder(),
-                        hintText: 'Stop 1, Stop 2, Stop 3, ...',
-                      ),
-                      maxLines: 3,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter stops';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 16),
-                    
-                    // Note
-                    TextFormField(
-                      controller: _noteController,
-                      decoration: InputDecoration(
-                        labelText: 'Note (optional)',
-                        border: OutlineInputBorder(),
-                      ),
-                      maxLines: 2,
-                    ),
-                    SizedBox(height: 16),
-                    
-                    // Route Map
-                    TextFormField(
-                      controller: _routeMapController,
-                      decoration: InputDecoration(
-                        labelText: 'Route Map URL (optional)',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    SizedBox(height: 24),
-                    
-                    // Save Button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromARGB(255, 88, 13, 218),
-                        ),
-                        onPressed: _saveRoute,
-                        child: Text(
-                          widget.isNewRoute ? 'Add Route' : 'Update Route',
-                          style: GoogleFonts.inter(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.isNewRoute ? 'Add New Route' : 'Edit Route',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
+                      Text(
+                        'Enter route details below',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.close,
+                      color: Colors.white,
+                      size: 30,
                     ),
-                  ],
-                ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
               ),
             ),
+          ),
+
+          // Scrollable content area
+          Positioned(
+            top: 140,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 88, 13, 218),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(30),
+                ),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(30),
+                  ),
+                ),
+                child: _isLoading
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        color: Color.fromARGB(255, 88, 13, 218),
+                      ),
+                    )
+                  : SingleChildScrollView(
+                      padding: EdgeInsets.all(20),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Route Code
+                            Text(
+                              'Route Code',
+                              style: GoogleFonts.inter(
+                                color: Color.fromARGB(255, 88, 13, 218),
+                                fontSize: 14,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            TextFormField(
+                              controller: _routeCodeController,
+                              decoration: InputDecoration(
+                                hintText: 'e.g., R1, F1',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                  borderSide: BorderSide(color: Colors.grey.shade300),
+                                ),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a route code';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 16),
+                            
+                            // Schedule Type
+                            Text(
+                              'Schedule Type',
+                              style: GoogleFonts.inter(
+                                color: Color.fromARGB(255, 88, 13, 218),
+                                fontSize: 14,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.grey.shade300,
+                                ),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                                  value: _schedule,
+                                  isExpanded: true,
+                                  icon: Icon(Icons.arrow_drop_down),
+                                  padding: EdgeInsets.symmetric(horizontal: 12),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      _schedule = newValue!;
+                                    });
+                                  },
+                                  items: ['Regular', 'Shuttle', 'Friday']
+                                    .map<DropdownMenuItem<String>>((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    }).toList(),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 16),
+                            
+                            // Route Name
+                            Text(
+                              'Route Name',
+                              style: GoogleFonts.inter(
+                                color: Color.fromARGB(255, 88, 13, 218),
+                                fontSize: 14,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            TextFormField(
+                              controller: _routeNameController,
+                              decoration: InputDecoration(
+                                hintText: 'e.g., DSC <> Dhanmondi',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                  borderSide: BorderSide(color: Colors.grey.shade300),
+                                ),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a route name';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 16),
+                            
+                            // Trip Direction
+                            Text(
+                              'Trip Direction',
+                              style: GoogleFonts.inter(
+                                color: Color.fromARGB(255, 88, 13, 218),
+                                fontSize: 14,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.grey.shade300,
+                                ),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                                  value: _tripDirection,
+                                  isExpanded: true,
+                                  icon: Icon(Icons.arrow_drop_down),
+                                  padding: EdgeInsets.symmetric(horizontal: 12),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      _tripDirection = newValue!;
+                                    });
+                                  },
+                                  items: ['To DSC', 'From DSC']
+                                    .map<DropdownMenuItem<String>>((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    }).toList(),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 16),
+                            
+                            // Time
+                            Text(
+                              'Time',
+                              style: GoogleFonts.inter(
+                                color: Color.fromARGB(255, 88, 13, 218),
+                                fontSize: 14,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            TextFormField(
+                              controller: _timeController,
+                              decoration: InputDecoration(
+                                hintText: 'e.g., 7:00 AM',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                  borderSide: BorderSide(color: Colors.grey.shade300),
+                                ),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a time';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 16),
+                            
+                            // Stops
+                            Text(
+                              'Stops',
+                              style: GoogleFonts.inter(
+                                color: Color.fromARGB(255, 88, 13, 218),
+                                fontSize: 14,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            TextFormField(
+                              controller: _stopsController,
+                              decoration: InputDecoration(
+                                hintText: 'Stop 1, Stop 2, Stop 3, ...',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                  borderSide: BorderSide(color: Colors.grey.shade300),
+                                ),
+                                contentPadding: EdgeInsets.all(12),
+                              ),
+                              maxLines: 3,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter stops';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 16),
+                            
+                            // Note
+                            Text(
+                              'Note (optional)',
+                              style: GoogleFonts.inter(
+                                color: Color.fromARGB(255, 88, 13, 218),
+                                fontSize: 14,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            TextFormField(
+                              controller: _noteController,
+                              decoration: InputDecoration(
+                                hintText: 'Additional information about this route',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                  borderSide: BorderSide(color: Colors.grey.shade300),
+                                ),
+                                contentPadding: EdgeInsets.all(12),
+                              ),
+                              maxLines: 2,
+                            ),
+                            SizedBox(height: 16),
+                            
+                            // Route Map
+                            Text(
+                              'Route Map URL (optional)',
+                              style: GoogleFonts.inter(
+                                color: Color.fromARGB(255, 88, 13, 218),
+                                fontSize: 14,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            TextFormField(
+                              controller: _routeMapController,
+                              decoration: InputDecoration(
+                                hintText: 'https://example.com/map',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                  borderSide: BorderSide(color: Colors.grey.shade300),
+                                ),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                              ),
+                            ),
+                            SizedBox(height: 30),
+                            
+                            // Save Button
+                            Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Color.fromARGB(255, 88, 13, 218),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: TextButton(
+                                onPressed: _saveRoute,
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 4),
+                                  child: Text(
+                                    widget.isNewRoute ? 'Add Route' : 'Update Route',
+                                    style: GoogleFonts.inter(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
+                    ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
