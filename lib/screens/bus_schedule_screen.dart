@@ -496,45 +496,63 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                     children: [
                                       SizedBox(height: 20),
                                       Container(
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          color: Color.fromARGB(
-                                            255,
-                                            88,
-                                            13,
-                                            218,
-                                          ),
-                                          borderRadius: BorderRadius.circular(
-                                            4,
-                                          ),
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: Color.fromARGB(
+                                        255,
+                                        88,
+                                        13,
+                                        218,
                                         ),
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: 12,
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            'Route Stops',
-                                            style: GoogleFonts.inter(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                            ),
-                                          ),
+                                        borderRadius: BorderRadius.circular(
+                                        4,
                                         ),
                                       ),
-                                      Padding(
-                                        padding: EdgeInsets.all(12),
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                      child: Center(
                                         child: Text(
-                                          startTimes.isNotEmpty
-                                              ? startTimes[0]['stops']
-                                              : (departureTimes.isNotEmpty
-                                                  ? departureTimes[0]['stops']
-                                                  : 'No stops information available'),
-                                          style: GoogleFonts.inter(
-                                            fontSize: 14,
-                                            height: 1.5,
-                                          ),
+                                        'Route Stops',
+                                        style: GoogleFonts.inter(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
                                         ),
+                                        ),
+                                      ),
+                                      ),
+                                      Padding(
+                                      padding: EdgeInsets.all(12),
+                                      child: Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
+                                        children: (startTimes.isNotEmpty
+                                            ? startTimes[0]['stops']
+                                            : (departureTimes.isNotEmpty
+                                              ? departureTimes[0]['stops']
+                                              : 'No stops information available'))
+                                          .split(',')
+                                          .map<Widget>((stop) => Container(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 6,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                              color: Colors.grey.shade300,
+                                              ),
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: Text(
+                                              '$stop',
+                                              style: GoogleFonts.inter(
+                                              fontSize: 12,
+                                              ),
+                                            ),
+                                            ))
+                                          .toList(),
+                                      ),
                                       ),
                                     ],
                                   ),
