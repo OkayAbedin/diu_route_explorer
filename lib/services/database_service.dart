@@ -1,14 +1,16 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../services/route_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class DatabaseService {
   final RouteService _routeService = RouteService();
   
   // GitHub API endpoint for updating Gist
-  // Note: You'll need to use a GitHub token with Gist permissions
   final String _githubApiUrl = 'https://api.github.com/gists/51bef3438ba8e7e1056d2f902670bfe9';
-  final String _githubToken = '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'; // Store this securely in production
+  
+  // Get token from environment variables
+  String get _githubToken => dotenv.env['GITHUB_TOKEN'] ?? '';
   
   // Get current database
   Future<List<Map<String, dynamic>>> getDatabase() async {
