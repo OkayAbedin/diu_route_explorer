@@ -5,6 +5,7 @@ import 'screens/bus_schedule_screen.dart';
 import 'screens/notification_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/admin_dashboard_screen.dart';
+import 'screens/help_support_screen.dart';
 import 'services/auth_service.dart';
 
 void main() async {
@@ -60,6 +61,7 @@ class _MyAppState extends State<MyApp> {
         '/route_information': (context) => RouteInformationScreen(),
         '/settings': (context) => SettingsScreen(),
         '/admin_dashboard': (context) => AdminDashboardScreen(),
+        '/help_support': (context) => HelpSupportScreen(),
       },
     );
   }

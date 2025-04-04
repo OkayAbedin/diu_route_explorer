@@ -5,6 +5,7 @@ import '../services/route_service.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'bus_schedule_screen.dart';
+import '../widgets/sidebar.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -133,7 +134,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     setState(() {
       _availableRoutes = uniqueRoutes.toList();
-      _availableRoutes.sort();
 
       // If no default route is selected yet, and we have routes available
       if (_selectedDefaultRoute.isEmpty && _availableRoutes.isNotEmpty) {
@@ -247,13 +247,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              // Replace the current Default Route section with this:
                               // Default Route Section
                               Text(
-                                'Default Route',
+                                'Select Route',
                                 style: GoogleFonts.inter(
                                   color: Color.fromARGB(255, 88, 13, 218),
                                   fontSize: 14,
-                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                               SizedBox(height: 8),
@@ -266,19 +266,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 ),
                                 child: DropdownButtonHideUnderline(
                                   child: DropdownButton<String>(
-                                    value:
-                                        _availableRoutes.contains(
-                                              _selectedDefaultRoute,
-                                            )
-                                            ? _selectedDefaultRoute
-                                            : (_availableRoutes.isNotEmpty
-                                                ? _availableRoutes[0]
-                                                : null),
+                                    value: _availableRoutes.contains(_selectedDefaultRoute)
+                                        ? _selectedDefaultRoute
+                                        : (_availableRoutes.isNotEmpty ? _availableRoutes[0] : null),
                                     isExpanded: true,
                                     icon: Icon(Icons.arrow_drop_down),
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                    ),
+                                    padding: EdgeInsets.symmetric(horizontal: 12),
                                     onChanged: (String? newValue) {
                                       if (newValue != null) {
                                         setState(() {
@@ -287,17 +280,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         _saveSettings();
                                       }
                                     },
-                                    items:
-                                        _availableRoutes
-                                            .map<DropdownMenuItem<String>>((
-                                              String value,
-                                            ) {
-                                              return DropdownMenuItem<String>(
-                                                value: value,
-                                                child: Text(value),
-                                              );
-                                            })
-                                            .toList(),
+                                    items: _availableRoutes.map<DropdownMenuItem<String>>((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    }).toList(),
                                   ),
                                 ),
                               ),
@@ -383,153 +371,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildSidebar(BuildContext context) {
-    return Drawer(
-      child: Column(
-        children: [
-          // Purple header with app description
-          Container(
-            width: double.infinity,
-            height: 240,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            color: const Color.fromARGB(255, 88, 13, 218),
-            child: SafeArea(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'DIU Route Explorers is a university bus schedule app that allows students to check bus routes, start and departure times, and important notes for a smooth commuting experience.',
-                    style: GoogleFonts.inter(
-                      color: Colors.white,
-                      fontSize: 16,
-                      height: 1.2,
-                      letterSpacing: 0.2,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Menu items with improved spacing
-          SizedBox(height: 30),
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.schedule),
-            title: Text('Bus Schedule', style: GoogleFonts.inter(fontSize: 16)),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => BusScheduleScreen()),
-              );
-            },
-          ),
-
-          Divider(height: 1, thickness: 0.5),
-
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.route),
-            title: Text(
-              'Route Information',
-              style: GoogleFonts.inter(fontSize: 16),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/route_information');
-            },
-          ),
-
-          Divider(height: 1, thickness: 0.5),
-
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.notifications),
-            title: Text(
-              'Notifications',
-              style: GoogleFonts.inter(fontSize: 16),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/notifications');
-            },
-          ),
-
-          Divider(height: 1, thickness: 0.5),
-
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.settings),
-            title: Text('Settings', style: GoogleFonts.inter(fontSize: 16)),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/settings');
-            },
-          ),
-
-          Divider(height: 1, thickness: 0.5),
-
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.help),
-            title: Text(
-              'Help and Support',
-              style: GoogleFonts.inter(fontSize: 16),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-
-          Divider(height: 1, thickness: 0.5),
-
-          // Logout at the bottom with red text
-          Spacer(),
-          Divider(height: 1, thickness: 0.5),
-
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.logout, color: Colors.red),
-            title: Text(
-              'Logout',
-              style: GoogleFonts.inter(color: Colors.red, fontSize: 16),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, '/');
-            },
-          ),
-          // Version and footer
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20.0),
-            child: Column(
-              children: [
-                Text(
-                  'Version 1.0.1',
-                  style: GoogleFonts.inter(color: Colors.grey, fontSize: 12),
-                ),
-                SizedBox(height: 6),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Made with ", style: GoogleFonts.inter(fontSize: 12)),
-                    Icon(Icons.favorite, color: Colors.red, size: 12),
-                    Text(" by ", style: GoogleFonts.inter(fontSize: 12)),
-                    Text(
-                      "MarsLab",
-                      style: GoogleFonts.inter(
-                        color: Color.fromARGB(255, 88, 13, 218),
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+    return Sidebar();
   }
 }
