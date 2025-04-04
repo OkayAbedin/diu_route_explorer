@@ -494,6 +494,7 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
             ),
             onTap: () {
               Navigator.pop(context);
+              Navigator.pushReplacementNamed(context, '/notifications');
             },
           ),
 
