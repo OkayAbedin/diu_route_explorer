@@ -127,13 +127,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text(
-                        'it\'s $currentTime now.',
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
                     ],
                   ),
                   Row(
