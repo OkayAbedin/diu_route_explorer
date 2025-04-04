@@ -358,17 +358,7 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   SizedBox(height: 20),
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 8),
-                                    child: Text(
-                                      'Route Stops',
-                                      style: GoogleFonts.inter(
-                                        color: Color.fromARGB(255, 88, 13, 218),
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ),
+                                  // Removed the 'Route Stops' text and its padding
                                   Padding(
                                     padding: EdgeInsets.all(12),
                                     child: Wrap(
@@ -411,7 +401,7 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
                                 onPressed: _openGoogleMaps,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Color.fromARGB(255, 88, 13, 218),
-                                  padding: EdgeInsets.symmetric(vertical: 15),
+                                  padding: EdgeInsets.symmetric(vertical: 20),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(4),
                                   ),

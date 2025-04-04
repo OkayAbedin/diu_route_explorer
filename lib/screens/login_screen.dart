@@ -243,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(
-                                          'Please enter a valid Student ID',
+                                          'Please enter a valid Student ID or Registration No',
                                         ),
                                         backgroundColor: Colors.red,
                                       ),
