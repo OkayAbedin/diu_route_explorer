@@ -33,7 +33,6 @@ class Sidebar extends StatelessWidget {
           ),
 
           // Menu items with improved spacing
-          SizedBox(height: 30),
           ListTile(
             contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
             leading: Icon(Icons.schedule),

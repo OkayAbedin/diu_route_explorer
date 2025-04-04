@@ -474,74 +474,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
 
           // Menu items with improved spacing
-          SizedBox(height: 30),
-
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.settings),
-            title: Text('Settings', style: GoogleFonts.inter(fontSize: 16)),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-
-          Divider(height: 1, thickness: 0.5),
-
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.help),
-            title: Text(
-              'Help and Support',
-              style: GoogleFonts.inter(fontSize: 16),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-
-          Divider(height: 1, thickness: 0.5),
-
-          // Logout at the bottom with red text
-          Spacer(),
-          Divider(height: 1, thickness: 0.5),
-
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.logout, color: Colors.red),
-            title: Text(
-              'Logout',
-              style: GoogleFonts.inter(fontSize: 16, color: Colors.red),
-            ),
-            onTap: () async {
-              // Close the drawer
-              Navigator.pop(context);
-
-              // Show loading indicator
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (BuildContext context) {
-                  return Center(
-                    child: CircularProgressIndicator(
-                      color: Color.fromARGB(255, 88, 13, 218),
-                    ),
-                  );
-                },
-              );
-
-              // Perform logout
-              await _authService.logout();
-
-              // Close loading dialog
-              Navigator.of(context).pop();
-
-              // Navigate to login screen
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                '/login',
-                (Route<dynamic> route) => false,
-              );
-            },
-          ),
+          SizedBox(height: MediaQuery.of(context).size.height - 240 - 80),
 
           // Version and footer
           Padding(
