@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
 import '../services/route_service.dart';
-import '../services/auth_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../widgets/sidebar.dart';
@@ -15,7 +14,7 @@ class BusScheduleScreen extends StatefulWidget {
 class _BusScheduleScreenState extends State<BusScheduleScreen> {
   String currentTime = '';
   Timer? _timer;
-  final AuthService _authService = AuthService();
+
 
   // Create an instance of the RouteService
   final RouteService _routeService = RouteService();

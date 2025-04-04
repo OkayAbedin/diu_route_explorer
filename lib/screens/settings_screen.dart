@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/route_service.dart';
 import 'dart:convert';
 import 'dart:async';
-import 'bus_schedule_screen.dart';
 import '../widgets/sidebar.dart';
 
 class SettingsScreen extends StatefulWidget {

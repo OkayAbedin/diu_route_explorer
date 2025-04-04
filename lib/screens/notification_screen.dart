@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/notification_service.dart';
-import 'bus_schedule_screen.dart';
 import '../widgets/sidebar.dart';
 import 'dart:async';
 
