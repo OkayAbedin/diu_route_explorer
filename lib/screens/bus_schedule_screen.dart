@@ -822,6 +822,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
             ),
             onTap: () {
               Navigator.pop(context);
+              Navigator.pushNamed(context, '/route_information');
             },
           ),
 

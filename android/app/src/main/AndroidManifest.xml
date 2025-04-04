@@ -45,4 +45,11 @@
             <data android:mimeType="text/plain"/>
         </intent>
     </queries>
+    <!-- Add this inside the <manifest> tag but outside the <application> tag -->
+    <queries>
+      <intent>
+        <action android:name="android.intent.action.VIEW" />
+        <data android:scheme="https" />
+      </intent>
+    </queries>
 </manifest>
