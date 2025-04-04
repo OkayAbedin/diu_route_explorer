@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../services/admin_service.dart';
 import '../services/database_service.dart';
 import '../services/auth_service.dart';
 import 'route_editor_screen.dart';
-import 'login_screen.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   @override
@@ -12,7 +10,7 @@ class AdminDashboardScreen extends StatefulWidget {
 }
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
-  final AdminService _adminService = AdminService();
+// Removed unused AdminService field
   final DatabaseService _databaseService = DatabaseService();
 
   List<Map<String, dynamic>> _routes = [];
