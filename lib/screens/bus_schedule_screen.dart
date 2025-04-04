@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import '../services/route_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'notification_screen.dart';
 
 class BusScheduleScreen extends StatefulWidget {
   @override
@@ -837,6 +838,10 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
             ),
             onTap: () {
               Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationScreen()),
+              );
             },
           ),
 

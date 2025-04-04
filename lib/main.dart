@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'screens/login_screen.dart';
 import 'screens/route_information_screen.dart';
 import 'screens/bus_schedule_screen.dart';
+import 'screens/notification_screen.dart';
 
 void main() async {
   // Ensure Flutter is initialized before using platform plugins
@@ -19,12 +20,14 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'DIU Route Explorer',
       theme: ThemeData(
-        primarySwatch: Colors.purple,
+        primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      initialRoute: '/',
       routes: {
-        '/': (context) => LoginScreen(), // Default route
+        '/': (context) => LoginScreen(),
         '/bus_schedule': (context) => BusScheduleScreen(),
+        '/notifications': (context) => NotificationScreen(),
         '/route_information': (context) => RouteInformationScreen(),
       },
     );
