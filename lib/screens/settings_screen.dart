@@ -178,8 +178,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         'Settings',
                         style: GoogleFonts.inter(
                           color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -304,12 +304,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     ),
                                   ),
                                   Switch(
-                                    value: _pushNotifications,
+                                    value: false, // Force disabled state
                                     onChanged: (value) {
-                                      setState(() {
-                                        _pushNotifications = value;
-                                      });
-                                      _saveSettings();
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text('Push notifications coming soon!'),
+                                          duration: Duration(seconds: 2),
+                                        ),
+                                      );
                                     },
                                     activeColor: Color.fromARGB(
                                       255,
@@ -336,12 +338,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     ),
                                   ),
                                   Switch(
-                                    value: _darkMode,
+                                    value: false, // Force disabled state
                                     onChanged: (value) {
-                                      setState(() {
-                                        _darkMode = value;
-                                      });
-                                      _saveSettings();
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text('Dark mode coming soon!'),
+                                          duration: Duration(seconds: 2),
+                                        ),
+                                      );
                                     },
                                     activeColor: Color.fromARGB(
                                       255,

@@ -156,7 +156,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             ),
           ),
 
-          // Scrollable content area
+          // Modernized scrollable content area
           Positioned(
             top: 140,
             left: 0,
@@ -164,205 +164,240 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             bottom: 0,
             child: Container(
               decoration: BoxDecoration(
-                color: Color.fromARGB(255, 88, 13, 218),
+                color: Colors.white,
                 borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 20,
+                    spreadRadius: 5,
+                  ),
+                ],
               ),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(30),
-                  ),
-                ),
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // FAQ Section
-                      Text(
-                        'Frequently Asked Questions',
-                        style: GoogleFonts.inter(
-                          color: Color.fromARGB(255, 88, 13, 218),
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Modern FAQ Section
+                    Text(
+                      'Frequently Asked Questions',
+                      style: GoogleFonts.inter(
+                        color: Color.fromARGB(255, 88, 13, 218),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
                       ),
-                      SizedBox(height: 16),
-
-                      // FAQ Expansion Panels
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: faqs.length,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            margin: EdgeInsets.only(bottom: 12),
-                            elevation: 2,
+                    ),
+                    SizedBox(height: 20),
+                    
+                    // Modern FAQ List
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: faqs.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          margin: EdgeInsets.only(bottom: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 6,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: ExpansionTile(
+                            tilePadding: EdgeInsets.symmetric(horizontal: 16),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            child: ExpansionTile(
-                              title: Text(
-                                faqs[index]['question']!,
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 15,
-                                ),
+                            collapsedShape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            title: Text(
+                              faqs[index]['question']!,
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 15,
                               ),
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 8,
-                                  ),
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      faqs[index]['answer']!,
-                                      style: GoogleFonts.inter(fontSize: 14),
-                                    ),
+                            ),
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.all(16),
+                                child: Text(
+                                  faqs[index]['answer']!,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 14,
+                                    color: Colors.grey.shade700,
                                   ),
                                 ),
-                                SizedBox(height: 8),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-
-                      SizedBox(height: 32),
-
-                      // Contact Section
-                      Text(
-                        'Contact Us',
-                        style: GoogleFonts.inter(
-                          color: Color.fromARGB(255, 88, 13, 218),
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 16),
-
-                      Text(
-                        'If you have any questions or need assistance, please feel free to contact us:',
-                        style: GoogleFonts.inter(fontSize: 14),
-                      ),
-                      SizedBox(height: 16),
-
-                      // Email Cards
-                      Card(
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: ListTile(
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          leading: CircleAvatar(
-                            backgroundColor: Color.fromARGB(255, 88, 13, 218),
-                            child: Icon(Icons.email, color: Colors.white),
-                          ),
-                          title: Text(
-                            'Support Email',
-                            style: GoogleFonts.inter(
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          subtitle: Text(
-                            'abedin15-4919@diu.edu.bd',
-                            style: GoogleFonts.inter(
-                              color: Colors.blue,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                          onTap: () => _launchEmail('abedin15-4919@diu.edu.bd'),
-                        ),
-                      ),
-
-                      SizedBox(height: 12),
-
-                      Card(
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: ListTile(
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          leading: CircleAvatar(
-                            backgroundColor: Color.fromARGB(255, 88, 13, 218),
-                            child: Icon(Icons.email, color: Colors.white),
-                          ),
-                          title: Text(
-                            'Support Email',
-                            style: GoogleFonts.inter(
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          subtitle: Text(
-                            'garodia15-5048@diu.edu.bd',
-                            style: GoogleFonts.inter(
-                              color: Colors.blue,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                          onTap:
-                              () => _launchEmail('garodia15-5048@diu.edu.bd'),
-                        ),
-                      ),
-
-                      SizedBox(height: 24),
-
-                      // App Information
-                      Container(
-                        padding: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.grey.shade300),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'About DIU Route Explorers',
-                              style: GoogleFonts.inter(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
                               ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'DIU Route Explorers is designed to help Daffodil International University students navigate the university bus system efficiently. The app provides up-to-date information on bus routes, schedules, and important announcements.',
-                              style: GoogleFonts.inter(fontSize: 14),
-                            ),
-                            SizedBox(height: 12),
-                            Text(
-                              'App Version: 1.0.1',
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                color: Colors.grey.shade700,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
 
-                      SizedBox(height: 30),
-                    ],
-                  ),
+                    SizedBox(height: 32),
+
+                    // Modern Contact Section
+                    Text(
+                      'Contact Us',
+                      style: GoogleFonts.inter(
+                        color: Color.fromARGB(255, 88, 13, 218),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(height: 16),
+
+                    Text(
+                      'If you have any questions or need assistance, please feel free to contact us:',
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+
+                    // Modern Email Cards
+                    Column(
+                      children: [
+                        _buildContactCard(
+                          email: 'abedin15-4919@diu.edu.bd',
+                          context: context,
+                        ),
+                        SizedBox(height: 16),
+                        _buildContactCard(
+                          email: 'garodia15-5048@diu.edu.bd',
+                          context: context,
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: 32),
+
+                    // Modern App Info Card
+                    Container(
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.grey.shade200,
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.03),
+                            blurRadius: 8,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'About DIU Route Explorers',
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(height: 12),
+                          Text(
+                            'DIU Route Explorers is designed to help Daffodil International University students navigate the university bus system efficiently. The app provides up-to-date information on bus routes, schedules, and important announcements.',
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              color: Colors.grey.shade700,
+                            ),
+                          ),
+                          SizedBox(height: 12),
+                          Text(
+                            'App Version: 1.0.1',
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // Add this new helper method outside build()
+  Widget _buildContactCard({required String email, required BuildContext context}) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () => _launchEmail(email),
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Colors.grey.shade200,
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 88, 13, 218).withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.email_outlined,
+                color: Color.fromARGB(255, 88, 13, 218),
+                size: 20,
+              ),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Support Email',
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    email,
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      color: Colors.blue,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              color: Colors.grey.shade400,
+            ),
+          ],
+        ),
       ),
     );
   }

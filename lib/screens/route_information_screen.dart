@@ -220,8 +220,8 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
                     'Route Information',
                     style: GoogleFonts.inter(
                       color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   Row(

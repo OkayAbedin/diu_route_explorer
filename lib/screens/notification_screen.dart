@@ -125,8 +125,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         'Notifications',
                         style: GoogleFonts.inter(
                           color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
