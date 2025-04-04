@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'bus_schedule_screen.dart';
 import '../services/admin_service.dart';
+import '../services/auth_service.dart';
 import 'admin_dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,6 +15,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController studentIdController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
+  final AuthService _authService = AuthService();
 
   @override
   void dispose() {
@@ -221,7 +224,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
-                                onPressed: () {
+                                onPressed: () async {
                                   // Validate using regex pattern: 3 digits-2 digits-4 or 5 digits
                                   RegExp regExp = RegExp(
                                     r'^\d{3}-\d{2}-\d{4,5}$',
@@ -230,8 +233,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                   if (regExp.hasMatch(
                                     studentIdController.text,
                                   )) {
+                                    // Save login state
+                                    await _authService.saveUserLogin(
+                                      studentIdController.text,
+                                      AuthService.USER_TYPE_STUDENT,
+                                    );
+
                                     // Valid format, navigate to BusScheduleScreen
-                                    Navigator.push(
+                                    Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
                                         builder:
@@ -268,7 +277,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: [
                             SizedBox(height: 8),
                             TextField(
-                              controller: usernameController,  // Add this line
+                              controller: usernameController, // Add this line
                               decoration: InputDecoration(
                                 hintText: "Enter your username",
                                 hintStyle: TextStyle(color: Colors.grey),
@@ -291,7 +300,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             SizedBox(height: 20),
                             TextField(
-                              controller: passwordController,  // Add this line
+                              controller: passwordController, // Add this line
                               obscureText: true,
                               decoration: InputDecoration(
                                 hintText: "Enter admin password",
@@ -329,17 +338,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                                 onPressed: () async {
-                                  if (usernameController.text.isEmpty || 
+                                  if (usernameController.text.isEmpty ||
                                       passwordController.text.isEmpty) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text('Please enter both username and password'),
+                                        content: Text(
+                                          'Please enter both username and password',
+                                        ),
                                         backgroundColor: Colors.red,
                                       ),
                                     );
                                     return;
                                   }
-                                  
+
                                   // Show loading indicator
                                   showDialog(
                                     context: context,
@@ -347,31 +358,45 @@ class _LoginScreenState extends State<LoginScreen> {
                                     builder: (BuildContext context) {
                                       return Center(
                                         child: CircularProgressIndicator(
-                                          color: Color.fromARGB(255, 88, 13, 218),
+                                          color: Color.fromARGB(
+                                            255,
+                                            88,
+                                            13,
+                                            218,
+                                          ),
                                         ),
                                       );
                                     },
                                   );
-                                  
+
                                   final success = await AdminService().login(
                                     usernameController.text,
                                     passwordController.text,
                                   );
-                                  
+
                                   // Close loading dialog
                                   Navigator.of(context).pop();
-                                  
+
                                   if (success) {
-                                    Navigator.push(
+                                    // Save login state
+                                    await _authService.saveUserLogin(
+                                      usernameController.text,
+                                      AuthService.USER_TYPE_ADMIN,
+                                    );
+
+                                    Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => AdminDashboardScreen(),
+                                        builder:
+                                            (context) => AdminDashboardScreen(),
                                       ),
                                     );
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text('Invalid admin credentials'),
+                                        content: Text(
+                                          'Invalid admin credentials',
+                                        ),
                                         backgroundColor: Colors.red,
                                       ),
                                     );
@@ -479,6 +504,44 @@ class _LoginScreenState extends State<LoginScreen> {
           // Logout at the bottom with red text
           Spacer(),
           Divider(height: 1, thickness: 0.5),
+
+          ListTile(
+            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            leading: Icon(Icons.logout, color: Colors.red),
+            title: Text(
+              'Logout',
+              style: GoogleFonts.inter(fontSize: 16, color: Colors.red),
+            ),
+            onTap: () async {
+              // Close the drawer
+              Navigator.pop(context);
+
+              // Show loading indicator
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: Color.fromARGB(255, 88, 13, 218),
+                    ),
+                  );
+                },
+              );
+
+              // Perform logout
+              await _authService.logout();
+
+              // Close loading dialog
+              Navigator.of(context).pop();
+
+              // Navigate to login screen
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                '/login',
+                (Route<dynamic> route) => false,
+              );
+            },
+          ),
 
           // Version and footer
           Padding(

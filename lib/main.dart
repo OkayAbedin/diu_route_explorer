@@ -3,6 +3,9 @@ import 'screens/login_screen.dart';
 import 'screens/route_information_screen.dart';
 import 'screens/bus_schedule_screen.dart';
 import 'screens/notification_screen.dart';
+import 'screens/settings_screen.dart';
+import 'screens/admin_dashboard_screen.dart';
+import 'services/auth_service.dart';
 
 void main() async {
   // Ensure Flutter is initialized before using platform plugins
@@ -12,7 +15,34 @@ void main() async {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final AuthService _authService = AuthService();
+  bool _isLoading = true;
+  bool _isLoggedIn = false;
+  String? _userType;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginState();
+  }
+
+  Future<void> _checkLoginState() async {
+    final isLoggedIn = await _authService.isLoggedIn();
+    final userType = await _authService.getUserType();
+
+    setState(() {
+      _isLoggedIn = isLoggedIn;
+      _userType = userType;
+      _isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -22,13 +52,37 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: '/',
+      home: _isLoading ? _buildLoadingScreen() : _getInitialScreen(),
       routes: {
-        '/': (context) => LoginScreen(),
+        '/login': (context) => LoginScreen(),
         '/bus_schedule': (context) => BusScheduleScreen(),
         '/notifications': (context) => NotificationScreen(),
         '/route_information': (context) => RouteInformationScreen(),
+        '/settings': (context) => SettingsScreen(),
+        '/admin_dashboard': (context) => AdminDashboardScreen(),
       },
     );
+  }
+
+  Widget _buildLoadingScreen() {
+    return Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(
+          color: Color.fromARGB(255, 88, 13, 218),
+        ),
+      ),
+    );
+  }
+
+  Widget _getInitialScreen() {
+    if (_isLoggedIn) {
+      if (_userType == AuthService.USER_TYPE_ADMIN) {
+        return AdminDashboardScreen();
+      } else {
+        return BusScheduleScreen();
+      }
+    } else {
+      return LoginScreen();
+    }
   }
 }

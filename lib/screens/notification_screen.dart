@@ -55,14 +55,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
     setState(() {
       isLoading = true;
     });
-    
+
     try {
-      final data = await _notificationService.getNotifications(forceRefresh: true);
+      final data = await _notificationService.getNotifications(
+        forceRefresh: true,
+      );
       setState(() {
         notifications = data;
         isLoading = false;
       });
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Notifications updated successfully'),
@@ -75,7 +77,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       setState(() {
         isLoading = false;
       });
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to update notifications'),
@@ -140,16 +142,17 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         onPressed: _refreshNotifications,
                       ),
                       Builder(
-                        builder: (context) => IconButton(
-                          icon: Icon(
-                            Icons.menu,
-                            color: Colors.white,
-                            size: 30,
-                          ),
-                          onPressed: () {
-                            Scaffold.of(context).openEndDrawer();
-                          },
-                        ),
+                        builder:
+                            (context) => IconButton(
+                              icon: Icon(
+                                Icons.menu,
+                                color: Colors.white,
+                                size: 30,
+                              ),
+                              onPressed: () {
+                                Scaffold.of(context).openEndDrawer();
+                              },
+                            ),
                       ),
                     ],
                   ),
@@ -178,82 +181,83 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     topRight: Radius.circular(30),
                   ),
                 ),
-                child: isLoading
-                    ? Center(
-                        child: CircularProgressIndicator(
-                          color: Color.fromARGB(255, 88, 13, 218),
-                        ),
-                      )
-                    : notifications.isEmpty
+                child:
+                    isLoading
                         ? Center(
-                            child: Text(
-                              'No notifications available',
-                              style: GoogleFonts.inter(
-                                color: Colors.grey,
-                                fontSize: 16,
-                              ),
-                            ),
-                          )
-                        : ListView.builder(
-                            padding: EdgeInsets.all(16),
-                            itemCount: notifications.length,
-                            itemBuilder: (context, index) {
-                              final notification = notifications[index];
-                              // Updated card design to match the image
-                              return Container(
-                                margin: EdgeInsets.only(bottom: 12),
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.grey.shade300,
-                                    width: 1,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Date header with purple background
-                                    Container(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 8,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Color.fromARGB(255, 88, 13, 218),
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(7),
-                                          topRight: Radius.circular(7),
-                                        ),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            notification['date'] ?? '',
-                                            style: GoogleFonts.inter(
-                                              color: Colors.white,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    // Notification title
-                                    Padding(
-                                      padding: EdgeInsets.all(16),
-                                      child: Text(
-                                        notification['title'] ?? '',
-                                        style: GoogleFonts.inter(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
+                          child: CircularProgressIndicator(
+                            color: Color.fromARGB(255, 88, 13, 218),
                           ),
+                        )
+                        : notifications.isEmpty
+                        ? Center(
+                          child: Text(
+                            'No notifications available',
+                            style: GoogleFonts.inter(
+                              color: Colors.grey,
+                              fontSize: 16,
+                            ),
+                          ),
+                        )
+                        : ListView.builder(
+                          padding: EdgeInsets.all(16),
+                          itemCount: notifications.length,
+                          itemBuilder: (context, index) {
+                            final notification = notifications[index];
+                            // Updated card design to match the image
+                            return Container(
+                              margin: EdgeInsets.only(bottom: 12),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.grey.shade300,
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Date header with purple background
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Color.fromARGB(255, 88, 13, 218),
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(7),
+                                        topRight: Radius.circular(7),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          notification['date'] ?? '',
+                                          style: GoogleFonts.inter(
+                                            color: Colors.white,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  // Notification title
+                                  Padding(
+                                    padding: EdgeInsets.all(16),
+                                    child: Text(
+                                      notification['title'] ?? '',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
               ),
             ),
           ),
@@ -261,6 +265,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       ),
     );
   }
+
   Widget _buildSidebar(BuildContext context) {
     return Drawer(
       child: Column(
@@ -347,6 +352,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             title: Text('Settings', style: GoogleFonts.inter(fontSize: 16)),
             onTap: () {
               Navigator.pop(context);
+              Navigator.pushNamed(context, '/settings');
             },
           ),
 

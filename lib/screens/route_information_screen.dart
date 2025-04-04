@@ -13,7 +13,7 @@ class RouteInformationScreen extends StatefulWidget {
 class _RouteInformationScreenState extends State<RouteInformationScreen> {
   final RouteService _routeService = RouteService();
   final String _cacheKey = 'cached_route_data';
-  
+
   List<dynamic> routeData = [];
   Map<String, List<String>> routesByType = {};
   List<String> availableRoutes = [];
@@ -49,28 +49,28 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
   void _processRouteData() {
     // Group routes by type
     routesByType = {};
-    
+
     // Get unique routes
     Set<String> uniqueRoutes = {};
-    
+
     for (var item in routeData) {
       String routeCode = item['Route'];
       String routeName = item['Route Name'];
       String fullRouteName = "$routeCode - $routeName";
-      
+
       // Only add each route once
       if (!uniqueRoutes.contains(fullRouteName)) {
         uniqueRoutes.add(fullRouteName);
-        
+
         // Skip R1 - DSC <> Dhanmondi
         if (fullRouteName.contains("R1 - DSC <> Dhanmondi")) {
           continue;
         }
-        
+
         availableRoutes.add(fullRouteName);
       }
     }
-    
+
     // Set default selected route
     if (availableRoutes.isNotEmpty && selectedRoute.isEmpty) {
       selectedRoute = availableRoutes[0];
@@ -110,15 +110,15 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final jsonString = prefs.getString(_cacheKey);
-      
+
       if (jsonString != null) {
         final data = json.decode(jsonString);
-        
+
         setState(() {
           routeData = List<dynamic>.from(data);
           _processRouteData();
         });
-        
+
         print('Loaded route data from cache');
       }
     } catch (e) {
@@ -130,18 +130,18 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
     setState(() {
       isLoading = true;
     });
-    
+
     try {
       final data = await _routeService.getRoutes(forceRefresh: true);
       _cacheData(data);
-      
+
       setState(() {
         routeData = data;
         _processRouteData();
         _updateRouteDetails();
         isLoading = false;
       });
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Route data updated successfully'),
@@ -154,7 +154,7 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
       setState(() {
         isLoading = false;
       });
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to update route data'),
@@ -166,12 +166,11 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
   }
 
   Future<void> _openGoogleMaps() async {
-    if (selectedRouteDetails.containsKey('Route Map') && 
-        selectedRouteDetails['Route Map'] != null && 
+    if (selectedRouteDetails.containsKey('Route Map') &&
+        selectedRouteDetails['Route Map'] != null &&
         selectedRouteDetails['Route Map'].toString().isNotEmpty) {
-      
       String mapUrl = selectedRouteDetails['Route Map'];
-      
+
       if (await canLaunch(mapUrl)) {
         await launch(mapUrl);
       } else {
@@ -235,16 +234,17 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
                         onPressed: _refreshData,
                       ),
                       Builder(
-                        builder: (context) => IconButton(
-                          icon: Icon(
-                            Icons.menu,
-                            color: Colors.white,
-                            size: 30,
-                          ),
-                          onPressed: () {
-                            Scaffold.of(context).openEndDrawer();
-                          },
-                        ),
+                        builder:
+                            (context) => IconButton(
+                              icon: Icon(
+                                Icons.menu,
+                                color: Colors.white,
+                                size: 30,
+                              ),
+                              onPressed: () {
+                                Scaffold.of(context).openEndDrawer();
+                              },
+                            ),
                       ),
                     ],
                   ),
@@ -273,153 +273,172 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
                     topRight: Radius.circular(30),
                   ),
                 ),
-                child: isLoading
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        color: Color.fromARGB(255, 88, 13, 218),
-                      ),
-                    )
-                  : SingleChildScrollView(
-                      child: Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Route Selection
-                            Text(
-                              'Select Route',
-                              style: GoogleFonts.inter(
-                                color: Color.fromARGB(255, 88, 13, 218),
-                                fontSize: 14,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.grey.shade300,
-                                ),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                  value: selectedRoute,
-                                  isExpanded: true,
-                                  icon: Icon(Icons.arrow_drop_down),
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                  ),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      selectedRoute = newValue!;
-                                      _updateRouteDetails();
-                                    });
-                                  },
-                                  items: availableRoutes
-                                    .map<DropdownMenuItem<String>>((
-                                      String value,
-                                    ) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,
-                                        child: Text(value),
-                                      );
-                                    })
-                                    .toList(),
-                                ),
-                              ),
-                            ),
-
-                            SizedBox(height: 20),
-
-                            // Route Details
-                            Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Color.fromARGB(255, 88, 13, 218),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              padding: EdgeInsets.symmetric(vertical: 12),
-                              child: Center(
-                                child: Text(
-                                  'Route Details',
+                child:
+                    isLoading
+                        ? Center(
+                          child: CircularProgressIndicator(
+                            color: Color.fromARGB(255, 88, 13, 218),
+                          ),
+                        )
+                        : SingleChildScrollView(
+                          child: Padding(
+                            padding: EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Route Selection
+                                Text(
+                                  'Select Route',
                                   style: GoogleFonts.inter(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                    color: Color.fromARGB(255, 88, 13, 218),
+                                    fontSize: 14,
                                   ),
                                 ),
-                              ),
-                            ),
-
-                            // Route Stops
-                            if (selectedRouteDetails.isNotEmpty && 
-                                selectedRouteDetails.containsKey('Stops'))
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(height: 20),
-                                  // Removed the 'Route Stops' text and its padding
-                                  Padding(
-                                    padding: EdgeInsets.all(12),
-                                    child: Wrap(
-                                      spacing: 8,
-                                      runSpacing: 8,
-                                      children: selectedRouteDetails['Stops']
-                                        .split(',')
-                                        .map<Widget>(
-                                          (stop) => Container(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: 12,
-                                              vertical: 6,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color: Colors.grey.shade300,
-                                              ),
-                                              borderRadius: BorderRadius.circular(4),
-                                            ),
-                                            child: Text(
-                                              '$stop',
-                                              style: GoogleFonts.inter(
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                        .toList(),
+                                SizedBox(height: 8),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.grey.shade300,
                                     ),
-                                  ),
-                                ],
-                              ),
-
-                            SizedBox(height: 20),
-
-                            // Google Maps Button
-                            Container(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: _openGoogleMaps,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color.fromARGB(255, 88, 13, 218),
-                                  padding: EdgeInsets.symmetric(vertical: 20),
-                                  shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(4),
                                   ),
-                                ),
-                                child: Text(
-                                  'View Map in Google Maps',
-                                  style: GoogleFonts.inter(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
+                                      value: selectedRoute,
+                                      isExpanded: true,
+                                      icon: Icon(Icons.arrow_drop_down),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                      ),
+                                      onChanged: (String? newValue) {
+                                        setState(() {
+                                          selectedRoute = newValue!;
+                                          _updateRouteDetails();
+                                        });
+                                      },
+                                      items:
+                                          availableRoutes
+                                              .map<DropdownMenuItem<String>>((
+                                                String value,
+                                              ) {
+                                                return DropdownMenuItem<String>(
+                                                  value: value,
+                                                  child: Text(value),
+                                                );
+                                              })
+                                              .toList(),
+                                    ),
                                   ),
                                 ),
-                              ),
+
+                                SizedBox(height: 20),
+
+                                // Route Details
+                                Container(
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    color: Color.fromARGB(255, 88, 13, 218),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  padding: EdgeInsets.symmetric(vertical: 12),
+                                  child: Center(
+                                    child: Text(
+                                      'Route Details',
+                                      style: GoogleFonts.inter(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                // Route Stops
+                                if (selectedRouteDetails.isNotEmpty &&
+                                    selectedRouteDetails.containsKey('Stops'))
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(height: 20),
+                                      // Removed the 'Route Stops' text and its padding
+                                      Padding(
+                                        padding: EdgeInsets.all(12),
+                                        child: Wrap(
+                                          spacing: 8,
+                                          runSpacing: 8,
+                                          children:
+                                              selectedRouteDetails['Stops']
+                                                  .split(',')
+                                                  .map<Widget>(
+                                                    (stop) => Container(
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                            horizontal: 12,
+                                                            vertical: 6,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                          color:
+                                                              Colors
+                                                                  .grey
+                                                                  .shade300,
+                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              4,
+                                                            ),
+                                                      ),
+                                                      child: Text(
+                                                        '$stop',
+                                                        style:
+                                                            GoogleFonts.inter(
+                                                              fontSize: 12,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                  )
+                                                  .toList(),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                SizedBox(height: 20),
+
+                                // Google Maps Button
+                                Container(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    onPressed: _openGoogleMaps,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Color.fromARGB(
+                                        255,
+                                        88,
+                                        13,
+                                        218,
+                                      ),
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 20,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'View Map in Google Maps',
+                                      style: GoogleFonts.inter(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
               ),
             ),
           ),
@@ -480,6 +499,7 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
             ),
             onTap: () {
               Navigator.pop(context);
+              Navigator.pushNamed(context, '/settings');
             },
           ),
 
@@ -506,6 +526,7 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
             title: Text('Settings', style: GoogleFonts.inter(fontSize: 16)),
             onTap: () {
               Navigator.pop(context);
+              Navigator.pushNamed(context, '/settings');
             },
           ),
 
@@ -520,6 +541,7 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
             ),
             onTap: () {
               Navigator.pop(context);
+              Navigator.pushNamed(context, '/settings');
             },
           ),
 

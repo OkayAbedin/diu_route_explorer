@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/admin_service.dart';
 import '../services/database_service.dart';
+import '../services/auth_service.dart';
 import 'route_editor_screen.dart';
 import 'login_screen.dart';
 
@@ -13,20 +14,20 @@ class AdminDashboardScreen extends StatefulWidget {
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   final AdminService _adminService = AdminService();
   final DatabaseService _databaseService = DatabaseService();
-  
+
   List<Map<String, dynamic>> _routes = [];
   bool _isLoading = true;
   String _filterSchedule = 'All';
   String _searchQuery = '';
   String currentTime = '';
-  
+
   @override
   void initState() {
     super.initState();
     _loadRoutes();
     _updateTime();
   }
-  
+
   void _updateTime() {
     final now = DateTime.now();
     final hour = now.hour > 12 ? now.hour - 12 : now.hour;
@@ -38,12 +39,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       currentTime = '$hourString:$minute $period';
     });
   }
-  
+
   Future<void> _loadRoutes() async {
     setState(() {
       _isLoading = true;
     });
-    
+
     try {
       final routes = await _databaseService.getDatabase();
       setState(() {
@@ -55,7 +56,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       setState(() {
         _isLoading = false;
       });
-      
+
       // Only show error message if the context is still valid
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -68,82 +69,84 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       }
     }
   }
-  
+
   // Add this method to handle SharedPreferences errors
   Future<void> _safeLogout() async {
     try {
-      await _adminService.logout();
+      // Use AuthService for consistent logout experience
+      final authService = AuthService();
+      await authService.logout();
     } catch (e) {
       print('Error during logout: $e');
       // Continue with navigation even if logout fails
     }
-    
+
     if (mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => LoginScreen()),
-        (route) => false,
-      );
+      Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
     }
   }
 
-  
   List<Map<String, dynamic>> _getFilteredRoutes() {
     return _routes.where((route) {
       // Apply schedule filter
       if (_filterSchedule != 'All' && route['Schedule'] != _filterSchedule) {
         return false;
       }
-      
+
       // Apply search filter
       if (_searchQuery.isNotEmpty) {
         final routeName = route['Route Name']?.toString().toLowerCase() ?? '';
         final routeCode = route['Route']?.toString().toLowerCase() ?? '';
         final searchLower = _searchQuery.toLowerCase();
-        
-        return routeName.contains(searchLower) || routeCode.contains(searchLower);
+
+        return routeName.contains(searchLower) ||
+            routeCode.contains(searchLower);
       }
-      
+
       return true;
     }).toList();
   }
-  
+
   // Replace the existing _logout method with this one
   Future<void> _logout() async {
     // Use the safe logout method instead
     await _safeLogout();
   }
-  
+
   Future<void> _deleteRoute(int index) async {
     final filteredRoutes = _getFilteredRoutes();
     final routeToDelete = filteredRoutes[index];
     final originalIndex = _routes.indexOf(routeToDelete);
-    
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Confirm Delete'),
-        content: Text('Are you sure you want to delete this route?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text('Delete', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    ) ?? false;
-    
+
+    final confirmed =
+        await showDialog<bool>(
+          context: context,
+          builder:
+              (context) => AlertDialog(
+                title: Text('Confirm Delete'),
+                content: Text('Are you sure you want to delete this route?'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: Text('Delete', style: TextStyle(color: Colors.red)),
+                  ),
+                ],
+              ),
+        ) ??
+        false;
+
     if (confirmed) {
       setState(() {
         _isLoading = true;
       });
-      
+
       try {
         final success = await _databaseService.deleteRoute(originalIndex);
-        
+
         if (success) {
           await _loadRoutes();
           if (mounted) {
@@ -159,7 +162,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           setState(() {
             _isLoading = false;
           });
-          
+
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -175,7 +178,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         setState(() {
           _isLoading = false;
         });
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -188,7 +191,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       }
     }
   }
-  
+
   Widget _buildSidebar(BuildContext context) {
     return Drawer(
       child: Column(
@@ -201,7 +204,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             color: const Color.fromARGB(255, 88, 13, 218),
             child: SafeArea(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.end, // Align content to the bottom
+                mainAxisAlignment:
+                    MainAxisAlignment.end, // Align content to the bottom
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -248,10 +252,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           ListTile(
             contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
             leading: Icon(Icons.analytics),
-            title: Text(
-              'Analytics',
-              style: GoogleFonts.inter(fontSize: 16),
-            ),
+            title: Text('Analytics', style: GoogleFonts.inter(fontSize: 16)),
             onTap: () {
               Navigator.pop(context);
             },
@@ -281,7 +282,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ),
             onTap: _logout,
           ),
-          
+
           // Version and footer
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 20.0),
@@ -314,11 +315,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       ),
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final filteredRoutes = _getFilteredRoutes();
-    
+
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 88, 13, 218),
       endDrawer: _buildSidebar(context),
@@ -341,7 +342,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 builder: (context) => RouteEditorScreen(isNewRoute: true),
               ),
             );
-            
+
             if (result == true) {
               await _loadRoutes();
             }
@@ -409,16 +410,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         onPressed: _loadRoutes,
                       ),
                       Builder(
-                        builder: (context) => IconButton(
-                          icon: Icon(
-                            Icons.menu,
-                            color: Colors.white,
-                            size: 30,
-                          ),
-                          onPressed: () {
-                            Scaffold.of(context).openEndDrawer();
-                          },
-                        ),
+                        builder:
+                            (context) => IconButton(
+                              icon: Icon(
+                                Icons.menu,
+                                color: Colors.white,
+                                size: 30,
+                              ),
+                              onPressed: () {
+                                Scaffold.of(context).openEndDrawer();
+                              },
+                            ),
                       ),
                     ],
                   ),
@@ -447,318 +449,466 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     topRight: Radius.circular(30),
                   ),
                 ),
-                child: _isLoading
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        color: Color.fromARGB(255, 88, 13, 218),
-                      ),
-                    )
-                  : Column(
-                      children: [
-                        // Search and filter bar
-                        Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Search Routes',
-                                style: GoogleFonts.inter(
-                                  color: Color.fromARGB(255, 88, 13, 218),
-                                  fontSize: 14,
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              TextField(
-                                decoration: InputDecoration(
-                                  hintText: 'Search routes...',
-                                  prefixIcon: Icon(Icons.search),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(4),
-                                    borderSide: BorderSide(color: Colors.grey.shade300),
+                child:
+                    _isLoading
+                        ? Center(
+                          child: CircularProgressIndicator(
+                            color: Color.fromARGB(255, 88, 13, 218),
+                          ),
+                        )
+                        : Column(
+                          children: [
+                            // Search and filter bar
+                            Padding(
+                              padding: EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Search Routes',
+                                    style: GoogleFonts.inter(
+                                      color: Color.fromARGB(255, 88, 13, 218),
+                                      fontSize: 14,
+                                    ),
                                   ),
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                                ),
-                                onChanged: (value) {
-                                  setState(() {
-                                    _searchQuery = value;
-                                  });
-                                },
-                              ),
-                              SizedBox(height: 16),
-                              Text(
-                                'Filter by Schedule',
-                                style: GoogleFonts.inter(
-                                  color: Color.fromARGB(255, 88, 13, 218),
-                                  fontSize: 14,
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.grey.shade300,
-                                  ),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<String>(
-                                    value: _filterSchedule,
-                                    isExpanded: true,
-                                    icon: Icon(Icons.arrow_drop_down),
-                                    padding: EdgeInsets.symmetric(horizontal: 12),
-                                    onChanged: (String? newValue) {
+                                  SizedBox(height: 8),
+                                  TextField(
+                                    decoration: InputDecoration(
+                                      hintText: 'Search routes...',
+                                      prefixIcon: Icon(Icons.search),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(4),
+                                        borderSide: BorderSide(
+                                          color: Colors.grey.shade300,
+                                        ),
+                                      ),
+                                      contentPadding: EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 16,
+                                      ),
+                                    ),
+                                    onChanged: (value) {
                                       setState(() {
-                                        _filterSchedule = newValue!;
+                                        _searchQuery = value;
                                       });
                                     },
-                                    items: ['All', 'Regular', 'Shuttle', 'Friday']
-                                      .map<DropdownMenuItem<String>>((String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(value),
-                                        );
-                                      }).toList(),
                                   ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        
-                        // Routes list
-                        Expanded(
-                          child: filteredRoutes.isEmpty
-                            ? Center(
-                                child: Text(
-                                  'No routes found',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 16,
-                                    color: Colors.grey,
+                                  SizedBox(height: 16),
+                                  Text(
+                                    'Filter by Schedule',
+                                    style: GoogleFonts.inter(
+                                      color: Color.fromARGB(255, 88, 13, 218),
+                                      fontSize: 14,
+                                    ),
                                   ),
-                                ),
-                              )
-                            : RefreshIndicator(
-                                onRefresh: _loadRoutes,
-                                color: Color.fromARGB(255, 88, 13, 218),
-                                child: ListView.builder(
-                                  itemCount: filteredRoutes.length,
-                                  itemBuilder: (context, index) {
-                                    final route = filteredRoutes[index];
-                                    return Card(
-                                      margin: EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 8,
+                                  SizedBox(height: 8),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.grey.shade300,
                                       ),
-                                      elevation: 4,
-                                      shadowColor: Colors.black26,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        side: BorderSide(
-                                          color: Colors.grey.shade200,
-                                          width: 1,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: DropdownButtonHideUnderline(
+                                      child: DropdownButton<String>(
+                                        value: _filterSchedule,
+                                        isExpanded: true,
+                                        icon: Icon(Icons.arrow_drop_down),
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 12,
                                         ),
+                                        onChanged: (String? newValue) {
+                                          setState(() {
+                                            _filterSchedule = newValue!;
+                                          });
+                                        },
+                                        items:
+                                            [
+                                              'All',
+                                              'Regular',
+                                              'Shuttle',
+                                              'Friday',
+                                            ].map<DropdownMenuItem<String>>((
+                                              String value,
+                                            ) {
+                                              return DropdownMenuItem<String>(
+                                                value: value,
+                                                child: Text(value),
+                                              );
+                                            }).toList(),
                                       ),
-                                      child: Padding(
-                                        padding: EdgeInsets.all(16),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                Expanded(
-                                                  child: Text(
-                                                    '${route['Route']} - ${route['Route Name']}',
-                                                    style: GoogleFonts.inter(
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 16, // Reduced from 18 to 16
-                                                      color: Color.fromARGB(255, 88, 13, 218),
-                                                    ),
-                                                  ),
-                                                ),
-                                                Container(
-                                                  padding: EdgeInsets.symmetric(
-                                                    horizontal: 8,
-                                                    vertical: 4,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    color: route['Schedule'] == 'Regular'
-                                                        ? Colors.blue.shade100
-                                                        : route['Schedule'] == 'Shuttle'
-                                                            ? Colors.green.shade100
-                                                            : Colors.orange.shade100,
-                                                    borderRadius: BorderRadius.circular(12),
-                                                  ),
-                                                  child: Text(
-                                                    route['Schedule'],
-                                                    style: GoogleFonts.inter(
-                                                      fontSize: 12,
-                                                      fontWeight: FontWeight.w500,
-                                                      color: route['Schedule'] == 'Regular'
-                                                          ? Colors.blue.shade800
-                                                          : route['Schedule'] == 'Shuttle'
-                                                              ? Colors.green.shade800
-                                                              : Colors.orange.shade800,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(height: 12),
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.directions_bus,
-                                                  size: 16,
-                                                  color: Colors.grey.shade700,
-                                                ),
-                                                SizedBox(width: 8),
-                                                Text(
-                                                  route['Trip Direction'],
-                                                  style: GoogleFonts.inter(
-                                                    fontSize: 14,
-                                                    color: Colors.grey.shade700,
-                                                  ),
-                                                ),
-                                                SizedBox(width: 16),
-                                                Icon(
-                                                  Icons.access_time,
-                                                  size: 16,
-                                                  color: Colors.grey.shade700,
-                                                ),
-                                                SizedBox(width: 8),
-                                                Text(
-                                                  route['Time'],
-                                                  style: GoogleFonts.inter(
-                                                    fontSize: 14,
-                                                    color: Colors.grey.shade700,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            if (route['Note'] != null && route['Note'].toString().isNotEmpty)
-                                              Padding(
-                                                padding: EdgeInsets.only(top: 12),
-                                                child: Container(
-                                                  padding: EdgeInsets.all(8),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.grey.shade100,
-                                                    borderRadius: BorderRadius.circular(8),
-                                                  ),
-                                                  child: Row(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Icon(
-                                                        Icons.info_outline,
-                                                        size: 16,
-                                                        color: Colors.grey.shade700,
-                                                      ),
-                                                      SizedBox(width: 8),
-                                                      Expanded(
-                                                        child: Text(
-                                                          route['Note'],
-                                                          style: GoogleFonts.inter(
-                                                            fontSize: 13,
-                                                            fontStyle: FontStyle.italic,
-                                                            color: Colors.grey.shade700,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // Routes list
+                            Expanded(
+                              child:
+                                  filteredRoutes.isEmpty
+                                      ? Center(
+                                        child: Text(
+                                          'No routes found',
+                                          style: GoogleFonts.inter(
+                                            fontSize: 16,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      )
+                                      : RefreshIndicator(
+                                        onRefresh: _loadRoutes,
+                                        color: Color.fromARGB(255, 88, 13, 218),
+                                        child: ListView.builder(
+                                          itemCount: filteredRoutes.length,
+                                          itemBuilder: (context, index) {
+                                            final route = filteredRoutes[index];
+                                            return Card(
+                                              margin: EdgeInsets.symmetric(
+                                                horizontal: 16,
+                                                vertical: 8,
+                                              ),
+                                              elevation: 4,
+                                              shadowColor: Colors.black26,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                side: BorderSide(
+                                                  color: Colors.grey.shade200,
+                                                  width: 1,
                                                 ),
                                               ),
-                                            SizedBox(height: 12),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.end,
-                                              children: [
-                                                ElevatedButton.icon(
-                                                  icon: Icon(
-                                                    Icons.edit,
-                                                    size: 18,
-                                                  ),
-                                                  label: Text('Edit'),
-                                                  style: ElevatedButton.styleFrom(
-                                                    foregroundColor: Color.fromARGB(255, 88, 13, 218),
-                                                    backgroundColor: Colors.white,
-                                                    elevation: 0,
-                                                    side: BorderSide(
-                                                      color: Color.fromARGB(255, 88, 13, 218),
-                                                    ),
-                                                    padding: EdgeInsets.symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 8,
-                                                    ),
-                                                  ),
-                                                  onPressed: () async {
-                                                    try {
-                                                      final originalIndex = _routes.indexOf(route);
-                                                      final result = await Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) => RouteEditorScreen(
-                                                            isNewRoute: false,
-                                                            route: route,
-                                                            routeIndex: originalIndex,
+                                              child: Padding(
+                                                padding: EdgeInsets.all(16),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Expanded(
+                                                          child: Text(
+                                                            '${route['Route']} - ${route['Route Name']}',
+                                                            style: GoogleFonts.inter(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize:
+                                                                  16, // Reduced from 18 to 16
+                                                              color:
+                                                                  Color.fromARGB(
+                                                                    255,
+                                                                    88,
+                                                                    13,
+                                                                    218,
+                                                                  ),
+                                                            ),
                                                           ),
                                                         ),
-                                                      );
-                                                      
-                                                      if (result == true) {
-                                                        await _loadRoutes();
-                                                      }
-                                                    } catch (e) {
-                                                      print('Error editing route: $e');
-                                                      if (mounted) {
-                                                        ScaffoldMessenger.of(context).showSnackBar(
-                                                          SnackBar(
-                                                            content: Text('Error editing route: $e'),
-                                                            backgroundColor: Colors.red,
-                                                            duration: Duration(seconds: 2),
+                                                        Container(
+                                                          padding:
+                                                              EdgeInsets.symmetric(
+                                                                horizontal: 8,
+                                                                vertical: 4,
+                                                              ),
+                                                          decoration: BoxDecoration(
+                                                            color:
+                                                                route['Schedule'] ==
+                                                                        'Regular'
+                                                                    ? Colors
+                                                                        .blue
+                                                                        .shade100
+                                                                    : route['Schedule'] ==
+                                                                        'Shuttle'
+                                                                    ? Colors
+                                                                        .green
+                                                                        .shade100
+                                                                    : Colors
+                                                                        .orange
+                                                                        .shade100,
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  12,
+                                                                ),
                                                           ),
-                                                        );
-                                                      }
-                                                    }
-                                                  },
-                                                ),
-                                                SizedBox(width: 8),
-                                                ElevatedButton.icon(
-                                                  icon: Icon(
-                                                    Icons.delete,
-                                                    size: 18,
-                                                    color: Colors.white, // Changed to white for better contrast
-                                                  ),
-                                                  label: Text(
-                                                    'Delete',
-                                                    style: TextStyle(color: Colors.white), // Changed to white
-                                                  ),
-                                                  style: ElevatedButton.styleFrom(
-                                                    foregroundColor: Colors.white, // Changed from red to white
-                                                    backgroundColor: Colors.red, // Changed from white to red
-                                                    elevation: 0,
-                                                    side: BorderSide(
-                                                      color: Colors.red,
+                                                          child: Text(
+                                                            route['Schedule'],
+                                                            style: GoogleFonts.inter(
+                                                              fontSize: 12,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              color:
+                                                                  route['Schedule'] ==
+                                                                          'Regular'
+                                                                      ? Colors
+                                                                          .blue
+                                                                          .shade800
+                                                                      : route['Schedule'] ==
+                                                                          'Shuttle'
+                                                                      ? Colors
+                                                                          .green
+                                                                          .shade800
+                                                                      : Colors
+                                                                          .orange
+                                                                          .shade800,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
-                                                    padding: EdgeInsets.symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 8,
+                                                    SizedBox(height: 12),
+                                                    Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons.directions_bus,
+                                                          size: 16,
+                                                          color:
+                                                              Colors
+                                                                  .grey
+                                                                  .shade700,
+                                                        ),
+                                                        SizedBox(width: 8),
+                                                        Text(
+                                                          route['Trip Direction'],
+                                                          style:
+                                                              GoogleFonts.inter(
+                                                                fontSize: 14,
+                                                                color:
+                                                                    Colors
+                                                                        .grey
+                                                                        .shade700,
+                                                              ),
+                                                        ),
+                                                        SizedBox(width: 16),
+                                                        Icon(
+                                                          Icons.access_time,
+                                                          size: 16,
+                                                          color:
+                                                              Colors
+                                                                  .grey
+                                                                  .shade700,
+                                                        ),
+                                                        SizedBox(width: 8),
+                                                        Text(
+                                                          route['Time'],
+                                                          style:
+                                                              GoogleFonts.inter(
+                                                                fontSize: 14,
+                                                                color:
+                                                                    Colors
+                                                                        .grey
+                                                                        .shade700,
+                                                              ),
+                                                        ),
+                                                      ],
                                                     ),
-                                                  ),
-                                                  onPressed: () => _deleteRoute(index),
+                                                    if (route['Note'] != null &&
+                                                        route['Note']
+                                                            .toString()
+                                                            .isNotEmpty)
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                              top: 12,
+                                                            ),
+                                                        child: Container(
+                                                          padding:
+                                                              EdgeInsets.all(8),
+                                                          decoration: BoxDecoration(
+                                                            color:
+                                                                Colors
+                                                                    .grey
+                                                                    .shade100,
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  8,
+                                                                ),
+                                                          ),
+                                                          child: Row(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Icon(
+                                                                Icons
+                                                                    .info_outline,
+                                                                size: 16,
+                                                                color:
+                                                                    Colors
+                                                                        .grey
+                                                                        .shade700,
+                                                              ),
+                                                              SizedBox(
+                                                                width: 8,
+                                                              ),
+                                                              Expanded(
+                                                                child: Text(
+                                                                  route['Note'],
+                                                                  style: GoogleFonts.inter(
+                                                                    fontSize:
+                                                                        13,
+                                                                    fontStyle:
+                                                                        FontStyle
+                                                                            .italic,
+                                                                    color:
+                                                                        Colors
+                                                                            .grey
+                                                                            .shade700,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    SizedBox(height: 12),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.end,
+                                                      children: [
+                                                        ElevatedButton.icon(
+                                                          icon: Icon(
+                                                            Icons.edit,
+                                                            size: 18,
+                                                          ),
+                                                          label: Text('Edit'),
+                                                          style: ElevatedButton.styleFrom(
+                                                            foregroundColor:
+                                                                Color.fromARGB(
+                                                                  255,
+                                                                  88,
+                                                                  13,
+                                                                  218,
+                                                                ),
+                                                            backgroundColor:
+                                                                Colors.white,
+                                                            elevation: 0,
+                                                            side: BorderSide(
+                                                              color:
+                                                                  Color.fromARGB(
+                                                                    255,
+                                                                    88,
+                                                                    13,
+                                                                    218,
+                                                                  ),
+                                                            ),
+                                                            padding:
+                                                                EdgeInsets.symmetric(
+                                                                  horizontal:
+                                                                      12,
+                                                                  vertical: 8,
+                                                                ),
+                                                          ),
+                                                          onPressed: () async {
+                                                            try {
+                                                              final originalIndex =
+                                                                  _routes
+                                                                      .indexOf(
+                                                                        route,
+                                                                      );
+                                                              final result = await Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder:
+                                                                      (
+                                                                        context,
+                                                                      ) => RouteEditorScreen(
+                                                                        isNewRoute:
+                                                                            false,
+                                                                        route:
+                                                                            route,
+                                                                        routeIndex:
+                                                                            originalIndex,
+                                                                      ),
+                                                                ),
+                                                              );
+
+                                                              if (result ==
+                                                                  true) {
+                                                                await _loadRoutes();
+                                                              }
+                                                            } catch (e) {
+                                                              print(
+                                                                'Error editing route: $e',
+                                                              );
+                                                              if (mounted) {
+                                                                ScaffoldMessenger.of(
+                                                                  context,
+                                                                ).showSnackBar(
+                                                                  SnackBar(
+                                                                    content: Text(
+                                                                      'Error editing route: $e',
+                                                                    ),
+                                                                    backgroundColor:
+                                                                        Colors
+                                                                            .red,
+                                                                    duration:
+                                                                        Duration(
+                                                                          seconds:
+                                                                              2,
+                                                                        ),
+                                                                  ),
+                                                                );
+                                                              }
+                                                            }
+                                                          },
+                                                        ),
+                                                        SizedBox(width: 8),
+                                                        ElevatedButton.icon(
+                                                          icon: Icon(
+                                                            Icons.delete,
+                                                            size: 18,
+                                                            color:
+                                                                Colors
+                                                                    .white, // Changed to white for better contrast
+                                                          ),
+                                                          label: Text(
+                                                            'Delete',
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                            ), // Changed to white
+                                                          ),
+                                                          style: ElevatedButton.styleFrom(
+                                                            foregroundColor:
+                                                                Colors
+                                                                    .white, // Changed from red to white
+                                                            backgroundColor:
+                                                                Colors
+                                                                    .red, // Changed from white to red
+                                                            elevation: 0,
+                                                            side: BorderSide(
+                                                              color: Colors.red,
+                                                            ),
+                                                            padding:
+                                                                EdgeInsets.symmetric(
+                                                                  horizontal:
+                                                                      12,
+                                                                  vertical: 8,
+                                                                ),
+                                                          ),
+                                                          onPressed:
+                                                              () =>
+                                                                  _deleteRoute(
+                                                                    index,
+                                                                  ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
                                                 ),
-                                              ],
-                                            ),
-                                          ],
+                                              ),
+                                            );
+                                          },
                                         ),
                                       ),
-                                    );
-                                  },
-                                ),
-                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
               ),
             ),
           ),

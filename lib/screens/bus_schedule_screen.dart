@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import '../services/route_service.dart';
+import '../services/auth_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'notification_screen.dart';
@@ -15,10 +16,11 @@ class BusScheduleScreen extends StatefulWidget {
 class _BusScheduleScreenState extends State<BusScheduleScreen> {
   String currentTime = '';
   Timer? _timer;
+  final AuthService _authService = AuthService();
 
   // Create an instance of the RouteService
   final RouteService _routeService = RouteService();
-  
+
   // Add a key for caching
   final String _cacheKey = 'cached_bus_data';
 
@@ -34,7 +36,8 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
   List<Map<String, dynamic>> departureTimes = [];
   bool isLoading = true;
   String selectedSchedule = 'Regular';
-  String selectedRoute = ''; // Will be set to R1 after data loads
+  String selectedRoute = ''; // Will be loaded from preferences if available
+  final String _defaultRouteKey = 'default_route';
 
   @override
   void initState() {
@@ -51,9 +54,12 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
     try {
       // Use the RouteService to fetch data
       final data = await _routeService.getRoutes();
-      
+
       // Cache the data
       _cacheData(data);
+
+      // Load saved default route preference
+      String? savedDefaultRoute = await _loadDefaultRoute();
 
       setState(() {
         busData = data;
@@ -88,18 +94,48 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
         // Set available routes based on default selected schedule
         availableRoutes = scheduleRoutes[selectedSchedule] ?? [];
 
-        // Set default route to first available route
-        selectedRoute = availableRoutes.isNotEmpty ? availableRoutes[0] : '';
-        _updateScheduleData();
+        // If we have a saved default route and it's in the available routes, use it
+        if (savedDefaultRoute != null && savedDefaultRoute.isNotEmpty) {
+          // Extract the route code from the saved default route (e.g., "R4 - ECB Chattor <> Mirpur <> DSC" -> "R4")
+          String savedRouteCode = savedDefaultRoute.split(' - ')[0];
 
+          // Find the schedule type for this route
+          String? routeSchedule;
+          for (var item in busData) {
+            if (item['Route'] == savedRouteCode) {
+              routeSchedule = item['Schedule'];
+              break;
+            }
+          }
+
+          // If we found the schedule, update the selected schedule
+          if (routeSchedule != null) {
+            selectedSchedule = routeSchedule;
+            availableRoutes = scheduleRoutes[selectedSchedule] ?? [];
+          }
+
+          // Check if the saved route is in the available routes for the selected schedule
+          if (availableRoutes.contains(savedDefaultRoute)) {
+            selectedRoute = savedDefaultRoute;
+          } else {
+            // Fallback to first available route if saved route is not available
+            selectedRoute =
+                availableRoutes.isNotEmpty ? availableRoutes[0] : '';
+          }
+        } else {
+          // Set default route to first available route if no saved preference
+          selectedRoute = availableRoutes.isNotEmpty ? availableRoutes[0] : '';
+        }
+
+        _updateScheduleData();
         isLoading = false;
       });
     } catch (e) {
       print('Error loading bus data: $e');
-      
+
       // Try to load from cache if network fetch fails
       _loadFromCache();
-      
+
       setState(() {
         isLoading = false;
       });
@@ -117,26 +153,25 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
       print('Error caching bus data: $e');
     }
   }
-  
+
   // Add method to load from cache
   Future<void> _loadFromCache() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final jsonString = prefs.getString(_cacheKey);
-      
+
       if (jsonString != null) {
         final data = json.decode(jsonString);
-        
+
+        // Load saved default route preference
+        String? savedDefaultRoute = await _loadDefaultRoute();
+
         setState(() {
           busData = List<dynamic>.from(data);
-          
+
           // Clear existing route mappings
-          scheduleRoutes = {
-            'Regular': [],
-            'Shuttle': [],
-            'Friday': [],
-          };
-          
+          scheduleRoutes = {'Regular': [], 'Shuttle': [], 'Friday': []};
+
           // Group routes by schedule type
           for (var item in busData) {
             String routeCode = item['Route'];
@@ -167,15 +202,58 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
           // Set available routes based on selected schedule
           availableRoutes = scheduleRoutes[selectedSchedule] ?? [];
 
-          // Set default route to first available route
-          selectedRoute = availableRoutes.isNotEmpty ? availableRoutes[0] : '';
+          // If we have a saved default route and it's in the available routes, use it
+          if (savedDefaultRoute != null && savedDefaultRoute.isNotEmpty) {
+            // Extract the route code from the saved default route
+            String savedRouteCode = savedDefaultRoute.split(' - ')[0];
+
+            // Find the schedule type for this route
+            String? routeSchedule;
+            for (var item in busData) {
+              if (item['Route'] == savedRouteCode) {
+                routeSchedule = item['Schedule'];
+                break;
+              }
+            }
+
+            // If we found the schedule, update the selected schedule
+            if (routeSchedule != null) {
+              selectedSchedule = routeSchedule;
+              availableRoutes = scheduleRoutes[selectedSchedule] ?? [];
+            }
+
+            // Check if the saved route is in the available routes for the selected schedule
+            if (availableRoutes.contains(savedDefaultRoute)) {
+              selectedRoute = savedDefaultRoute;
+            } else {
+              // Fallback to first available route if saved route is not available
+              selectedRoute =
+                  availableRoutes.isNotEmpty ? availableRoutes[0] : '';
+            }
+          } else {
+            // Set default route to first available route if no saved preference
+            selectedRoute =
+                availableRoutes.isNotEmpty ? availableRoutes[0] : '';
+          }
+
           _updateScheduleData();
         });
-        
+
         print('Loaded bus data from cache');
       }
     } catch (e) {
       print('Error loading from cache: $e');
+    }
+  }
+
+  // Load default route from SharedPreferences
+  Future<String?> _loadDefaultRoute() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString(_defaultRouteKey);
+    } catch (e) {
+      print('Error loading default route: $e');
+      return null;
     }
   }
 
@@ -203,13 +281,17 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
       if (item['Trip Direction'] == 'To DSC') {
         newStartTimes.add({
           'time': item['Time'],
-          'note': item['Note'] ?? '', // Changed from 'No additional information' to empty string
+          'note':
+              item['Note'] ??
+              '', // Changed from 'No additional information' to empty string
           'stops': item['Stops'],
         });
       } else if (item['Trip Direction'] == 'From DSC') {
         newDepartureTimes.add({
           'time': item['Time'],
-          'note': item['Note'] ?? '', // Changed from 'No additional information' to empty string
+          'note':
+              item['Note'] ??
+              '', // Changed from 'No additional information' to empty string
           'stops': item['Stops'],
         });
       }
@@ -244,24 +326,20 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
     setState(() {
       isLoading = true;
     });
-    
+
     try {
       // Force fetch from network
       final data = await _routeService.getRoutes(forceRefresh: true);
-      
+
       // Cache the new data
       _cacheData(data);
-      
+
       setState(() {
         busData = data;
 
         // Clear existing route mappings
-        scheduleRoutes = {
-          'Regular': [],
-          'Shuttle': [],
-          'Friday': [],
-        };
-        
+        scheduleRoutes = {'Regular': [], 'Shuttle': [], 'Friday': []};
+
         // Group routes by schedule type
         for (var item in busData) {
           String routeCode = item['Route'];
@@ -295,10 +373,10 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
         // Set default route to first available route
         selectedRoute = availableRoutes.isNotEmpty ? availableRoutes[0] : '';
         _updateScheduleData();
-        
+
         isLoading = false;
       });
-      
+
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -312,7 +390,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
       setState(() {
         isLoading = false;
       });
-      
+
       // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -593,7 +671,8 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                                 Padding(
                                                   padding: EdgeInsets.all(12),
                                                   child: Text(
-                                                    time['note'] == null || time['note'].isEmpty
+                                                    time['note'] == null ||
+                                                            time['note'].isEmpty
                                                         ? 'No additional information'
                                                         : time['note'],
                                                     style: GoogleFonts.inter(
@@ -664,7 +743,8 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                                 Padding(
                                                   padding: EdgeInsets.all(12),
                                                   child: Text(
-                                                    time['note'] == null || time['note'].isEmpty
+                                                    time['note'] == null ||
+                                                            time['note'].isEmpty
                                                         ? 'No additional information'
                                                         : time['note'],
                                                     style: GoogleFonts.inter(
@@ -853,6 +933,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
             title: Text('Settings', style: GoogleFonts.inter(fontSize: 16)),
             onTap: () {
               Navigator.pop(context);
+              Navigator.pushNamed(context, '/settings');
             },
           ),
 
@@ -883,9 +964,34 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
               'Logout',
               style: GoogleFonts.inter(color: Colors.red, fontSize: 16),
             ),
-            onTap: () {
+            onTap: () async {
+              // Close the drawer
               Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, '/');
+
+              // Show loading indicator
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: Color.fromARGB(255, 88, 13, 218),
+                    ),
+                  );
+                },
+              );
+
+              // Perform logout
+              await _authService.logout();
+
+              // Close loading dialog
+              Navigator.of(context).pop();
+
+              // Navigate to login screen
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                '/login',
+                (Route<dynamic> route) => false,
+              );
             },
           ),
           // Version and footer
