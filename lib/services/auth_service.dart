@@ -6,6 +6,9 @@ class AuthService {
   static const String _userLoginKey = 'user_login_state';
   static const String _userIdKey = 'user_id';
   static const String _userTypeKey = 'user_type';
+  static const String _userNameKey = 'user_name';
+  static const String _defaultRouteKey = 'default_route';
+  static const String _onboardingCompletedKey = 'onboarding_completed';
 
   // User types
   static const String USER_TYPE_STUDENT = 'student';
@@ -85,6 +88,75 @@ class AuthService {
     } catch (e) {
       print('Error logging out: $e');
       return false;
+    }
+  }
+
+  // Check if onboarding is completed
+  Future<bool> isOnboardingCompleted() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getBool(_onboardingCompletedKey) ?? false;
+    } catch (e) {
+      print('Error checking onboarding status: $e');
+      return false;
+    }
+  }
+
+  // Mark onboarding as completed
+  Future<bool> markOnboardingCompleted() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_onboardingCompletedKey, true);
+      return true;
+    } catch (e) {
+      print('Error marking onboarding as completed: $e');
+      return false;
+    }
+  }
+
+  // Save user name
+  Future<bool> saveUserName(String name) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_userNameKey, name);
+      return true;
+    } catch (e) {
+      print('Error saving user name: $e');
+      return false;
+    }
+  }
+
+  // Get user name
+  Future<String> getUserName() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString(_userNameKey) ?? '';
+    } catch (e) {
+      print('Error getting user name: $e');
+      return '';
+    }
+  }
+
+  // Save default route
+  Future<bool> saveDefaultRoute(String route) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_defaultRouteKey, route);
+      return true;
+    } catch (e) {
+      print('Error saving default route: $e');
+      return false;
+    }
+  }
+
+  // Get default route
+  Future<String> getDefaultRoute() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString(_defaultRouteKey) ?? '';
+    } catch (e) {
+      print('Error getting default route: $e');
+      return '';
     }
   }
 }

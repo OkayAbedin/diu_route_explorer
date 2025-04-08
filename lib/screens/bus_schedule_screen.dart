@@ -5,6 +5,7 @@ import '../services/route_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../widgets/sidebar.dart';
+import '../services/auth_service.dart';
 
 class BusScheduleScreen extends StatefulWidget {
   @override
@@ -13,8 +14,8 @@ class BusScheduleScreen extends StatefulWidget {
 
 class _BusScheduleScreenState extends State<BusScheduleScreen> {
   String currentTime = '';
+  String userName = '';
   Timer? _timer;
-
 
   // Create an instance of the RouteService
   final RouteService _routeService = RouteService();
@@ -43,6 +44,9 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
     _updateTime();
     // Update time every minute
     _timer = Timer.periodic(Duration(minutes: 1), (timer) => _updateTime());
+
+    // Load user name
+    _loadUserName();
 
     // Load data from JSON
     _loadBusData();
@@ -319,6 +323,18 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
     });
   }
 
+  Future<void> _loadUserName() async {
+    try {
+      final AuthService authService = AuthService();
+      final name = await authService.getUserName();
+      setState(() {
+        userName = name;
+      });
+    } catch (e) {
+      print('Error loading user name: $e');
+    }
+  }
+
   // Update this method to refresh data
   Future<void> _refreshData() async {
     setState(() {
@@ -428,7 +444,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Welcome,',
+                        'Welcome, $userName',
                         style: GoogleFonts.inter(
                           color: Colors.white,
                           fontSize: 20,

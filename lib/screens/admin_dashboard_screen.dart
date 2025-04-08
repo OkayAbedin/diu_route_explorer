@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../services/database_service.dart';
 import '../services/auth_service.dart';
 import 'route_editor_screen.dart';
+import 'dart:async';
 
 class AdminDashboardScreen extends StatefulWidget {
   @override
@@ -10,7 +11,7 @@ class AdminDashboardScreen extends StatefulWidget {
 }
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
-// Removed unused AdminService field
+  // Removed unused AdminService field
   final DatabaseService _databaseService = DatabaseService();
 
   List<Map<String, dynamic>> _routes = [];
@@ -18,12 +19,28 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   String _filterSchedule = 'All';
   String _searchQuery = '';
   String currentTime = '';
+  String adminName = '';
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     _loadRoutes();
     _updateTime();
+    _timer = Timer.periodic(Duration(minutes: 1), (timer) => _updateTime());
+    _loadAdminName();
+  }
+
+  Future<void> _loadAdminName() async {
+    try {
+      final AuthService authService = AuthService();
+      final name = await authService.getUserName();
+      setState(() {
+        adminName = name;
+      });
+    } catch (e) {
+      print('Error loading admin name: $e');
+    }
   }
 
   void _updateTime() {

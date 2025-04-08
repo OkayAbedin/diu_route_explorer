@@ -4,6 +4,7 @@ import 'bus_schedule_screen.dart';
 import '../services/admin_service.dart';
 import '../services/auth_service.dart';
 import 'admin_dashboard_screen.dart';
+import 'onboarding_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -239,14 +240,37 @@ class _LoginScreenState extends State<LoginScreen> {
                                       AuthService.USER_TYPE_STUDENT,
                                     );
 
-                                    // Valid format, navigate to BusScheduleScreen
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (context) => BusScheduleScreen(),
-                                      ),
-                                    );
+                                    // Check if onboarding is completed
+                                    final isOnboardingCompleted =
+                                        await _authService
+                                            .isOnboardingCompleted();
+
+                                    // Navigate to appropriate screen based on onboarding status
+                                    if (!isOnboardingCompleted) {
+                                      // First-time user, navigate to onboarding
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => OnboardingScreen(
+                                                userId:
+                                                    studentIdController.text,
+                                                userType:
+                                                    AuthService
+                                                        .USER_TYPE_STUDENT,
+                                              ),
+                                        ),
+                                      );
+                                    } else {
+                                      // Returning user, navigate to BusScheduleScreen
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => BusScheduleScreen(),
+                                        ),
+                                      );
+                                    }
                                   } else {
                                     // Show error message for invalid format
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -384,13 +408,36 @@ class _LoginScreenState extends State<LoginScreen> {
                                       AuthService.USER_TYPE_ADMIN,
                                     );
 
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (context) => AdminDashboardScreen(),
-                                      ),
-                                    );
+                                    // Check if onboarding is completed
+                                    final isOnboardingCompleted =
+                                        await _authService
+                                            .isOnboardingCompleted();
+
+                                    // Navigate to appropriate screen based on onboarding status
+                                    if (!isOnboardingCompleted) {
+                                      // First-time admin, navigate to onboarding
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => OnboardingScreen(
+                                                userId: usernameController.text,
+                                                userType:
+                                                    AuthService.USER_TYPE_ADMIN,
+                                              ),
+                                        ),
+                                      );
+                                    } else {
+                                      // Returning admin, navigate to dashboard
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) =>
+                                                  AdminDashboardScreen(),
+                                        ),
+                                      );
+                                    }
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
