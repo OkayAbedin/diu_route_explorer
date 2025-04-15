@@ -537,7 +537,10 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                 Text(
                                   'Select Schedule',
                                   style: GoogleFonts.inter(
-                                    color: primaryColor,
+                                    color:
+                                        isDarkMode
+                                            ? Colors.white
+                                            : primaryColor,
                                     fontSize: 14,
                                   ),
                                 ),
@@ -553,8 +556,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                       isExpanded: true,
                                       icon: Icon(
                                         Icons.arrow_drop_down,
-                                        color:
-                                            isDarkMode ? Colors.white : null,
+                                        color: isDarkMode ? Colors.white : null,
                                       ),
                                       padding: EdgeInsets.symmetric(
                                         horizontal: 12,
@@ -603,7 +605,10 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                 Text(
                                   'Select Route',
                                   style: GoogleFonts.inter(
-                                    color: primaryColor,
+                                    color:
+                                        isDarkMode
+                                            ? Colors.white
+                                            : primaryColor,
                                     fontSize: 14,
                                   ),
                                 ),
@@ -619,8 +624,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                       isExpanded: true,
                                       icon: Icon(
                                         Icons.arrow_drop_down,
-                                        color:
-                                            isDarkMode ? Colors.white : null,
+                                        color: isDarkMode ? Colors.white : null,
                                       ),
                                       padding: EdgeInsets.symmetric(
                                         horizontal: 12,

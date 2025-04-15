@@ -122,7 +122,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       style: TextStyle(
                                         color:
                                             isUserLogin
-                                                ? primaryColor
+                                                ? (isDarkMode
+                                                    ? Colors.white
+                                                    : primaryColor)
                                                 : textColor,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
@@ -159,7 +161,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       style: TextStyle(
                                         color:
                                             !isUserLogin
-                                                ? primaryColor
+                                                ? (isDarkMode
+                                                    ? Colors.white
+                                                    : primaryColor)
                                                 : textColor,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
@@ -204,7 +208,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 labelText: "Student ID",
                                 labelStyle: TextStyle(color: hintTextColor),
                                 floatingLabelStyle: TextStyle(
-                                  color: primaryColor,
+                                  color:
+                                      isDarkMode ? Colors.white : primaryColor,
                                 ),
                               ),
                             ),
@@ -309,7 +314,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 labelText: "Username",
                                 labelStyle: TextStyle(color: hintTextColor),
                                 floatingLabelStyle: TextStyle(
-                                  color: primaryColor,
+                                  color:
+                                      isDarkMode ? Colors.white : primaryColor,
                                 ),
                               ),
                             ),
@@ -330,7 +336,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 labelText: "Password",
                                 labelStyle: TextStyle(color: hintTextColor),
                                 floatingLabelStyle: TextStyle(
-                                  color: primaryColor,
+                                  color:
+                                      isDarkMode ? Colors.white : primaryColor,
                                 ),
                               ),
                             ),
@@ -459,8 +466,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Show snackbar asking user to login first instead of opening drawer
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Please login first to access the menu'),
-                    backgroundColor: primaryColor,
+                    content: Text(
+                      'Please login first to access the menu',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor:
+                        isDarkMode ? Colors.grey[800] : primaryColor,
                     duration: Duration(seconds: 2),
                   ),
                 );

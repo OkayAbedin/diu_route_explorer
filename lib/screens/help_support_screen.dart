@@ -112,7 +112,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
     final cardBackgroundColor = isDarkMode ? Color(0xFF1E1E1E) : Colors.white;
     final textColor = isDarkMode ? Colors.white : Colors.black87;
     final secondaryTextColor =
-          isDarkMode ? Colors.grey[400]! : Colors.grey.shade700;
+        isDarkMode ? Colors.grey[400]! : Colors.grey.shade700;
     final borderColor =
         isDarkMode ? Colors.grey.shade800 : Colors.grey.shade200;
     final shadowColor =
@@ -196,7 +196,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     Text(
                       'Frequently Asked Questions',
                       style: GoogleFonts.inter(
-                        color: primaryColor,
+                        color: isDarkMode ? Colors.white : primaryColor,
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
                       ),
@@ -268,7 +268,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     Text(
                       'Contact Us',
                       style: GoogleFonts.inter(
-                        color: primaryColor,
+                        color: isDarkMode ? Colors.white : primaryColor,
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
                       ),

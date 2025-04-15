@@ -251,9 +251,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             children: [
                               // Default Route Section
                               Text(
-                                'Select Route',
+                                'Select Default Route',
                                 style: GoogleFonts.inter(
-                                  color: primaryColor,
+                                  color:
+                                      isDarkMode ? Colors.white : primaryColor,
                                   fontSize: 14,
                                 ),
                               ),
