@@ -8,6 +8,7 @@ import 'screens/settings_screen.dart';
 import 'screens/admin_dashboard_screen.dart';
 import 'screens/help_support_screen.dart';
 import 'screens/onboarding_screen.dart';
+import 'screens/splash_screen.dart';
 import 'services/auth_service.dart';
 import 'providers/theme_provider.dart';
 
@@ -65,7 +66,9 @@ class _MyAppState extends State<MyApp> {
       theme: themeProvider.lightTheme,
       darkTheme: themeProvider.darkTheme,
       themeMode: themeProvider.themeMode,
-      home: _isLoading ? _buildLoadingScreen() : _getInitialScreen(),
+      home: SplashScreen(
+        nextScreen: _isLoading ? _buildLoadingScreen() : _getInitialScreen(),
+      ),
       routes: {
         '/login': (context) => LoginScreen(),
         '/bus_schedule': (context) => BusScheduleScreen(),
