@@ -31,6 +31,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     _loadAdminName();
   }
 
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
   Future<void> _loadAdminName() async {
     try {
       final AuthService authService = AuthService();
