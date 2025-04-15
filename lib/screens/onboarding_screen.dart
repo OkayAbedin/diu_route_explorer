@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../services/route_service.dart';
+import '../providers/theme_provider.dart';
 import 'bus_schedule_screen.dart';
 import 'admin_dashboard_screen.dart';
 
@@ -127,33 +129,39 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildNameStep() {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final primaryColor = Color.fromARGB(255, 88, 13, 218);
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
+    final hintTextColor = isDarkMode ? Colors.grey[400] : Colors.grey;
+    final borderColor = isDarkMode ? Colors.grey[700] : primaryColor;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: 8),
         TextField(
           controller: _nameController,
+          style: TextStyle(color: textColor),
           decoration: InputDecoration(
             hintText: "Enter your name",
-            hintStyle: TextStyle(color: Colors.grey),
+            hintStyle: TextStyle(color: hintTextColor),
             enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Color.fromARGB(255, 88, 13, 218)),
+              borderSide: BorderSide(color: borderColor!),
             ),
             focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Color.fromARGB(255, 88, 13, 218)),
+              borderSide: BorderSide(color: primaryColor),
             ),
             labelText: "Name",
-            labelStyle: TextStyle(color: Colors.grey),
-            floatingLabelStyle: TextStyle(
-              color: Color.fromARGB(255, 88, 13, 218),
-            ),
+            labelStyle: TextStyle(color: hintTextColor),
+            floatingLabelStyle: TextStyle(color: primaryColor),
           ),
         ),
         SizedBox(height: 30),
         Center(
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromARGB(255, 88, 13, 218),
+              backgroundColor: primaryColor,
               minimumSize: Size(double.infinity, 50),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -184,44 +192,58 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildRouteStep() {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final primaryColor = Color.fromARGB(255, 88, 13, 218);
+    final textColor = isDarkMode ? Colors.white70 : Colors.grey[800]!;
+    final backgroundColor = isDarkMode ? Color(0xFF121212) : Colors.white;
+    final borderColor = isDarkMode ? Colors.grey[700] : primaryColor;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: 8),
         Text(
           "Select your default route",
-          style: GoogleFonts.inter(fontSize: 16, color: Colors.grey[800]),
+          style: GoogleFonts.inter(fontSize: 16, color: textColor),
         ),
         SizedBox(height: 20),
         _isLoading
-            ? Center(
-              child: CircularProgressIndicator(
-                color: Color.fromARGB(255, 88, 13, 218),
-              ),
-            )
+            ? Center(child: CircularProgressIndicator(color: primaryColor))
             : _availableRoutes.isEmpty
             ? Center(
               child: Text(
                 "No routes available",
-                style: TextStyle(color: Colors.grey),
+                style: TextStyle(
+                  color: isDarkMode ? Colors.grey[400] : Colors.grey,
+                ),
               ),
             )
             : Container(
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
               decoration: BoxDecoration(
-                border: Border.all(color: Color.fromARGB(255, 88, 13, 218)),
+                border: Border.all(color: borderColor!),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   isExpanded: true,
                   value: _selectedRoute.isEmpty ? null : _selectedRoute,
-                  hint: Text("Select a route"),
+                  hint: Text(
+                    "Select a route",
+                    style: TextStyle(
+                      color: isDarkMode ? Colors.grey[400] : null,
+                    ),
+                  ),
+                  dropdownColor: backgroundColor,
                   items:
                       _availableRoutes.map((String route) {
                         return DropdownMenuItem<String>(
                           value: route,
-                          child: Text(route),
+                          child: Text(
+                            route,
+                            style: TextStyle(color: textColor),
+                          ),
                         );
                       }).toList(),
                   onChanged: (String? newValue) {
@@ -240,8 +262,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[300],
-                  foregroundColor: Colors.black,
+                  backgroundColor:
+                      isDarkMode ? Colors.grey[800] : Colors.grey[300],
+                  foregroundColor: isDarkMode ? Colors.white70 : Colors.black,
                   minimumSize: Size(0, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -259,7 +282,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(255, 88, 13, 218),
+                  backgroundColor: primaryColor,
                   minimumSize: Size(0, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -280,6 +303,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Get theme provider
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final primaryColor = Color.fromARGB(255, 88, 13, 218);
+    final backgroundColor = isDarkMode ? Color(0xFF121212) : Colors.white;
+    final textColor = isDarkMode ? Colors.white70 : Colors.black87;
+
     // Get display name (either "Hi" or "Hi, FirstName" if name is entered)
     String displayName = '';
     if (_nameController.text.isNotEmpty) {
@@ -288,7 +318,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor,
       body: Stack(
         children: [
           // Scrollable content
@@ -300,7 +330,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   width: double.infinity,
                   height: MediaQuery.of(context).size.height * 0.5,
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 88, 13, 218),
+                    color: primaryColor,
                     borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(40),
                     ),
@@ -346,14 +376,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
 
-                // White content section
+                // Content section
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 30,
                     vertical: 30,
                   ),
-                  decoration: const BoxDecoration(color: Colors.white),
+                  decoration: BoxDecoration(color: backgroundColor),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -378,13 +408,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                       style: TextStyle(
                                         color:
                                             _currentStep == 0
-                                                ? Color.fromARGB(
-                                                  255,
-                                                  88,
-                                                  13,
-                                                  218,
-                                                )
-                                                : Colors.black,
+                                                ? primaryColor
+                                                : textColor,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
                                       ),
@@ -394,7 +419,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                       height: 3,
                                       color:
                                           _currentStep == 0
-                                              ? Color.fromARGB(255, 88, 13, 218)
+                                              ? primaryColor
                                               : Colors.transparent,
                                     ),
                                   ],
@@ -431,13 +456,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                       style: TextStyle(
                                         color:
                                             _currentStep == 1
-                                                ? Color.fromARGB(
-                                                  255,
-                                                  88,
-                                                  13,
-                                                  218,
-                                                )
-                                                : Colors.black,
+                                                ? primaryColor
+                                                : textColor,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
                                       ),
@@ -447,7 +467,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                       height: 3,
                                       color:
                                           _currentStep == 1
-                                              ? Color.fromARGB(255, 88, 13, 218)
+                                              ? primaryColor
                                               : Colors.transparent,
                                     ),
                                   ],

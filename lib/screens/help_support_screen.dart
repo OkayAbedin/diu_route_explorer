@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'dart:async';
 import 'package:url_launcher/url_launcher.dart';
 import '../widgets/sidebar.dart';
+import '../providers/theme_provider.dart';
 
 class HelpSupportScreen extends StatefulWidget {
   @override
@@ -100,16 +102,27 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
     }
   }
 
-  Widget _buildSidebar(BuildContext context) {
-    return Sidebar();
-  }
-  
-
   @override
   Widget build(BuildContext context) {
+    // Get theme provider
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final primaryColor = Color.fromARGB(255, 88, 13, 218);
+    final backgroundColor = isDarkMode ? Color(0xFF121212) : Colors.white;
+    final cardBackgroundColor = isDarkMode ? Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
+    final secondaryTextColor =
+          isDarkMode ? Colors.grey[400]! : Colors.grey.shade700;
+    final borderColor =
+        isDarkMode ? Colors.grey.shade800 : Colors.grey.shade200;
+    final shadowColor =
+        isDarkMode
+            ? Colors.black.withOpacity(0.3)
+            : Colors.black.withOpacity(0.05);
+
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 88, 13, 218),
-      endDrawer: _buildSidebar(context),
+      backgroundColor: primaryColor,
+      endDrawer: Sidebar(),
       body: Stack(
         children: [
           // Fixed purple header
@@ -119,7 +132,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             right: 0,
             child: Container(
               width: double.infinity,
-              color: Color.fromARGB(255, 88, 13, 218),
+              color: primaryColor,
               padding: EdgeInsets.only(
                 top: 60,
                 bottom: 15,
@@ -164,13 +177,11 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             bottom: 0,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(30),
-                ),
+                color: backgroundColor,
+                borderRadius: BorderRadius.only(topRight: Radius.circular(30)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: shadowColor,
                     blurRadius: 20,
                     spreadRadius: 5,
                   ),
@@ -185,13 +196,13 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     Text(
                       'Frequently Asked Questions',
                       style: GoogleFonts.inter(
-                        color: Color.fromARGB(255, 88, 13, 218),
+                        color: primaryColor,
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     SizedBox(height: 20),
-                    
+
                     // Modern FAQ List
                     ListView.builder(
                       shrinkWrap: true,
@@ -201,11 +212,11 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                         return Container(
                           margin: EdgeInsets.only(bottom: 12),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: cardBackgroundColor,
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
+                                color: shadowColor,
                                 blurRadius: 6,
                                 offset: Offset(0, 2),
                               ),
@@ -219,11 +230,19 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                             collapsedShape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
+                            collapsedBackgroundColor: cardBackgroundColor,
+                            backgroundColor: cardBackgroundColor,
+                            iconColor: primaryColor,
+                            collapsedIconColor:
+                                isDarkMode
+                                    ? Colors.white
+                                    : Colors.grey.shade700,
                             title: Text(
                               faqs[index]['question']!,
                               style: GoogleFonts.inter(
                                 fontWeight: FontWeight.w500,
                                 fontSize: 15,
+                                color: textColor,
                               ),
                             ),
                             children: [
@@ -233,7 +252,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                                   faqs[index]['answer']!,
                                   style: GoogleFonts.inter(
                                     fontSize: 14,
-                                    color: Colors.grey.shade700,
+                                    color: secondaryTextColor,
                                   ),
                                 ),
                               ),
@@ -249,7 +268,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     Text(
                       'Contact Us',
                       style: GoogleFonts.inter(
-                        color: Color.fromARGB(255, 88, 13, 218),
+                        color: primaryColor,
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
                       ),
@@ -260,7 +279,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                       'If you have any questions or need assistance, please feel free to contact us:',
                       style: GoogleFonts.inter(
                         fontSize: 14,
-                        color: Colors.grey.shade700,
+                        color: secondaryTextColor,
                       ),
                     ),
                     SizedBox(height: 20),
@@ -271,11 +290,23 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                         _buildContactCard(
                           email: 'abedin15-4919@diu.edu.bd',
                           context: context,
+                          isDarkMode: isDarkMode,
+                          cardBackgroundColor: cardBackgroundColor,
+                          textColor: textColor,
+                          secondaryTextColor: secondaryTextColor,
+                          borderColor: borderColor,
+                          primaryColor: primaryColor,
                         ),
                         SizedBox(height: 16),
                         _buildContactCard(
                           email: 'garodia15-5048@diu.edu.bd',
                           context: context,
+                          isDarkMode: isDarkMode,
+                          cardBackgroundColor: cardBackgroundColor,
+                          textColor: textColor,
+                          secondaryTextColor: secondaryTextColor,
+                          borderColor: borderColor,
+                          primaryColor: primaryColor,
                         ),
                       ],
                     ),
@@ -286,15 +317,12 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     Container(
                       padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: cardBackgroundColor,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.grey.shade200,
-                          width: 1,
-                        ),
+                        border: Border.all(color: borderColor, width: 1),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.03),
+                            color: shadowColor,
                             blurRadius: 8,
                             offset: Offset(0, 4),
                           ),
@@ -308,6 +336,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                             style: GoogleFonts.inter(
                               fontWeight: FontWeight.w600,
                               fontSize: 16,
+                              color: textColor,
                             ),
                           ),
                           SizedBox(height: 12),
@@ -315,7 +344,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                             'DIU Route Explorers is designed to help Daffodil International University students navigate the university bus system efficiently. The app provides up-to-date information on bus routes, schedules, and important announcements.',
                             style: GoogleFonts.inter(
                               fontSize: 14,
-                              color: Colors.grey.shade700,
+                              color: secondaryTextColor,
                             ),
                           ),
                           SizedBox(height: 12),
@@ -323,7 +352,10 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                             'App Version: 1.0.1',
                             style: GoogleFonts.inter(
                               fontSize: 13,
-                              color: Colors.grey.shade600,
+                              color:
+                                  isDarkMode
+                                      ? Colors.grey[500]
+                                      : Colors.grey.shade600,
                             ),
                           ),
                         ],
@@ -339,20 +371,26 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
     );
   }
 
-  // Add this new helper method outside build()
-  Widget _buildContactCard({required String email, required BuildContext context}) {
+  // Updated helper method with dark mode support
+  Widget _buildContactCard({
+    required String email,
+    required BuildContext context,
+    required bool isDarkMode,
+    required Color cardBackgroundColor,
+    required Color textColor,
+    required Color secondaryTextColor,
+    required Color borderColor,
+    required Color primaryColor,
+  }) {
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       onTap: () => _launchEmail(email),
       child: Container(
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: cardBackgroundColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: Colors.grey.shade200,
-            width: 1,
-          ),
+          border: Border.all(color: borderColor, width: 1),
         ),
         child: Row(
           children: [
@@ -360,14 +398,10 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: Color.fromARGB(255, 88, 13, 218).withOpacity(0.1),
+                color: primaryColor.withOpacity(isDarkMode ? 0.2 : 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                Icons.email_outlined,
-                color: Color.fromARGB(255, 88, 13, 218),
-                size: 20,
-              ),
+              child: Icon(Icons.email_outlined, color: primaryColor, size: 20),
             ),
             SizedBox(width: 16),
             Expanded(
@@ -379,22 +413,20 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     style: GoogleFonts.inter(
                       fontWeight: FontWeight.w500,
                       fontSize: 14,
+                      color: textColor,
                     ),
                   ),
                   SizedBox(height: 4),
                   Text(
                     email,
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      color: Colors.blue,
-                    ),
+                    style: GoogleFonts.inter(fontSize: 13, color: Colors.blue),
                   ),
                 ],
               ),
             ),
             Icon(
               Icons.chevron_right,
-              color: Colors.grey.shade400,
+              color: isDarkMode ? Colors.grey[600] : Colors.grey.shade400,
             ),
           ],
         ),

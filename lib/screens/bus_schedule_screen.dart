@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'dart:async';
 import '../services/route_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../widgets/sidebar.dart';
 import '../services/auth_service.dart';
+import '../providers/theme_provider.dart';
 
 class BusScheduleScreen extends StatefulWidget {
   @override
@@ -418,8 +420,17 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Add theme provider
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final primaryColor = Color.fromARGB(255, 88, 13, 218);
+    final backgroundColor = isDarkMode ? Color(0xFF121212) : Colors.white;
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
+    final borderColor =
+        isDarkMode ? Colors.grey.shade700 : Colors.grey.shade300;
+
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 88, 13, 218),
+      backgroundColor: primaryColor,
       endDrawer: _buildSidebar(context),
       body: Stack(
         children: [
@@ -430,7 +441,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
             right: 0,
             child: Container(
               width: double.infinity,
-              color: Color.fromARGB(255, 88, 13, 218),
+              color: primaryColor,
               padding: EdgeInsets.only(
                 top: 60, // Increased from 40 to 60 for more space from the top
                 bottom: 15,
@@ -499,14 +510,14 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
             bottom: 0,
             child: Container(
               decoration: BoxDecoration(
-                color: Color.fromARGB(255, 88, 13, 218),
+                color: primaryColor,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(30),
                 ),
               ),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: backgroundColor,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(30),
                   ),
@@ -514,9 +525,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                 child:
                     isLoading
                         ? Center(
-                          child: CircularProgressIndicator(
-                            color: Color.fromARGB(255, 88, 13, 218),
-                          ),
+                          child: CircularProgressIndicator(color: primaryColor),
                         )
                         : SingleChildScrollView(
                           child: Padding(
@@ -528,26 +537,29 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                 Text(
                                   'Select Schedule',
                                   style: GoogleFonts.inter(
-                                    color: Color.fromARGB(255, 88, 13, 218),
+                                    color: primaryColor,
                                     fontSize: 14,
                                   ),
                                 ),
                                 SizedBox(height: 8),
                                 Container(
                                   decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: Colors.grey.shade300,
-                                    ),
+                                    border: Border.all(color: borderColor),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton<String>(
                                       value: selectedSchedule,
                                       isExpanded: true,
-                                      icon: Icon(Icons.arrow_drop_down),
+                                      icon: Icon(
+                                        Icons.arrow_drop_down,
+                                        color:
+                                            isDarkMode ? Colors.white : null,
+                                      ),
                                       padding: EdgeInsets.symmetric(
                                         horizontal: 12,
                                       ),
+                                      dropdownColor: backgroundColor,
                                       onChanged: (String? newValue) {
                                         setState(() {
                                           selectedSchedule = newValue!;
@@ -573,7 +585,12 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                           ) {
                                             return DropdownMenuItem<String>(
                                               value: value,
-                                              child: Text(value),
+                                              child: Text(
+                                                value,
+                                                style: TextStyle(
+                                                  color: textColor,
+                                                ),
+                                              ),
                                             );
                                           }).toList(),
                                     ),
@@ -586,26 +603,29 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                 Text(
                                   'Select Route',
                                   style: GoogleFonts.inter(
-                                    color: Color.fromARGB(255, 88, 13, 218),
+                                    color: primaryColor,
                                     fontSize: 14,
                                   ),
                                 ),
                                 SizedBox(height: 8),
                                 Container(
                                   decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: Colors.grey.shade300,
-                                    ),
+                                    border: Border.all(color: borderColor),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton<String>(
                                       value: selectedRoute,
                                       isExpanded: true,
-                                      icon: Icon(Icons.arrow_drop_down),
+                                      icon: Icon(
+                                        Icons.arrow_drop_down,
+                                        color:
+                                            isDarkMode ? Colors.white : null,
+                                      ),
                                       padding: EdgeInsets.symmetric(
                                         horizontal: 12,
                                       ),
+                                      dropdownColor: backgroundColor,
                                       onChanged: (String? newValue) {
                                         setState(() {
                                           selectedRoute = newValue!;
@@ -619,7 +639,12 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                               ) {
                                                 return DropdownMenuItem<String>(
                                                   value: value,
-                                                  child: Text(value),
+                                                  child: Text(
+                                                    value,
+                                                    style: TextStyle(
+                                                      color: textColor,
+                                                    ),
+                                                  ),
                                                 );
                                               })
                                               .toList(),
@@ -633,7 +658,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                 Container(
                                   width: double.infinity,
                                   decoration: BoxDecoration(
-                                    color: Color.fromARGB(255, 88, 13, 218),
+                                    color: primaryColor,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   padding: EdgeInsets.symmetric(vertical: 12),
@@ -657,7 +682,10 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                         child: Text(
                                           'No start times available for this selection',
                                           style: GoogleFonts.inter(
-                                            color: Colors.grey,
+                                            color:
+                                                isDarkMode
+                                                    ? Colors.grey[400]
+                                                    : Colors.grey,
                                             fontStyle: FontStyle.italic,
                                           ),
                                         ),
@@ -665,7 +693,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                     )
                                     : Table(
                                       border: TableBorder.all(
-                                        color: Colors.grey.shade300,
+                                        color: borderColor,
                                         width: 1,
                                       ),
                                       children:
@@ -679,6 +707,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                                     style: GoogleFonts.inter(
                                                       fontWeight:
                                                           FontWeight.bold,
+                                                      color: textColor,
                                                     ),
                                                   ),
                                                 ),
@@ -691,6 +720,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                                         : time['note'],
                                                     style: GoogleFonts.inter(
                                                       fontSize: 14,
+                                                      color: textColor,
                                                     ),
                                                   ),
                                                 ),
@@ -705,7 +735,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                 Container(
                                   width: double.infinity,
                                   decoration: BoxDecoration(
-                                    color: Color.fromARGB(255, 88, 13, 218),
+                                    color: primaryColor,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   padding: EdgeInsets.symmetric(vertical: 12),
@@ -729,7 +759,10 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                         child: Text(
                                           'No departure times available for this selection',
                                           style: GoogleFonts.inter(
-                                            color: Colors.grey,
+                                            color:
+                                                isDarkMode
+                                                    ? Colors.grey[400]
+                                                    : Colors.grey,
                                             fontStyle: FontStyle.italic,
                                           ),
                                         ),
@@ -737,7 +770,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                     )
                                     : Table(
                                       border: TableBorder.all(
-                                        color: Colors.grey.shade300,
+                                        color: borderColor,
                                         width: 1,
                                       ),
                                       children:
@@ -751,6 +784,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                                     style: GoogleFonts.inter(
                                                       fontWeight:
                                                           FontWeight.bold,
+                                                      color: textColor,
                                                     ),
                                                   ),
                                                 ),
@@ -763,6 +797,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                                         : time['note'],
                                                     style: GoogleFonts.inter(
                                                       fontSize: 14,
+                                                      color: textColor,
                                                     ),
                                                   ),
                                                 ),
@@ -782,11 +817,9 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                       Container(
                                         width: double.infinity,
                                         decoration: BoxDecoration(
-                                          color: Color.fromARGB(
-                                            255,
-                                            88,
-                                            13,
-                                            218,
+                                          color: primaryColor,
+                                          borderRadius: BorderRadius.circular(
+                                            4,
                                           ),
                                         ),
                                         padding: EdgeInsets.symmetric(
@@ -825,10 +858,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                                           ),
                                                       decoration: BoxDecoration(
                                                         border: Border.all(
-                                                          color:
-                                                              Colors
-                                                                  .grey
-                                                                  .shade300,
+                                                          color: borderColor,
                                                         ),
                                                         borderRadius:
                                                             BorderRadius.circular(
@@ -840,6 +870,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                                         style:
                                                             GoogleFonts.inter(
                                                               fontSize: 12,
+                                                              color: textColor,
                                                             ),
                                                       ),
                                                     ),

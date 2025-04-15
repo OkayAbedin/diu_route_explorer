@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../services/notification_service.dart';
 import '../widgets/sidebar.dart';
+import '../providers/theme_provider.dart';
 import 'dart:async';
 
 class NotificationScreen extends StatefulWidget {
@@ -96,19 +98,28 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Get theme provider
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final primaryColor = Color.fromARGB(255, 88, 13, 218);
+    final backgroundColor = isDarkMode ? Color(0xFF121212) : Colors.white;
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
+    final borderColor =
+        isDarkMode ? Colors.grey.shade700 : Colors.grey.shade300;
+
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 88, 13, 218),
-      endDrawer: _buildSidebar(context),
+      backgroundColor: primaryColor,
+      endDrawer: Sidebar(),
       body: Stack(
         children: [
-          // Fixed purple header - updated to match bus_schedule_screen.dart
+          // Fixed purple header
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: Container(
               width: double.infinity,
-              color: Color.fromARGB(255, 88, 13, 218),
+              color: primaryColor,
               padding: EdgeInsets.only(
                 top: 60,
                 bottom: 15,
@@ -161,22 +172,22 @@ class _NotificationScreenState extends State<NotificationScreen> {
             ),
           ),
 
-          // Scrollable content area - updated to match bus_schedule_screen.dart
+          // Scrollable content area
           Positioned(
-            top: 140, // Changed from 100 to 140 to match bus_schedule_screen
+            top: 140,
             left: 0,
             right: 0,
             bottom: 0,
             child: Container(
               decoration: BoxDecoration(
-                color: Color.fromARGB(255, 88, 13, 218),
+                color: primaryColor,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(30),
                 ),
               ),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: backgroundColor,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(30),
                   ),
@@ -184,16 +195,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 child:
                     isLoading
                         ? Center(
-                          child: CircularProgressIndicator(
-                            color: Color.fromARGB(255, 88, 13, 218),
-                          ),
+                          child: CircularProgressIndicator(color: primaryColor),
                         )
                         : notifications.isEmpty
                         ? Center(
                           child: Text(
                             'No notifications available',
                             style: GoogleFonts.inter(
-                              color: Colors.grey,
+                              color:
+                                  isDarkMode ? Colors.grey[400] : Colors.grey,
                               fontSize: 16,
                             ),
                           ),
@@ -203,12 +213,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           itemCount: notifications.length,
                           itemBuilder: (context, index) {
                             final notification = notifications[index];
-                            // Updated card design to match the image
+                            // Updated card design with dark mode support
                             return Container(
                               margin: EdgeInsets.only(bottom: 12),
                               decoration: BoxDecoration(
                                 border: Border.all(
-                                  color: Colors.grey.shade300,
+                                  color: borderColor,
                                   width: 1,
                                 ),
                                 borderRadius: BorderRadius.circular(8),
@@ -223,7 +233,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                       vertical: 8,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: Color.fromARGB(255, 88, 13, 218),
+                                      color: primaryColor,
                                       borderRadius: BorderRadius.only(
                                         topLeft: Radius.circular(7),
                                         topRight: Radius.circular(7),
@@ -250,6 +260,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                       style: GoogleFonts.inter(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500,
+                                        color: textColor,
                                       ),
                                     ),
                                   ),
@@ -264,9 +275,5 @@ class _NotificationScreenState extends State<NotificationScreen> {
         ],
       ),
     );
-  }
-
-  Widget _buildSidebar(BuildContext context) {
-    return Sidebar();
   }
 }

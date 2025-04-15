@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'bus_schedule_screen.dart';
 import '../services/admin_service.dart';
 import '../services/auth_service.dart';
+import '../providers/theme_provider.dart';
 import 'admin_dashboard_screen.dart';
 import 'onboarding_screen.dart';
+import '../widgets/sidebar.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -29,10 +32,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Get theme provider
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final primaryColor = Color.fromARGB(255, 88, 13, 218);
+    final backgroundColor = isDarkMode ? Color(0xFF121212) : Colors.white;
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
+    final hintTextColor = isDarkMode ? Colors.grey[400] : Colors.grey;
+    final borderColor =
+        isDarkMode ? Colors.grey[700] : Color.fromARGB(255, 88, 13, 218);
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
-      endDrawer: _buildSidebar(context),
+      backgroundColor: backgroundColor,
+      endDrawer: Sidebar(),
       body: Stack(
         children: [
           // Scrollable content
@@ -44,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   height: MediaQuery.of(context).size.height * 0.5,
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 88, 13, 218),
+                    color: primaryColor,
                     borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(40),
                     ),
@@ -78,14 +91,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                // White content section
+                // Content section
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 30,
                     vertical: 30,
                   ),
-                  decoration: const BoxDecoration(color: Colors.white),
+                  decoration: BoxDecoration(color: backgroundColor),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -110,13 +123,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                       style: TextStyle(
                                         color:
                                             isUserLogin
-                                                ? Color.fromARGB(
-                                                  255,
-                                                  88,
-                                                  13,
-                                                  218,
-                                                )
-                                                : Colors.black,
+                                                ? primaryColor
+                                                : textColor,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
                                       ),
@@ -126,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       height: 3,
                                       color:
                                           isUserLogin
-                                              ? Color.fromARGB(255, 88, 13, 218)
+                                              ? primaryColor
                                               : Colors.transparent,
                                     ),
                                   ],
@@ -152,13 +160,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                       style: TextStyle(
                                         color:
                                             !isUserLogin
-                                                ? Color.fromARGB(
-                                                  255,
-                                                  88,
-                                                  13,
-                                                  218,
-                                                )
-                                                : Colors.black,
+                                                ? primaryColor
+                                                : textColor,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
                                       ),
@@ -168,7 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       height: 3,
                                       color:
                                           !isUserLogin
-                                              ? Color.fromARGB(255, 88, 13, 218)
+                                              ? primaryColor
                                               : Colors.transparent,
                                     ),
                                   ],
@@ -189,23 +192,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             SizedBox(height: 8),
                             TextField(
                               controller: studentIdController,
+                              style: TextStyle(color: textColor),
                               decoration: InputDecoration(
                                 hintText: "Enter your Student ID",
-                                hintStyle: TextStyle(color: Colors.grey),
+                                hintStyle: TextStyle(color: hintTextColor),
                                 enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color.fromARGB(255, 88, 13, 218),
-                                  ),
+                                  borderSide: BorderSide(color: borderColor!),
                                 ),
                                 focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color.fromARGB(255, 88, 13, 218),
-                                  ),
+                                  borderSide: BorderSide(color: primaryColor),
                                 ),
                                 labelText: "Student ID",
-                                labelStyle: TextStyle(color: Colors.grey),
+                                labelStyle: TextStyle(color: hintTextColor),
                                 floatingLabelStyle: TextStyle(
-                                  color: Color.fromARGB(255, 88, 13, 218),
+                                  color: primaryColor,
                                 ),
                               ),
                             ),
@@ -214,12 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Center(
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color.fromARGB(
-                                    255,
-                                    88,
-                                    13,
-                                    218,
-                                  ),
+                                  backgroundColor: primaryColor,
                                   minimumSize: Size(double.infinity, 50),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
@@ -301,48 +296,42 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: [
                             SizedBox(height: 8),
                             TextField(
-                              controller: usernameController, // Add this line
+                              controller: usernameController,
+                              style: TextStyle(color: textColor),
                               decoration: InputDecoration(
                                 hintText: "Enter your username",
-                                hintStyle: TextStyle(color: Colors.grey),
+                                hintStyle: TextStyle(color: hintTextColor),
                                 enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color.fromARGB(255, 88, 13, 218),
-                                  ),
+                                  borderSide: BorderSide(color: borderColor!),
                                 ),
                                 focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color.fromARGB(255, 88, 13, 218),
-                                  ),
+                                  borderSide: BorderSide(color: primaryColor),
                                 ),
                                 labelText: "Username",
-                                labelStyle: TextStyle(color: Colors.grey),
+                                labelStyle: TextStyle(color: hintTextColor),
                                 floatingLabelStyle: TextStyle(
-                                  color: Color.fromARGB(255, 88, 13, 218),
+                                  color: primaryColor,
                                 ),
                               ),
                             ),
                             SizedBox(height: 20),
                             TextField(
-                              controller: passwordController, // Add this line
+                              controller: passwordController,
                               obscureText: true,
+                              style: TextStyle(color: textColor),
                               decoration: InputDecoration(
                                 hintText: "Enter admin password",
-                                hintStyle: TextStyle(color: Colors.grey),
+                                hintStyle: TextStyle(color: hintTextColor),
                                 enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color.fromARGB(255, 88, 13, 218),
-                                  ),
+                                  borderSide: BorderSide(color: borderColor!),
                                 ),
                                 focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color.fromARGB(255, 88, 13, 218),
-                                  ),
+                                  borderSide: BorderSide(color: primaryColor),
                                 ),
                                 labelText: "Password",
-                                labelStyle: TextStyle(color: Colors.grey),
+                                labelStyle: TextStyle(color: hintTextColor),
                                 floatingLabelStyle: TextStyle(
-                                  color: Color.fromARGB(255, 88, 13, 218),
+                                  color: primaryColor,
                                 ),
                               ),
                             ),
@@ -350,12 +339,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Center(
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color.fromARGB(
-                                    255,
-                                    88,
-                                    13,
-                                    218,
-                                  ),
+                                  backgroundColor: primaryColor,
                                   minimumSize: Size(double.infinity, 50),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
@@ -382,12 +366,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     builder: (BuildContext context) {
                                       return Center(
                                         child: CircularProgressIndicator(
-                                          color: Color.fromARGB(
-                                            255,
-                                            88,
-                                            13,
-                                            218,
-                                          ),
+                                          color: primaryColor,
                                         ),
                                       );
                                     },
@@ -483,72 +462,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       Scaffold.of(context).openEndDrawer();
                     },
                   ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSidebar(BuildContext context) {
-    return Drawer(
-      child: Column(
-        children: [
-          // Purple header with app description
-          Container(
-            width: double.infinity,
-            height: 240,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            color: const Color.fromARGB(255, 88, 13, 218),
-            child: SafeArea(
-              child: Column(
-                mainAxisAlignment:
-                    MainAxisAlignment.end, // Align content to the bottom
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'DIU Route Explorers is a university bus schedule app that allows students to check bus routes, start and departure times, and important notes for a smooth commuting experience.',
-                    style: GoogleFonts.inter(
-                      color: Colors.white,
-                      fontSize: 16,
-                      height: 1.2,
-                      letterSpacing: 0.2,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Menu items with improved spacing
-          SizedBox(height: MediaQuery.of(context).size.height - 240 - 80),
-
-          // Version and footer
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20.0),
-            child: Column(
-              children: [
-                Text(
-                  'Version 1.0.1',
-                  style: GoogleFonts.inter(color: Colors.grey, fontSize: 12),
-                ),
-                SizedBox(height: 6),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Made with ", style: GoogleFonts.inter(fontSize: 12)),
-                    Icon(Icons.favorite, color: Colors.red, size: 12),
-                    Text(" by ", style: GoogleFonts.inter(fontSize: 12)),
-                    Text(
-                      "MarsLab",
-                      style: GoogleFonts.inter(
-                        color: Color.fromARGB(255, 88, 13, 218),
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
             ),
           ),
         ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/route_information_screen.dart';
 import 'screens/bus_schedule_screen.dart';
@@ -8,13 +9,16 @@ import 'screens/admin_dashboard_screen.dart';
 import 'screens/help_support_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'services/auth_service.dart';
+import 'providers/theme_provider.dart';
 
 void main() async {
   // Ensure Flutter is initialized before using platform plugins
   WidgetsFlutterBinding.ensureInitialized();
 
   // Run the app
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(create: (_) => ThemeProvider(), child: MyApp()),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -53,13 +57,14 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'DIU Route Explorer',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+      theme: themeProvider.lightTheme,
+      darkTheme: themeProvider.darkTheme,
+      themeMode: themeProvider.themeMode,
       home: _isLoading ? _buildLoadingScreen() : _getInitialScreen(),
       routes: {
         '/login': (context) => LoginScreen(),

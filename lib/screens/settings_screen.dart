@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../providers/theme_provider.dart';
 import '../services/route_service.dart';
 import 'dart:convert';
 import 'dart:async';
@@ -17,7 +19,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final String _defaultRouteKey = 'default_route';
 
   bool _pushNotifications = true;
-  bool _darkMode = false;
   String _selectedDefaultRoute = '';
 
   List<String> _availableRoutes = [];
@@ -51,7 +52,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final prefs = await SharedPreferences.getInstance();
       setState(() {
         _pushNotifications = prefs.getBool('push_notifications') ?? true;
-        _darkMode = prefs.getBool('dark_mode') ?? false;
         _selectedDefaultRoute = prefs.getString(_defaultRouteKey) ?? '';
       });
     } catch (e) {
@@ -63,7 +63,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('push_notifications', _pushNotifications);
-      await prefs.setBool('dark_mode', _darkMode);
       await prefs.setString(_defaultRouteKey, _selectedDefaultRoute);
 
       // Show success message
@@ -149,8 +148,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+    final backgroundColor = isDarkMode ? Color(0xFF121212) : Colors.white;
+    final primaryColor = Color.fromARGB(255, 88, 13, 218);
+
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 88, 13, 218),
+      backgroundColor: primaryColor,
       endDrawer: _buildSidebar(context),
       body: Stack(
         children: [
@@ -161,7 +166,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             right: 0,
             child: Container(
               width: double.infinity,
-              color: Color.fromARGB(255, 88, 13, 218),
+              color: primaryColor,
               padding: EdgeInsets.only(
                 top: 60,
                 bottom: 15,
@@ -222,14 +227,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
             bottom: 0,
             child: Container(
               decoration: BoxDecoration(
-                color: Color.fromARGB(255, 88, 13, 218),
+                color: primaryColor,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(30),
                 ),
               ),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: backgroundColor,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(30),
                   ),
@@ -237,21 +242,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child:
                     _isLoading
                         ? Center(
-                          child: CircularProgressIndicator(
-                            color: Color.fromARGB(255, 88, 13, 218),
-                          ),
+                          child: CircularProgressIndicator(color: primaryColor),
                         )
                         : SingleChildScrollView(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Replace the current Default Route section with this:
                               // Default Route Section
                               Text(
                                 'Select Route',
                                 style: GoogleFonts.inter(
-                                  color: Color.fromARGB(255, 88, 13, 218),
+                                  color: primaryColor,
                                   fontSize: 14,
                                 ),
                               ),
@@ -259,18 +261,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               Container(
                                 decoration: BoxDecoration(
                                   border: Border.all(
-                                    color: Colors.grey.shade300,
+                                    color:
+                                        isDarkMode
+                                            ? Colors.grey.shade700
+                                            : Colors.grey.shade300,
                                   ),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: DropdownButtonHideUnderline(
                                   child: DropdownButton<String>(
-                                    value: _availableRoutes.contains(_selectedDefaultRoute)
-                                        ? _selectedDefaultRoute
-                                        : (_availableRoutes.isNotEmpty ? _availableRoutes[0] : null),
+                                    value:
+                                        _availableRoutes.contains(
+                                              _selectedDefaultRoute,
+                                            )
+                                            ? _selectedDefaultRoute
+                                            : (_availableRoutes.isNotEmpty
+                                                ? _availableRoutes[0]
+                                                : null),
                                     isExpanded: true,
-                                    icon: Icon(Icons.arrow_drop_down),
-                                    padding: EdgeInsets.symmetric(horizontal: 12),
+                                    icon: Icon(
+                                      Icons.arrow_drop_down,
+                                      color:
+                                          isDarkMode
+                                              ? Colors.white
+                                              : Colors.black54,
+                                    ),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                    ),
+                                    dropdownColor: backgroundColor,
                                     onChanged: (String? newValue) {
                                       if (newValue != null) {
                                         setState(() {
@@ -279,12 +298,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         _saveSettings();
                                       }
                                     },
-                                    items: _availableRoutes.map<DropdownMenuItem<String>>((String value) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,
-                                        child: Text(value),
-                                      );
-                                    }).toList(),
+                                    items:
+                                        _availableRoutes
+                                            .map<DropdownMenuItem<String>>((
+                                              String value,
+                                            ) {
+                                              return DropdownMenuItem<String>(
+                                                value: value,
+                                                child: Text(
+                                                  value,
+                                                  style: TextStyle(
+                                                    color: textColor,
+                                                  ),
+                                                ),
+                                              );
+                                            })
+                                            .toList(),
                                   ),
                                 ),
                               ),
@@ -301,24 +330,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     style: GoogleFonts.inter(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
+                                      color: textColor,
                                     ),
                                   ),
                                   Switch(
                                     value: false, // Force disabled state
                                     onChanged: (value) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         SnackBar(
-                                          content: Text('Push notifications coming soon!'),
+                                          content: Text(
+                                            'Push notifications coming soon!',
+                                          ),
                                           duration: Duration(seconds: 2),
                                         ),
                                       );
                                     },
-                                    activeColor: Color.fromARGB(
-                                      255,
-                                      88,
-                                      13,
-                                      218,
-                                    ),
+                                    activeColor: primaryColor,
                                   ),
                                 ],
                               ),
@@ -335,24 +364,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     style: GoogleFonts.inter(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
+                                      color: textColor,
                                     ),
                                   ),
                                   Switch(
-                                    value: false, // Force disabled state
+                                    value: themeProvider.isDarkMode,
                                     onChanged: (value) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text('Dark mode coming soon!'),
-                                          duration: Duration(seconds: 2),
-                                        ),
-                                      );
+                                      themeProvider.toggleTheme();
                                     },
-                                    activeColor: Color.fromARGB(
-                                      255,
-                                      88,
-                                      13,
-                                      218,
-                                    ),
+                                    activeColor: primaryColor,
                                   ),
                                 ],
                               ),

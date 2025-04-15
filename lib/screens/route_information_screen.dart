@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../services/route_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/sidebar.dart';
+import '../providers/theme_provider.dart';
 
 class RouteInformationScreen extends StatefulWidget {
   @override
@@ -194,9 +196,18 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Get theme provider
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final primaryColor = Color.fromARGB(255, 88, 13, 218);
+    final backgroundColor = isDarkMode ? Color(0xFF121212) : Colors.white;
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
+    final borderColor =
+        isDarkMode ? Colors.grey.shade700 : Colors.grey.shade300;
+
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 88, 13, 218),
-      endDrawer: _buildSidebar(context),
+      backgroundColor: primaryColor,
+      endDrawer: Sidebar(),
       body: Stack(
         children: [
           // Fixed purple header
@@ -206,7 +217,7 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
             right: 0,
             child: Container(
               width: double.infinity,
-              color: Color.fromARGB(255, 88, 13, 218),
+              color: primaryColor,
               padding: EdgeInsets.only(
                 top: 60,
                 bottom: 15,
@@ -262,14 +273,14 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
             bottom: 0,
             child: Container(
               decoration: BoxDecoration(
-                color: Color.fromARGB(255, 88, 13, 218),
+                color: primaryColor,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(30),
                 ),
               ),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: backgroundColor,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(30),
                   ),
@@ -277,9 +288,7 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
                 child:
                     isLoading
                         ? Center(
-                          child: CircularProgressIndicator(
-                            color: Color.fromARGB(255, 88, 13, 218),
-                          ),
+                          child: CircularProgressIndicator(color: primaryColor),
                         )
                         : SingleChildScrollView(
                           child: Padding(
@@ -291,26 +300,29 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
                                 Text(
                                   'Select Route',
                                   style: GoogleFonts.inter(
-                                    color: Color.fromARGB(255, 88, 13, 218),
+                                    color: primaryColor,
                                     fontSize: 14,
                                   ),
                                 ),
                                 SizedBox(height: 8),
                                 Container(
                                   decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: Colors.grey.shade300,
-                                    ),
+                                    border: Border.all(color: borderColor),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton<String>(
                                       value: selectedRoute,
                                       isExpanded: true,
-                                      icon: Icon(Icons.arrow_drop_down),
+                                      icon: Icon(
+                                        Icons.arrow_drop_down,
+                                        color:
+                                            isDarkMode ? Colors.white : null,
+                                      ),
                                       padding: EdgeInsets.symmetric(
                                         horizontal: 12,
                                       ),
+                                      dropdownColor: backgroundColor,
                                       onChanged: (String? newValue) {
                                         setState(() {
                                           selectedRoute = newValue!;
@@ -324,7 +336,12 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
                                               ) {
                                                 return DropdownMenuItem<String>(
                                                   value: value,
-                                                  child: Text(value),
+                                                  child: Text(
+                                                    value,
+                                                    style: TextStyle(
+                                                      color: textColor,
+                                                    ),
+                                                  ),
                                                 );
                                               })
                                               .toList(),
@@ -338,7 +355,7 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
                                 Container(
                                   width: double.infinity,
                                   decoration: BoxDecoration(
-                                    color: Color.fromARGB(255, 88, 13, 218),
+                                    color: primaryColor,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   padding: EdgeInsets.symmetric(vertical: 12),
@@ -380,10 +397,7 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
                                                           ),
                                                       decoration: BoxDecoration(
                                                         border: Border.all(
-                                                          color:
-                                                              Colors
-                                                                  .grey
-                                                                  .shade300,
+                                                          color: borderColor,
                                                         ),
                                                         borderRadius:
                                                             BorderRadius.circular(
@@ -395,6 +409,7 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
                                                         style:
                                                             GoogleFonts.inter(
                                                               fontSize: 12,
+                                                              color: textColor,
                                                             ),
                                                       ),
                                                     ),
@@ -413,12 +428,7 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
                                   child: ElevatedButton(
                                     onPressed: _openGoogleMaps,
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Color.fromARGB(
-                                        255,
-                                        88,
-                                        13,
-                                        218,
-                                      ),
+                                      backgroundColor: primaryColor,
                                       padding: EdgeInsets.symmetric(
                                         vertical: 20,
                                       ),
@@ -446,9 +456,5 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
         ],
       ),
     );
-  }
-
-  Widget _buildSidebar(BuildContext context) {
-    return Sidebar();
   }
 }

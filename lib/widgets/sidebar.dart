@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import '../providers/theme_provider.dart';
 
 class Sidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final backgroundColor = isDarkMode ? Color(0xFF121212) : Colors.white;
+    final textColor = isDarkMode ? Colors.white70 : Colors.black87;
+    final dividerColor = isDarkMode ? Colors.grey[800] : Colors.grey[300];
+
     return Drawer(
+      backgroundColor: backgroundColor,
       child: Column(
         children: [
           // Purple header with app description
@@ -35,22 +44,31 @@ class Sidebar extends StatelessWidget {
           // Menu items with improved spacing
           ListTile(
             contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.schedule),
-            title: Text('Bus Schedule', style: GoogleFonts.inter(fontSize: 16)),
+            leading: Icon(
+              Icons.schedule,
+              color: isDarkMode ? Colors.white70 : null,
+            ),
+            title: Text(
+              'Bus Schedule',
+              style: GoogleFonts.inter(fontSize: 16, color: textColor),
+            ),
             onTap: () {
               Navigator.pop(context);
               Navigator.pushNamed(context, '/bus_schedule');
             },
           ),
 
-          Divider(height: 1, thickness: 0.5),
+          Divider(height: 1, thickness: 0.5, color: dividerColor),
 
           ListTile(
             contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.route),
+            leading: Icon(
+              Icons.route,
+              color: isDarkMode ? Colors.white70 : null,
+            ),
             title: Text(
               'Route Information',
-              style: GoogleFonts.inter(fontSize: 16),
+              style: GoogleFonts.inter(fontSize: 16, color: textColor),
             ),
             onTap: () {
               Navigator.pop(context);
@@ -58,14 +76,17 @@ class Sidebar extends StatelessWidget {
             },
           ),
 
-          Divider(height: 1, thickness: 0.5),
+          Divider(height: 1, thickness: 0.5, color: dividerColor),
 
           ListTile(
             contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.notifications),
+            leading: Icon(
+              Icons.notifications,
+              color: isDarkMode ? Colors.white70 : null,
+            ),
             title: Text(
               'Notifications',
-              style: GoogleFonts.inter(fontSize: 16),
+              style: GoogleFonts.inter(fontSize: 16, color: textColor),
             ),
             onTap: () {
               Navigator.pop(context);
@@ -73,26 +94,35 @@ class Sidebar extends StatelessWidget {
             },
           ),
 
-          Divider(height: 1, thickness: 0.5),
+          Divider(height: 1, thickness: 0.5, color: dividerColor),
 
           ListTile(
             contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.settings),
-            title: Text('Settings', style: GoogleFonts.inter(fontSize: 16)),
+            leading: Icon(
+              Icons.settings,
+              color: isDarkMode ? Colors.white70 : null,
+            ),
+            title: Text(
+              'Settings',
+              style: GoogleFonts.inter(fontSize: 16, color: textColor),
+            ),
             onTap: () {
               Navigator.pop(context);
               Navigator.pushNamed(context, '/settings');
             },
           ),
 
-          Divider(height: 1, thickness: 0.5),
+          Divider(height: 1, thickness: 0.5, color: dividerColor),
 
           ListTile(
             contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.help),
+            leading: Icon(
+              Icons.help,
+              color: isDarkMode ? Colors.white70 : null,
+            ),
             title: Text(
               'Help and Support',
-              style: GoogleFonts.inter(fontSize: 16),
+              style: GoogleFonts.inter(fontSize: 16, color: textColor),
             ),
             onTap: () {
               Navigator.pop(context);
@@ -100,11 +130,11 @@ class Sidebar extends StatelessWidget {
             },
           ),
 
-          Divider(height: 1, thickness: 0.5),
+          Divider(height: 1, thickness: 0.5, color: dividerColor),
 
           // Logout at the bottom with red text
           Spacer(),
-          Divider(height: 1, thickness: 0.5),
+          Divider(height: 1, thickness: 0.5, color: dividerColor),
 
           ListTile(
             contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
@@ -138,9 +168,21 @@ class Sidebar extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Made with ", style: GoogleFonts.inter(fontSize: 12)),
+                    Text(
+                      "Made with ",
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: isDarkMode ? Colors.grey : Colors.black54,
+                      ),
+                    ),
                     Icon(Icons.favorite, color: Colors.red, size: 12),
-                    Text(" by ", style: GoogleFonts.inter(fontSize: 12)),
+                    Text(
+                      " by ",
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: isDarkMode ? Colors.grey : Colors.black54,
+                      ),
+                    ),
                     Text(
                       "MarsLab",
                       style: GoogleFonts.inter(
