@@ -119,19 +119,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
   }
 
+  // Get first name from full name
+  String _getFirstName(String fullName) {
+    if (fullName.isEmpty) return '';
+    List<String> nameParts = fullName.trim().split(' ');
+    return nameParts[0];
+  }
+
   Widget _buildNameStep() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "What's your name?",
-          style: GoogleFonts.inter(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 88, 13, 218),
-          ),
-        ),
-        SizedBox(height: 20),
+        SizedBox(height: 8),
         TextField(
           controller: _nameController,
           decoration: InputDecoration(
@@ -151,6 +150,35 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
         ),
         SizedBox(height: 30),
+        Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color.fromARGB(255, 88, 13, 218),
+              minimumSize: Size(double.infinity, 50),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onPressed: () {
+              if (_nameController.text.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Please enter your name'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+              setState(() {
+                _currentStep = 1;
+              });
+            },
+            child: Text(
+              "Next",
+              style: GoogleFonts.inter(fontSize: 18, color: Colors.white),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -159,22 +187,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        SizedBox(height: 8),
         Text(
           "Select your default route",
-          style: GoogleFonts.inter(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 88, 13, 218),
-          ),
-        ),
-        SizedBox(height: 20),
-        Text(
-          "This will be your default route in the app. You can change it later in settings.",
-          style: GoogleFonts.inter(fontSize: 16, color: Colors.grey[700]),
+          style: GoogleFonts.inter(fontSize: 16, color: Colors.grey[800]),
         ),
         SizedBox(height: 20),
         _isLoading
-            ? Center(child: CircularProgressIndicator())
+            ? Center(
+              child: CircularProgressIndicator(
+                color: Color.fromARGB(255, 88, 13, 218),
+              ),
+            )
             : _availableRoutes.isEmpty
             ? Center(
               child: Text(
@@ -183,7 +207,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             )
             : Container(
-              padding: EdgeInsets.symmetric(horizontal: 12),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
               decoration: BoxDecoration(
                 border: Border.all(color: Color.fromARGB(255, 88, 13, 218)),
                 borderRadius: BorderRadius.circular(8),
@@ -211,97 +235,242 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
         SizedBox(height: 30),
+        Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey[300],
+                  foregroundColor: Colors.black,
+                  minimumSize: Size(0, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: () {
+                  setState(() {
+                    _currentStep = 0;
+                  });
+                },
+                child: Text("Back"),
+              ),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromARGB(255, 88, 13, 218),
+                  minimumSize: Size(0, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: _completeOnboarding,
+                child: Text(
+                  "Finish",
+                  style: GoogleFonts.inter(fontSize: 18, color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    // Get display name (either "Hi" or "Hi, FirstName" if name is entered)
+    String displayName = '';
+    if (_nameController.text.isNotEmpty) {
+      displayName = "Hi, ${_getFirstName(_nameController.text)}";
+    }
+
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
+      body: Stack(
+        children: [
+          // Scrollable content
+          SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 40),
-                Text(
-                  "Welcome to",
-                  style: GoogleFonts.inter(
-                    fontSize: 24,
-                    color: Colors.grey[800],
+                // Purple header section
+                Container(
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 88, 13, 218),
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(40),
+                    ),
                   ),
-                ),
-                Text(
-                  "DIU ROUTE EXPLORER",
-                  style: GoogleFonts.inter(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 88, 13, 218),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 40,
                   ),
-                ),
-                SizedBox(height: 40),
-
-                // Stepper content
-                _currentStep == 0 ? _buildNameStep() : _buildRouteStep(),
-
-                // Navigation buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    if (_currentStep > 0)
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey[300],
-                          foregroundColor: Colors.black,
-                          minimumSize: Size(120, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 50), // Space for the menu icon
+                      if (displayName.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 20),
+                          child: Text(
+                            displayName,
+                            style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _currentStep--;
-                          });
-                        },
-                        child: Text("Back"),
-                      )
-                    else
-                      SizedBox(width: 120),
+                      Spacer(), // Add spacer to push text to bottom
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 0),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "COMPLETE\nYOUR\nPROFILE",
+                            style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontSize: 60,
+                              fontWeight: FontWeight.bold,
+                              height: 1.2,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromARGB(255, 88, 13, 218),
-                        minimumSize: Size(120, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                // White content section
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 30,
+                  ),
+                  decoration: const BoxDecoration(color: Colors.white),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Onboarding step tabs with Underline Indicator
+                      Row(
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _currentStep = 0;
+                                });
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0,
+                                ),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      "Your Name",
+                                      style: TextStyle(
+                                        color:
+                                            _currentStep == 0
+                                                ? Color.fromARGB(
+                                                  255,
+                                                  88,
+                                                  13,
+                                                  218,
+                                                )
+                                                : Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Container(
+                                      height: 3,
+                                      color:
+                                          _currentStep == 0
+                                              ? Color.fromARGB(255, 88, 13, 218)
+                                              : Colors.transparent,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                if (_nameController.text.isNotEmpty) {
+                                  setState(() {
+                                    _currentStep = 1;
+                                  });
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Please enter your name first',
+                                      ),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0,
+                                ),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      "Default Route",
+                                      style: TextStyle(
+                                        color:
+                                            _currentStep == 1
+                                                ? Color.fromARGB(
+                                                  255,
+                                                  88,
+                                                  13,
+                                                  218,
+                                                )
+                                                : Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Container(
+                                      height: 3,
+                                      color:
+                                          _currentStep == 1
+                                              ? Color.fromARGB(255, 88, 13, 218)
+                                              : Colors.transparent,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      onPressed: () {
-                        if (_currentStep < 1) {
-                          setState(() {
-                            _currentStep++;
-                          });
-                        } else {
-                          _completeOnboarding();
-                        }
-                      },
-                      child: Text(
-                        _currentStep < 1 ? "Next" : "Finish",
-                        style: GoogleFonts.inter(
-                          fontSize: 18,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
+                      SizedBox(height: 30),
+
+                      // Conditional content based on step
+                      _currentStep == 0 ? _buildNameStep() : _buildRouteStep(),
+
+                      // Add space at the bottom
+                      SizedBox(height: 40),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-        ),
+        ],
       ),
     );
   }
