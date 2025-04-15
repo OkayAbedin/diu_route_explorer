@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../services/database_service.dart';
 import '../services/auth_service.dart';
+import '../providers/theme_provider.dart';
 import 'route_editor_screen.dart';
 import 'dart:async';
 
@@ -213,139 +215,39 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     }
   }
 
-  Widget _buildSidebar(BuildContext context) {
-    return Drawer(
-      child: Column(
-        children: [
-          // Purple header with app description
-          Container(
-            width: double.infinity,
-            height: 240,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-            color: const Color.fromARGB(255, 88, 13, 218),
-            child: SafeArea(
-              child: Column(
-                mainAxisAlignment:
-                    MainAxisAlignment.end, // Align content to the bottom
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Admin Dashboard for DIU Route Explorers allows you to manage bus routes, schedules, and provide students with accurate transportation information.',
-                    style: GoogleFonts.inter(
-                      color: Colors.white,
-                      fontSize: 16,
-                      height: 1.2,
-                      letterSpacing: 0.2,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Menu items with improved spacing
-          SizedBox(height: 30),
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.dashboard),
-            title: Text('Dashboard', style: GoogleFonts.inter(fontSize: 16)),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-
-          Divider(height: 1, thickness: 0.5),
-
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.route),
-            title: Text(
-              'Manage Routes',
-              style: GoogleFonts.inter(fontSize: 16),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-
-          Divider(height: 1, thickness: 0.5),
-
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.analytics),
-            title: Text('Analytics', style: GoogleFonts.inter(fontSize: 16)),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-
-          Divider(height: 1, thickness: 0.5),
-
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.settings),
-            title: Text('Settings', style: GoogleFonts.inter(fontSize: 16)),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-
-          // Logout at the bottom with red text
-          Spacer(),
-          Divider(height: 1, thickness: 0.5),
-
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(Icons.logout, color: Colors.red),
-            title: Text(
-              'Logout',
-              style: GoogleFonts.inter(color: Colors.red, fontSize: 16),
-            ),
-            onTap: _logout,
-          ),
-
-          // Version and footer
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20.0),
-            child: Column(
-              children: [
-                Text(
-                  'Version 1.0.1',
-                  style: GoogleFonts.inter(color: Colors.grey, fontSize: 12),
-                ),
-                SizedBox(height: 6),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Made with ", style: GoogleFonts.inter(fontSize: 12)),
-                    Icon(Icons.favorite, color: Colors.red, size: 12),
-                    Text(" by ", style: GoogleFonts.inter(fontSize: 12)),
-                    Text(
-                      "MarsLab",
-                      style: GoogleFonts.inter(
-                        color: Color.fromARGB(255, 88, 13, 218),
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    // Get theme provider
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+
+    // Define colors for both themes
+    final primaryColor =
+        isDarkMode
+            ? Color.fromARGB(255, 88, 13, 218) 
+            : Color.fromARGB(
+              255,
+              88,
+              13,
+              218,
+            ); // Original purple for light mode
+
+    final backgroundColor = isDarkMode ? Color(0xFF121212) : Colors.white;
+    final cardBackgroundColor = isDarkMode ? Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDarkMode ? Colors.white70 : Colors.black87;
+    final secondaryTextColor =
+        isDarkMode ? Colors.grey[400] : Colors.grey.shade700;
+    final borderColor =
+        isDarkMode ? Colors.grey.shade800 : Colors.grey.shade200;
+    final searchBorderColor =
+        isDarkMode ? Colors.grey.shade700 : Colors.grey.shade300;
+
     final filteredRoutes = _getFilteredRoutes();
 
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 88, 13, 218),
-      endDrawer: _buildSidebar(context),
+      backgroundColor: primaryColor,
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Color.fromARGB(255, 88, 13, 218),
+        backgroundColor: primaryColor,
         icon: Icon(Icons.add, color: Colors.white),
         label: Text(
           'Add Route',
@@ -390,7 +292,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             right: 0,
             child: Container(
               width: double.infinity,
-              color: Color.fromARGB(255, 88, 13, 218),
+              color: primaryColor,
               padding: EdgeInsets.only(
                 top: 60,
                 bottom: 15,
@@ -430,18 +332,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         ),
                         onPressed: _loadRoutes,
                       ),
-                      Builder(
-                        builder:
-                            (context) => IconButton(
-                              icon: Icon(
-                                Icons.menu,
-                                color: Colors.white,
-                                size: 30,
-                              ),
-                              onPressed: () {
-                                Scaffold.of(context).openEndDrawer();
-                              },
-                            ),
+                      // Replace menu icon with logout icon
+                      IconButton(
+                        icon: Icon(Icons.logout, color: Colors.white, size: 26),
+                        tooltip: 'Logout',
+                        onPressed: _logout,
                       ),
                     ],
                   ),
@@ -458,14 +353,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             bottom: 0,
             child: Container(
               decoration: BoxDecoration(
-                color: Color.fromARGB(255, 88, 13, 218),
+                color: primaryColor,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(30),
                 ),
               ),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: backgroundColor,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(30),
                   ),
@@ -473,9 +368,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 child:
                     _isLoading
                         ? Center(
-                          child: CircularProgressIndicator(
-                            color: Color.fromARGB(255, 88, 13, 218),
-                          ),
+                          child: CircularProgressIndicator(color: primaryColor),
                         )
                         : Column(
                           children: [
@@ -488,25 +381,53 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                   Text(
                                     'Search Routes',
                                     style: GoogleFonts.inter(
-                                      color: Color.fromARGB(255, 88, 13, 218),
+                                      color: primaryColor,
                                       fontSize: 14,
                                     ),
                                   ),
                                   SizedBox(height: 8),
                                   TextField(
+                                    style: TextStyle(color: textColor),
                                     decoration: InputDecoration(
                                       hintText: 'Search routes...',
-                                      prefixIcon: Icon(Icons.search),
+                                      hintStyle: TextStyle(
+                                        color:
+                                            isDarkMode
+                                                ? Colors.grey[400]
+                                                : Colors.grey,
+                                      ),
+                                      prefixIcon: Icon(
+                                        Icons.search,
+                                        color:
+                                            isDarkMode
+                                                ? Colors.grey[400]
+                                                : null,
+                                      ),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(4),
                                         borderSide: BorderSide(
-                                          color: Colors.grey.shade300,
+                                          color: searchBorderColor,
+                                        ),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(4),
+                                        borderSide: BorderSide(
+                                          color: searchBorderColor,
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(4),
+                                        borderSide: BorderSide(
+                                          color: primaryColor,
                                         ),
                                       ),
                                       contentPadding: EdgeInsets.symmetric(
                                         horizontal: 12,
                                         vertical: 16,
                                       ),
+                                      fillColor:
+                                          isDarkMode ? Color(0xFF292929) : null,
+                                      filled: isDarkMode,
                                     ),
                                     onChanged: (value) {
                                       setState(() {
@@ -518,7 +439,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                   Text(
                                     'Filter by Schedule',
                                     style: GoogleFonts.inter(
-                                      color: Color.fromARGB(255, 88, 13, 218),
+                                      color: primaryColor,
                                       fontSize: 14,
                                     ),
                                   ),
@@ -526,18 +447,30 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                   Container(
                                     decoration: BoxDecoration(
                                       border: Border.all(
-                                        color: Colors.grey.shade300,
+                                        color: searchBorderColor,
                                       ),
                                       borderRadius: BorderRadius.circular(4),
+                                      color:
+                                          isDarkMode ? Color(0xFF292929) : null,
                                     ),
                                     child: DropdownButtonHideUnderline(
                                       child: DropdownButton<String>(
                                         value: _filterSchedule,
                                         isExpanded: true,
-                                        icon: Icon(Icons.arrow_drop_down),
+                                        icon: Icon(
+                                          Icons.arrow_drop_down,
+                                          color:
+                                              isDarkMode
+                                                  ? Colors.white70
+                                                  : null,
+                                        ),
                                         padding: EdgeInsets.symmetric(
                                           horizontal: 12,
                                         ),
+                                        dropdownColor:
+                                            isDarkMode
+                                                ? Color(0xFF292929)
+                                                : null,
                                         onChanged: (String? newValue) {
                                           setState(() {
                                             _filterSchedule = newValue!;
@@ -554,7 +487,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                             ) {
                                               return DropdownMenuItem<String>(
                                                 value: value,
-                                                child: Text(value),
+                                                child: Text(
+                                                  value,
+                                                  style: TextStyle(
+                                                    color: textColor,
+                                                  ),
+                                                ),
                                               );
                                             }).toList(),
                                       ),
@@ -573,13 +511,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                           'No routes found',
                                           style: GoogleFonts.inter(
                                             fontSize: 16,
-                                            color: Colors.grey,
+                                            color:
+                                                isDarkMode
+                                                    ? Colors.grey[400]
+                                                    : Colors.grey,
                                           ),
                                         ),
                                       )
                                       : RefreshIndicator(
                                         onRefresh: _loadRoutes,
-                                        color: Color.fromARGB(255, 88, 13, 218),
+                                        color: primaryColor,
                                         child: ListView.builder(
                                           itemCount: filteredRoutes.length,
                                           itemBuilder: (context, index) {
@@ -590,12 +531,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                 vertical: 8,
                                               ),
                                               elevation: 4,
-                                              shadowColor: Colors.black26,
+                                              shadowColor:
+                                                  isDarkMode
+                                                      ? Colors.black
+                                                      : Colors.black26,
+                                              color: cardBackgroundColor,
                                               shape: RoundedRectangleBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(12),
                                                 side: BorderSide(
-                                                  color: Colors.grey.shade200,
+                                                  color: borderColor,
                                                   width: 1,
                                                 ),
                                               ),
@@ -617,15 +562,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                               fontWeight:
                                                                   FontWeight
                                                                       .bold,
-                                                              fontSize:
-                                                                  16, // Reduced from 18 to 16
+                                                              fontSize: 16,
                                                               color:
-                                                                  Color.fromARGB(
-                                                                    255,
-                                                                    88,
-                                                                    13,
-                                                                    218,
-                                                                  ),
+                                                                  primaryColor,
                                                             ),
                                                           ),
                                                         ),
@@ -637,19 +576,33 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                               ),
                                                           decoration: BoxDecoration(
                                                             color:
-                                                                route['Schedule'] ==
-                                                                        'Regular'
-                                                                    ? Colors
-                                                                        .blue
-                                                                        .shade100
-                                                                    : route['Schedule'] ==
-                                                                        'Shuttle'
-                                                                    ? Colors
-                                                                        .green
-                                                                        .shade100
-                                                                    : Colors
-                                                                        .orange
-                                                                        .shade100,
+                                                                isDarkMode
+                                                                    ? (route['Schedule'] ==
+                                                                            'Regular'
+                                                                        ? Colors
+                                                                            .blue
+                                                                            .shade900
+                                                                        : route['Schedule'] ==
+                                                                            'Shuttle'
+                                                                        ? Colors
+                                                                            .green
+                                                                            .shade900
+                                                                        : Colors
+                                                                            .orange
+                                                                            .shade900)
+                                                                    : (route['Schedule'] ==
+                                                                            'Regular'
+                                                                        ? Colors
+                                                                            .blue
+                                                                            .shade100
+                                                                        : route['Schedule'] ==
+                                                                            'Shuttle'
+                                                                        ? Colors
+                                                                            .green
+                                                                            .shade100
+                                                                        : Colors
+                                                                            .orange
+                                                                            .shade100),
                                                             borderRadius:
                                                                 BorderRadius.circular(
                                                                   12,
@@ -663,19 +616,33 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                                   FontWeight
                                                                       .w500,
                                                               color:
-                                                                  route['Schedule'] ==
-                                                                          'Regular'
-                                                                      ? Colors
-                                                                          .blue
-                                                                          .shade800
-                                                                      : route['Schedule'] ==
-                                                                          'Shuttle'
-                                                                      ? Colors
-                                                                          .green
-                                                                          .shade800
-                                                                      : Colors
-                                                                          .orange
-                                                                          .shade800,
+                                                                  isDarkMode
+                                                                      ? (route['Schedule'] ==
+                                                                              'Regular'
+                                                                          ? Colors
+                                                                              .blue
+                                                                              .shade100
+                                                                          : route['Schedule'] ==
+                                                                              'Shuttle'
+                                                                          ? Colors
+                                                                              .green
+                                                                              .shade100
+                                                                          : Colors
+                                                                              .orange
+                                                                              .shade100)
+                                                                      : (route['Schedule'] ==
+                                                                              'Regular'
+                                                                          ? Colors
+                                                                              .blue
+                                                                              .shade800
+                                                                          : route['Schedule'] ==
+                                                                              'Shuttle'
+                                                                          ? Colors
+                                                                              .green
+                                                                              .shade800
+                                                                          : Colors
+                                                                              .orange
+                                                                              .shade800),
                                                             ),
                                                           ),
                                                         ),
@@ -688,42 +655,32 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                           Icons.directions_bus,
                                                           size: 16,
                                                           color:
-                                                              Colors
-                                                                  .grey
-                                                                  .shade700,
+                                                              secondaryTextColor,
                                                         ),
                                                         SizedBox(width: 8),
                                                         Text(
                                                           route['Trip Direction'],
-                                                          style:
-                                                              GoogleFonts.inter(
-                                                                fontSize: 14,
-                                                                color:
-                                                                    Colors
-                                                                        .grey
-                                                                        .shade700,
-                                                              ),
+                                                          style: GoogleFonts.inter(
+                                                            fontSize: 14,
+                                                            color:
+                                                                secondaryTextColor,
+                                                          ),
                                                         ),
                                                         SizedBox(width: 16),
                                                         Icon(
                                                           Icons.access_time,
                                                           size: 16,
                                                           color:
-                                                              Colors
-                                                                  .grey
-                                                                  .shade700,
+                                                              secondaryTextColor,
                                                         ),
                                                         SizedBox(width: 8),
                                                         Text(
                                                           route['Time'],
-                                                          style:
-                                                              GoogleFonts.inter(
-                                                                fontSize: 14,
-                                                                color:
-                                                                    Colors
-                                                                        .grey
-                                                                        .shade700,
-                                                              ),
+                                                          style: GoogleFonts.inter(
+                                                            fontSize: 14,
+                                                            color:
+                                                                secondaryTextColor,
+                                                          ),
                                                         ),
                                                       ],
                                                     ),
@@ -741,9 +698,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                               EdgeInsets.all(8),
                                                           decoration: BoxDecoration(
                                                             color:
-                                                                Colors
-                                                                    .grey
-                                                                    .shade100,
+                                                                isDarkMode
+                                                                    ? Color(
+                                                                      0xFF282828,
+                                                                    )
+                                                                    : Colors
+                                                                        .grey
+                                                                        .shade100,
                                                             borderRadius:
                                                                 BorderRadius.circular(
                                                                   8,
@@ -759,9 +720,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                                     .info_outline,
                                                                 size: 16,
                                                                 color:
-                                                                    Colors
-                                                                        .grey
-                                                                        .shade700,
+                                                                    secondaryTextColor,
                                                               ),
                                                               SizedBox(
                                                                 width: 8,
@@ -776,9 +735,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                                         FontStyle
                                                                             .italic,
                                                                     color:
-                                                                        Colors
-                                                                            .grey
-                                                                            .shade700,
+                                                                        secondaryTextColor,
                                                                   ),
                                                                 ),
                                                               ),
@@ -799,23 +756,18 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                           label: Text('Edit'),
                                                           style: ElevatedButton.styleFrom(
                                                             foregroundColor:
-                                                                Color.fromARGB(
-                                                                  255,
-                                                                  88,
-                                                                  13,
-                                                                  218,
-                                                                ),
+                                                                primaryColor,
                                                             backgroundColor:
-                                                                Colors.white,
+                                                                isDarkMode
+                                                                    ? Color(
+                                                                      0xFF252525,
+                                                                    )
+                                                                    : Colors
+                                                                        .white,
                                                             elevation: 0,
                                                             side: BorderSide(
                                                               color:
-                                                                  Color.fromARGB(
-                                                                    255,
-                                                                    88,
-                                                                    13,
-                                                                    218,
-                                                                  ),
+                                                                  primaryColor,
                                                             ),
                                                             padding:
                                                                 EdgeInsets.symmetric(
@@ -883,24 +835,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                                           icon: Icon(
                                                             Icons.delete,
                                                             size: 18,
-                                                            color:
-                                                                Colors
-                                                                    .white, // Changed to white for better contrast
+                                                            color: Colors.white,
                                                           ),
                                                           label: Text(
                                                             'Delete',
                                                             style: TextStyle(
                                                               color:
                                                                   Colors.white,
-                                                            ), // Changed to white
+                                                            ),
                                                           ),
                                                           style: ElevatedButton.styleFrom(
                                                             foregroundColor:
-                                                                Colors
-                                                                    .white, // Changed from red to white
+                                                                Colors.white,
                                                             backgroundColor:
-                                                                Colors
-                                                                    .red, // Changed from white to red
+                                                                Colors.red,
                                                             elevation: 0,
                                                             side: BorderSide(
                                                               color: Colors.red,

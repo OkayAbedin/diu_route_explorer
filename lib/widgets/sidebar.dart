@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/theme_provider.dart';
+import '../services/auth_service.dart';
 
 class Sidebar extends StatelessWidget {
+  // Create a direct instance of AuthService instead of using Provider
+  final AuthService _authService = AuthService();
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
     final backgroundColor = isDarkMode ? Color(0xFF121212) : Colors.white;
-    final textColor = isDarkMode ? Colors.white70 : Colors.black87;
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
     final dividerColor = isDarkMode ? Colors.grey[800] : Colors.grey[300];
 
     return Drawer(
@@ -46,7 +50,7 @@ class Sidebar extends StatelessWidget {
             contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
             leading: Icon(
               Icons.schedule,
-              color: isDarkMode ? Colors.white70 : null,
+              color: isDarkMode ? Colors.white : null,
             ),
             title: Text(
               'Bus Schedule',
@@ -64,7 +68,7 @@ class Sidebar extends StatelessWidget {
             contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
             leading: Icon(
               Icons.route,
-              color: isDarkMode ? Colors.white70 : null,
+              color: isDarkMode ? Colors.white : null,
             ),
             title: Text(
               'Route Information',
@@ -82,7 +86,7 @@ class Sidebar extends StatelessWidget {
             contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
             leading: Icon(
               Icons.notifications,
-              color: isDarkMode ? Colors.white70 : null,
+              color: isDarkMode ? Colors.white : null,
             ),
             title: Text(
               'Notifications',
@@ -100,7 +104,7 @@ class Sidebar extends StatelessWidget {
             contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
             leading: Icon(
               Icons.settings,
-              color: isDarkMode ? Colors.white70 : null,
+              color: isDarkMode ? Colors.white : null,
             ),
             title: Text(
               'Settings',
@@ -118,7 +122,7 @@ class Sidebar extends StatelessWidget {
             contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
             leading: Icon(
               Icons.help,
-              color: isDarkMode ? Colors.white70 : null,
+              color: isDarkMode ? Colors.white : null,
             ),
             title: Text(
               'Help and Support',
@@ -144,14 +148,35 @@ class Sidebar extends StatelessWidget {
               style: GoogleFonts.inter(color: Colors.red, fontSize: 16),
             ),
             onTap: () async {
-              // Close the drawer
-              Navigator.pop(context);
+              try {
+                // Close the drawer
+                Navigator.pop(context);
 
-              // Navigate to login screen
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                '/login',
-                (Route<dynamic> route) => false,
-              );
+                // Use the direct instance of AuthService to properly logout
+                await _authService.logout();
+
+                // Navigate to login screen
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/login',
+                  (Route<dynamic> route) => false,
+                );
+              } catch (e) {
+                print('Error during logout: $e');
+                // Show error message
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Logout failed. Please try again.'),
+                    backgroundColor: Colors.red,
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+
+                // Even if logout fails, attempt to navigate to login screen
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/login',
+                  (Route<dynamic> route) => false,
+                );
+              }
             },
           ),
 

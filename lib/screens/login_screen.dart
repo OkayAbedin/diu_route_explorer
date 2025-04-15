@@ -7,7 +7,6 @@ import '../services/auth_service.dart';
 import '../providers/theme_provider.dart';
 import 'admin_dashboard_screen.dart';
 import 'onboarding_screen.dart';
-import '../widgets/sidebar.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -45,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: backgroundColor,
-      endDrawer: Sidebar(),
+      // Removed endDrawer property
       body: Stack(
         children: [
           // Scrollable content
@@ -454,14 +453,18 @@ class _LoginScreenState extends State<LoginScreen> {
           Positioned(
             top: 40,
             right: 40,
-            child: Builder(
-              builder:
-                  (context) => IconButton(
-                    icon: Icon(Icons.menu, color: Colors.white, size: 30),
-                    onPressed: () {
-                      Scaffold.of(context).openEndDrawer();
-                    },
+            child: IconButton(
+              icon: Icon(Icons.menu, color: Colors.white, size: 30),
+              onPressed: () {
+                // Show snackbar asking user to login first instead of opening drawer
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Please login first to access the menu'),
+                    backgroundColor: primaryColor,
+                    duration: Duration(seconds: 2),
                   ),
+                );
+              },
             ),
           ),
         ],
