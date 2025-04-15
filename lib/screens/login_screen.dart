@@ -323,7 +323,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 hintText: "Enter admin password",
                                 hintStyle: TextStyle(color: hintTextColor),
                                 enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: borderColor!),
+                                  borderSide: BorderSide(color: borderColor),
                                 ),
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(color: primaryColor),
