@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 class SplashScreen extends StatefulWidget {
   final Widget nextScreen;
 
-  const SplashScreen({Key? key, required this.nextScreen}) : super(key: key);
+  const SplashScreen({super.key, required this.nextScreen});
 
   @override
   _SplashScreenState createState() => _SplashScreenState();

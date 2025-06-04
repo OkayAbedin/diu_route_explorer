@@ -9,6 +9,8 @@ import 'dart:async';
 import '../widgets/sidebar.dart';
 
 class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
+
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
 }

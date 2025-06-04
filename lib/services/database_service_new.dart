@@ -1,9 +1,7 @@
 import 'firebase_database_service.dart';
-import '../services/route_service.dart';
 
 class DatabaseService {
   final FirebaseDatabaseService _firebaseDb = FirebaseDatabaseService();
-  final RouteService _routeService = RouteService();
 
   // Get current database
   Future<List<Map<String, dynamic>>> getDatabase() async {

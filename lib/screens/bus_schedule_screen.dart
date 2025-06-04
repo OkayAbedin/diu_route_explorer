@@ -10,6 +10,8 @@ import '../services/auth_service.dart';
 import '../providers/theme_provider.dart';
 
 class BusScheduleScreen extends StatefulWidget {
+  const BusScheduleScreen({super.key});
+
   @override
   _BusScheduleScreenState createState() => _BusScheduleScreenState();
 }
@@ -71,7 +73,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
         // Group routes by schedule type
         for (var item in busData) {
           String routeCode = item['Route'];
-          String routeName = "${routeCode} - ${item['Route Name']}";
+          String routeName = "$routeCode - ${item['Route Name']}";
           String schedule = item['Schedule'];
 
           // Map route codes to schedule types
@@ -179,7 +181,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
           // Group routes by schedule type
           for (var item in busData) {
             String routeCode = item['Route'];
-            String routeName = "${routeCode} - ${item['Route Name']}";
+            String routeName = "$routeCode - ${item['Route Name']}";
             String schedule = item['Schedule'];
 
             // Map route codes to schedule types
@@ -359,7 +361,7 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
         // Group routes by schedule type
         for (var item in busData) {
           String routeCode = item['Route'];
-          String routeName = "${routeCode} - ${item['Route Name']}";
+          String routeName = "$routeCode - ${item['Route Name']}";
           String schedule = item['Schedule'];
 
           // Map route codes to schedule types

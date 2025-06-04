@@ -82,7 +82,6 @@ class ThemeProvider with ChangeNotifier {
         primary: const Color.fromARGB(255, 126, 52, 255),
         secondary: const Color.fromARGB(255, 126, 52, 255),
         surface: const Color.fromARGB(255, 0, 0, 0),
-        background: const Color.fromARGB(255, 0, 0, 0),
       ),
       scaffoldBackgroundColor: const Color.fromARGB(255, 0, 0, 0),
       appBarTheme: const AppBarTheme(
@@ -104,8 +103,7 @@ class ThemeProvider with ChangeNotifier {
       ),
       dividerColor: Colors.grey[800],
       cardColor: const Color(0xFF1F1F1F),
-      iconTheme: const IconThemeData(color: Colors.white),
-      dialogBackgroundColor: const Color(0xFF1F1F1F),
+      iconTheme: const IconThemeData(color: Colors.white), dialogTheme: DialogThemeData(backgroundColor: const Color(0xFF1F1F1F)),
     );
   }
 }

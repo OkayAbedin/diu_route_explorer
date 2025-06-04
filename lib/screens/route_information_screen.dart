@@ -9,6 +9,8 @@ import '../widgets/sidebar.dart';
 import '../providers/theme_provider.dart';
 
 class RouteInformationScreen extends StatefulWidget {
+  const RouteInformationScreen({super.key});
+
   @override
   _RouteInformationScreenState createState() => _RouteInformationScreenState();
 }
@@ -425,7 +427,7 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
                                 SizedBox(height: 20),
 
                                 // Google Maps Button
-                                Container(
+                                SizedBox(
                                   width: double.infinity,
                                   child: ElevatedButton(
                                     onPressed: _openGoogleMaps,

@@ -7,6 +7,8 @@ import '../widgets/sidebar.dart';
 import '../providers/theme_provider.dart';
 
 class HelpSupportScreen extends StatefulWidget {
+  const HelpSupportScreen({super.key});
+
   @override
   _HelpSupportScreenState createState() => _HelpSupportScreenState();
 }

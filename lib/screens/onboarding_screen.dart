@@ -5,17 +5,16 @@ import '../services/auth_service.dart';
 import '../services/route_service.dart';
 import '../providers/theme_provider.dart';
 import 'bus_schedule_screen.dart';
-import 'admin_dashboard_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final String userId;
   final String userType;
 
   const OnboardingScreen({
-    Key? key,
+    super.key,
     required this.userId,
     required this.userType,
-  }) : super(key: key);
+  });
 
   @override
   _OnboardingScreenState createState() => _OnboardingScreenState();
@@ -52,7 +51,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
       for (var item in data) {
         String routeCode = item['Route'];
-        String routeName = "${routeCode} - ${item['Route Name']}";
+        String routeName = "$routeCode - ${item['Route Name']}";
 
         // Skip the R1 - DSC <> Dhanmondi route
         if (!routeName.contains("R1 - DSC <> Dhanmondi")) {
@@ -96,20 +95,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       await _authService.saveDefaultRoute(_selectedRoute);
 
       // Mark onboarding as completed
-      await _authService.markOnboardingCompleted();
-
-      // Navigate to appropriate screen based on user type
-      if (widget.userType == AuthService.USER_TYPE_ADMIN) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => AdminDashboardScreen()),
-        );
-      } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => BusScheduleScreen()),
-        );
-      }
+      await _authService
+          .markOnboardingCompleted(); // Navigate to bus schedule screen for all users
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => BusScheduleScreen()),
+      );
     } catch (e) {
       print('Error completing onboarding: $e');
       ScaffoldMessenger.of(context).showSnackBar(

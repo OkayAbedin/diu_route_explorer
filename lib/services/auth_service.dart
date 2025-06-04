@@ -1,5 +1,4 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'admin_service.dart';
 
 class AuthService {
   // Keys for SharedPreferences
@@ -9,12 +8,8 @@ class AuthService {
   static const String _userNameKey = 'user_name';
   static const String _defaultRouteKey = 'default_route';
   static const String _onboardingCompletedKey = 'onboarding_completed';
-
-  // User types
+  // User types - keeping only student type
   static const String USER_TYPE_STUDENT = 'student';
-  static const String USER_TYPE_ADMIN = 'admin';
-
-  final AdminService _adminService = AdminService();
 
   // Save user login state
   Future<bool> saveUserLogin(String userId, String userType) async {
@@ -63,26 +58,15 @@ class AuthService {
     }
   }
 
-  // Check if admin is logged in (uses AdminService)
-  Future<bool> isAdminLoggedIn() async {
-    return await _adminService.isLoggedIn();
-  }
-
   // Logout user
   Future<bool> logout() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final userType = await getUserType();
 
       // Clear user login data
       await prefs.remove(_userLoginKey);
       await prefs.remove(_userIdKey);
       await prefs.remove(_userTypeKey);
-
-      // If admin, also logout from admin service
-      if (userType == USER_TYPE_ADMIN) {
-        await _adminService.logout();
-      }
 
       return true;
     } catch (e) {

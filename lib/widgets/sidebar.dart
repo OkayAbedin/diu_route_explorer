@@ -8,6 +8,8 @@ class Sidebar extends StatelessWidget {
   // Create a direct instance of AuthService instead of using Provider
   final AuthService _authService = AuthService();
 
+  Sidebar({super.key});
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);

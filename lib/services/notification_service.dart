@@ -1,15 +1,34 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationService {
-  // Public JSON URL for notifications
-  final String _notificationsUrl = 'https://api.jsonbin.io/v3/b/67efe2438561e97a50f89e92/latest';
-  
+  // Mock notifications data since we're removing external dependencies
+  final List<dynamic> _mockNotifications = [
+    {
+      'id': '1',
+      'title': 'Welcome to DIU Route Explorer',
+      'message':
+          'Stay updated with the latest bus schedules and route information.',
+      'timestamp':
+          DateTime.now().subtract(Duration(hours: 1)).toIso8601String(),
+      'type': 'info',
+      'isRead': false,
+    },
+    {
+      'id': '2',
+      'title': 'Route Update',
+      'message':
+          'New shuttle routes have been added to improve campus connectivity.',
+      'timestamp': DateTime.now().subtract(Duration(days: 1)).toIso8601String(),
+      'type': 'update',
+      'isRead': false,
+    },
+  ];
+
   // Cache key for notifications
   final String _cacheKey = 'cached_notifications';
 
-  // Get notifications from API or cache
+  // Get notifications from cache or use mock data
   Future<List<dynamic>> getNotifications({bool forceRefresh = false}) async {
     if (!forceRefresh) {
       // Try to get from cache first
@@ -20,65 +39,16 @@ class NotificationService {
     }
 
     try {
-      // Make API request
-      final response = await http.get(
-        Uri.parse(_notificationsUrl),
-        headers: {
-          'X-Bin-Meta': 'false',
-        },
-      );
+      // Use mock data instead of external API
+      final notifications = List<dynamic>.from(_mockNotifications);
 
-      if (response.statusCode == 200) {
-        final responseBody = response.body;
-        print('Response body: $responseBody');
-        
-        // Try to parse the response body
-        final dynamic data = json.decode(responseBody);
-        List<dynamic> notifications = [];
-        
-        // Check if data is directly a list
-        if (data is List) {
-          notifications = data;
-        } 
-        // Check if data has a record field that is a list
-        else if (data is Map && data.containsKey('record') && data['record'] is List) {
-          notifications = data['record'];
-        }
-        // If record is a string, try to parse it as JSON
-        else if (data is Map && data.containsKey('record') && data['record'] is String) {
-          try {
-            final recordData = json.decode(data['record']);
-            if (recordData is List) {
-              notifications = recordData;
-            }
-          } catch (e) {
-            print('Error parsing record as JSON: $e');
-            // If parsing fails, use an empty list
-            notifications = [];
-          }
-        }
-        
-        // Ensure each item has a unique ID if not already present
-        for (int i = 0; i < notifications.length; i++) {
-          if (!notifications[i].containsKey('id')) {
-            notifications[i]['id'] = i + 1;
-          }
-        }
-        
-        // Cache the data
-        await _cacheData(notifications);
-        
-        return notifications;
-      } else {
-        throw Exception('Failed to load notifications: ${response.statusCode}');
-      }
+      // Cache the data
+      await _cacheData(notifications);
+
+      return notifications;
     } catch (e) {
-      // If network request fails, try to get from cache
-      final cachedData = await _getFromCache();
-      if (cachedData != null) {
-        return cachedData;
-      }
-      throw Exception('Failed to load notifications: $e');
+      // If caching fails, still return mock data
+      return List<dynamic>.from(_mockNotifications);
     }
   }
 
@@ -99,7 +69,7 @@ class NotificationService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final jsonString = prefs.getString(_cacheKey);
-      
+
       if (jsonString != null) {
         final data = json.decode(jsonString);
         print('Loaded notifications from cache');

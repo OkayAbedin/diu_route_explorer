@@ -7,6 +7,8 @@ import '../providers/theme_provider.dart';
 import 'dart:async';
 
 class NotificationScreen extends StatefulWidget {
+  const NotificationScreen({super.key});
+
   @override
   _NotificationScreenState createState() => _NotificationScreenState();
 }

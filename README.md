@@ -13,8 +13,7 @@ DIU Route Explorer is a comprehensive mobile application designed to streamline 
 
 - **Real-time Bus Schedules**: Access up-to-date bus schedules and departure times
 - **Route Information**: View detailed information about bus routes and stops
-- **User Authentication**: Secure login for students, faculty, and administrators
-- **Administrative Dashboard**: Dedicated interface for transportation administrators
+- **User Authentication**: Secure login for students and faculty
 - **Push Notifications**: Receive important updates about schedule changes or delays
 - **Dark/Light Theme Support**: Choose your preferred app appearance
 - **Personalized Onboarding**: Customized experience for first-time users
@@ -50,7 +49,7 @@ DIU Route Explorer is a comprehensive mobile application designed to streamline 
 
 The application follows a provider-based state management approach and is organized into the following directory structure:
 
-- `lib/screens/`: All app screens including login, bus schedules, and admin dashboard
+- `lib/screens/`: All app screens including login and bus schedules
 - `lib/providers/`: State management using Provider pattern
 - `lib/services/`: Backend services and API integration
 - `lib/widgets/`: Reusable UI components

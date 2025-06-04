@@ -7,11 +7,9 @@ import 'screens/route_information_screen.dart';
 import 'screens/bus_schedule_screen.dart';
 import 'screens/notification_screen.dart';
 import 'screens/settings_screen.dart';
-import 'screens/admin_dashboard_screen.dart';
 import 'screens/help_support_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/splash_screen.dart';
-import 'screens/migration_screen.dart';
 import 'services/auth_service.dart';
 import 'providers/theme_provider.dart';
 
@@ -29,6 +27,8 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -81,9 +81,7 @@ class _MyAppState extends State<MyApp> {
         '/notifications': (context) => NotificationScreen(),
         '/route_information': (context) => RouteInformationScreen(),
         '/settings': (context) => SettingsScreen(),
-        '/admin_dashboard': (context) => AdminDashboardScreen(),
         '/help_support': (context) => HelpSupportScreen(),
-        '/migration': (context) => MigrationScreen(),
       },
     );
   }
@@ -108,12 +106,8 @@ class _MyAppState extends State<MyApp> {
           userType: _userType ?? AuthService.USER_TYPE_STUDENT,
         );
       } else {
-        // Show appropriate screen based on user type
-        if (_userType == AuthService.USER_TYPE_ADMIN) {
-          return AdminDashboardScreen();
-        } else {
-          return BusScheduleScreen();
-        }
+        // Show bus schedule screen for all users
+        return BusScheduleScreen();
       }
     } else {
       return LoginScreen();
