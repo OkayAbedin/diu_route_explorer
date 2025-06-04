@@ -104,10 +104,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
     final primaryColor = Color.fromARGB(255, 88, 13, 218);
-    final backgroundColor = isDarkMode ? Color(0xFF121212) : Colors.white;
-    final textColor = isDarkMode ? Colors.white : Colors.black87;
+    final backgroundColor = isDarkMode ? Color(0xFF121212) : Colors.white;    final textColor = isDarkMode ? Colors.white : Colors.black87;
     final borderColor =
-        isDarkMode ? Colors.grey.shade700 : Colors.grey.shade300;
+        isDarkMode ? Colors.grey.shade700.withOpacity(0.5) : Colors.grey.shade300;
 
     return Scaffold(
       backgroundColor: primaryColor,

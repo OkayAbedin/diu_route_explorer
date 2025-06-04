@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/theme_provider.dart';
 import '../services/route_service.dart';
+import '../utils/route_utils.dart';
 import 'dart:convert';
 import 'dart:async';
 import '../widgets/sidebar.dart';
@@ -133,7 +134,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
 
     setState(() {
-      _availableRoutes = uniqueRoutes.toList();
+      _availableRoutes = RouteUtils.sortRouteNames(uniqueRoutes.toList());
 
       // If no default route is selected yet, and we have routes available
       if (_selectedDefaultRoute.isEmpty && _availableRoutes.isNotEmpty) {
@@ -262,11 +263,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
                               SizedBox(height: 8),
                               Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
+                                decoration: BoxDecoration(                                  border: Border.all(
                                     color:
                                         isDarkMode
-                                            ? Colors.grey.shade700
+                                            ? Colors.grey.shade700.withOpacity(0.5)
                                             : Colors.grey.shade300,
                                   ),
                                   borderRadius: BorderRadius.circular(4),

@@ -8,6 +8,7 @@ import 'dart:convert';
 import '../widgets/sidebar.dart';
 import '../services/auth_service.dart';
 import '../providers/theme_provider.dart';
+import '../utils/route_utils.dart';
 
 class BusScheduleScreen extends StatefulWidget {
   const BusScheduleScreen({super.key});
@@ -95,6 +96,9 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
               scheduleRoutes[key]!
                   .where((route) => !route.contains("R1 - DSC <> Dhanmondi"))
                   .toList();
+
+          // Sort the routes using RouteUtils
+          scheduleRoutes[key] = RouteUtils.sortRouteNames(scheduleRoutes[key]!);
         }
 
         // Set available routes based on default selected schedule
@@ -203,6 +207,11 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                 scheduleRoutes[key]!
                     .where((route) => !route.contains("R1 - DSC <> Dhanmondi"))
                     .toList();
+
+            // Sort the routes using RouteUtils
+            scheduleRoutes[key] = RouteUtils.sortRouteNames(
+              scheduleRoutes[key]!,
+            );
           }
 
           // Set available routes based on selected schedule
@@ -383,6 +392,9 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
               scheduleRoutes[key]!
                   .where((route) => !route.contains("R1 - DSC <> Dhanmondi"))
                   .toList();
+
+          // Sort the routes using RouteUtils
+          scheduleRoutes[key] = RouteUtils.sortRouteNames(scheduleRoutes[key]!);
         }
 
         // Set available routes based on selected schedule
@@ -427,9 +439,8 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
     final isDarkMode = themeProvider.isDarkMode;
     final primaryColor = Color.fromARGB(255, 88, 13, 218);
     final backgroundColor = isDarkMode ? Color(0xFF121212) : Colors.white;
-    final textColor = isDarkMode ? Colors.white : Colors.black87;
-    final borderColor =
-        isDarkMode ? Colors.grey.shade700 : Colors.grey.shade300;
+    final textColor = isDarkMode ? Colors.white : Colors.black87;    final borderColor =
+        isDarkMode ? Colors.grey.shade700.withOpacity(0.5) : Colors.grey.shade300;
 
     return Scaffold(
       backgroundColor: primaryColor,
