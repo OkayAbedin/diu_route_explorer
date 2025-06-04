@@ -91,11 +91,10 @@ class _RouteEditorScreenState extends State<RouteEditorScreen> {
     };
 
     bool success;
-
     if (widget.isNewRoute) {
       success = await _databaseService.addRoute(routeData);
     } else {
-      success = await _databaseService.updateRoute(
+      success = await _databaseService.updateRouteByIndex(
         widget.routeIndex!,
         routeData,
       );

@@ -166,9 +166,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       setState(() {
         _isLoading = true;
       });
-
       try {
-        final success = await _databaseService.deleteRoute(originalIndex);
+        final success = await _databaseService.deleteRouteByIndex(
+          originalIndex,
+        );
 
         if (success) {
           await _loadRoutes();
@@ -224,7 +225,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     // Define colors for both themes
     final primaryColor =
         isDarkMode
-            ? Color.fromARGB(255, 88, 13, 218) 
+            ? Color.fromARGB(255, 88, 13, 218)
             : Color.fromARGB(
               255,
               88,
@@ -331,6 +332,18 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           size: 26,
                         ),
                         onPressed: _loadRoutes,
+                      ),
+                      // Firebase test button for development
+                      IconButton(
+                        icon: Icon(
+                          Icons.cloud_queue,
+                          color: Colors.white,
+                          size: 26,
+                        ),
+                        tooltip: 'Test Firebase',
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/migration');
+                        },
                       ),
                       // Replace menu icon with logout icon
                       IconButton(

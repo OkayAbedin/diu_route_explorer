@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'screens/login_screen.dart';
 import 'screens/route_information_screen.dart';
 import 'screens/bus_schedule_screen.dart';
@@ -9,12 +11,16 @@ import 'screens/admin_dashboard_screen.dart';
 import 'screens/help_support_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/splash_screen.dart';
+import 'screens/migration_screen.dart';
 import 'services/auth_service.dart';
 import 'providers/theme_provider.dart';
 
 void main() async {
   // Ensure Flutter is initialized before using platform plugins
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Run the app
   runApp(
@@ -77,6 +83,7 @@ class _MyAppState extends State<MyApp> {
         '/settings': (context) => SettingsScreen(),
         '/admin_dashboard': (context) => AdminDashboardScreen(),
         '/help_support': (context) => HelpSupportScreen(),
+        '/migration': (context) => MigrationScreen(),
       },
     );
   }
