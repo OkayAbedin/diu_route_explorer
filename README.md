@@ -2,12 +2,24 @@
 
 [![Flutter Version](https://img.shields.io/badge/Flutter-3.7+-blue.svg)](https://flutter.dev/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Firebase Hosting](https://img.shields.io/badge/Firebase-Hosting-orange.svg)](https://diurouteexplorer.web.app)
+[![Live Website](https://img.shields.io/badge/Live-Website-success.svg)](https://diurouteexplorer.web.app)
 
 <p align="center">
   <img src="assets/icons/icon.png" alt="DIU Route Explorer Logo" width="200"/>
 </p>
 
 DIU Route Explorer is a comprehensive mobile application designed to streamline bus transportation for Daffodil International University students, faculty, and staff. The app provides real-time bus schedules, route information, and notifications to help users efficiently navigate university transportation.
+
+🌐 **Live Web App**: [https://diurouteexplorer.web.app](https://diurouteexplorer.web.app)
+
+## 🚀 Deployment
+
+This project is automatically deployed to Firebase Hosting using GitHub Actions. Every push to the `main` branch triggers:
+- Flutter code analysis
+- Unit tests
+- Web build compilation
+- Automatic deployment to production
 
 ## Features
 
@@ -53,6 +65,31 @@ The application follows a provider-based state management approach and is organi
 - `lib/providers/`: State management using Provider pattern
 - `lib/services/`: Backend services and API integration
 - `lib/widgets/`: Reusable UI components
+
+## 🛠️ Development & Deployment
+
+### Local Development
+1. Follow the installation steps above
+2. Make your changes
+3. Test locally with `flutter run -d chrome` for web testing
+
+### Deployment Process
+This project uses automated CI/CD with GitHub Actions:
+
+1. **Push to main branch** → Triggers automatic deployment
+2. **Pull Request** → Creates preview deployment for testing
+3. **Automatic steps**:
+   - Code analysis (`flutter analyze`)
+   - Unit tests (`flutter test`)
+   - Web build (`flutter build web --release`)
+   - Deploy to Firebase Hosting
+
+### Manual Deployment
+If you need to deploy manually:
+```bash
+flutter build web --release
+firebase deploy --only hosting
+```
 
 ## Contributing
 
