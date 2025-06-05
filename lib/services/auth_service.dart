@@ -58,16 +58,18 @@ class AuthService {
       return null;
     }
   }
-
   // Logout user
   Future<bool> logout() async {
     try {
       final prefs = await SharedPreferences.getInstance();
 
-      // Clear user login data
+      // Clear all user data including login state, onboarding status, and personal data
       await prefs.remove(_userLoginKey);
       await prefs.remove(_userIdKey);
       await prefs.remove(_userTypeKey);
+      await prefs.remove(_userNameKey);
+      await prefs.remove(_defaultRouteKey);
+      await prefs.remove(_onboardingCompletedKey);
 
       return true;
     } catch (e) {
