@@ -58,6 +58,7 @@ class AuthService {
       return null;
     }
   }
+
   // Logout user
   Future<bool> logout() async {
     try {
