@@ -14,13 +14,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController studentIdController = TextEditingController();
+  final TextEditingController idController = TextEditingController();
 
   final AuthService _authService = AuthService();
 
   @override
   void dispose() {
-    studentIdController.dispose();
+    idController.dispose();
     super.dispose();
   }
 
@@ -100,10 +100,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           SizedBox(height: 20),
                           TextField(
-                            controller: studentIdController,
+                            controller: idController,
                             style: TextStyle(color: textColor),
                             decoration: InputDecoration(
-                              hintText: "Enter your Student ID",
+                              hintText: "Enter your Student / Employee ID",
                               hintStyle: TextStyle(color: hintTextColor),
                               enabledBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(color: borderColor!),
@@ -111,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(color: primaryColor),
                               ),
-                              labelText: "Student ID",
+                              labelText: "Student / Employee ID",
                               labelStyle: TextStyle(color: hintTextColor),
                               floatingLabelStyle: TextStyle(
                                 color: isDarkMode ? Colors.white : primaryColor,
@@ -130,26 +130,43 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                               onPressed: () async {
-                                // Validate using regex pattern:
-                                // Format 1: 3 digits-2 digits-any number of digits
-                                // Format 2: Total of only 16 digits
-                                RegExp regExp = RegExp(
+                                // Validate using regex patterns:
+                                // Student ID Format 1: 3 digits-2 digits-any number of digits
+                                // Student ID Format 2: Total of only 16 digits
+                                // Employee ID Format: Any 9 digits
+                                RegExp studentRegExp = RegExp(
                                   r'^(\d{3}-\d{2}-\d+|\d{16})$',
                                 );
+                                RegExp employeeRegExp = RegExp(r'^\d{9}$');
 
-                                if (regExp.hasMatch(studentIdController.text)) {
+                                String inputId = idController.text.trim();
+                                String userType =
+                                    AuthService
+                                        .USER_TYPE_STUDENT; // Default to student
+
+                                bool isValidStudent = studentRegExp.hasMatch(
+                                  inputId,
+                                );
+                                bool isValidEmployee = employeeRegExp.hasMatch(
+                                  inputId,
+                                );
+
+                                if (isValidStudent || isValidEmployee) {
+                                  // Determine user type based on format
+                                  if (isValidEmployee && !isValidStudent) {
+                                    userType = AuthService.USER_TYPE_EMPLOYEE;
+                                  }
+
                                   // Save login state
                                   await _authService.saveUserLogin(
-                                    studentIdController.text,
-                                    AuthService.USER_TYPE_STUDENT,
+                                    inputId,
+                                    userType,
                                   );
 
                                   // Check if onboarding is completed
                                   final isOnboardingCompleted =
                                       await _authService
-                                          .isOnboardingCompleted();
-
-                                  // Navigate to appropriate screen based on onboarding status
+                                          .isOnboardingCompleted(); // Navigate to appropriate screen based on onboarding status
                                   if (!isOnboardingCompleted) {
                                     // First-time user, navigate to onboarding
                                     Navigator.pushReplacement(
@@ -157,9 +174,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                       MaterialPageRoute(
                                         builder:
                                             (context) => OnboardingScreen(
-                                              userId: studentIdController.text,
-                                              userType:
-                                                  AuthService.USER_TYPE_STUDENT,
+                                              userId: inputId,
+                                              userType: userType,
                                             ),
                                       ),
                                     );
@@ -178,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
-                                        'Please enter a valid Student ID or Registration No',
+                                        'Please enter a valid Student ID (XXX-XX-XXXX or 16 digits) or Employee ID (9 digits)',
                                       ),
                                       backgroundColor: Colors.red,
                                     ),

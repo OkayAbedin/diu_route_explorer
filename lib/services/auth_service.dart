@@ -7,9 +7,10 @@ class AuthService {
   static const String _userTypeKey = 'user_type';
   static const String _userNameKey = 'user_name';
   static const String _defaultRouteKey = 'default_route';
-  static const String _onboardingCompletedKey = 'onboarding_completed';
-  // User types - keeping only student type
+  static const String _onboardingCompletedKey =
+      'onboarding_completed'; // User types - supporting both student and employee types
   static const String USER_TYPE_STUDENT = 'student';
+  static const String USER_TYPE_EMPLOYEE = 'employee';
 
   // Save user login state
   Future<bool> saveUserLogin(String userId, String userType) async {
