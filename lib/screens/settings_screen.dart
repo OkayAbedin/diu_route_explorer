@@ -263,10 +263,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
                               SizedBox(height: 8),
                               Container(
-                                decoration: BoxDecoration(                                  border: Border.all(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
                                     color:
                                         isDarkMode
-                                            ? Colors.grey.shade700.withOpacity(0.5)
+                                            ? Colors.grey.shade700.withOpacity(
+                                              0.5,
+                                            )
                                             : Colors.grey.shade300,
                                   ),
                                   borderRadius: BorderRadius.circular(4),

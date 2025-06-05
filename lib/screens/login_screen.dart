@@ -130,9 +130,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                               onPressed: () async {
-                                // Validate using regex pattern: 3 digits-2 digits-4 or 5 digits
+                                // Validate using regex pattern:
+                                // Format 1: 3 digits-2 digits-any number of digits
+                                // Format 2: Total of only 16 digits
                                 RegExp regExp = RegExp(
-                                  r'^\d{3}-\d{2}-\d{4,5}$',
+                                  r'^(\d{3}-\d{2}-\d+|\d{16})$',
                                 );
 
                                 if (regExp.hasMatch(studentIdController.text)) {

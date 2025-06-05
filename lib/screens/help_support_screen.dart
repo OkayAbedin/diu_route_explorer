@@ -112,10 +112,13 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
     final primaryColor = Color.fromARGB(255, 88, 13, 218);
     final backgroundColor = isDarkMode ? Color(0xFF121212) : Colors.white;
     final cardBackgroundColor = isDarkMode ? Color(0xFF1E1E1E) : Colors.white;
-    final textColor = isDarkMode ? Colors.white : Colors.black87;    final secondaryTextColor =
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
+    final secondaryTextColor =
         isDarkMode ? Colors.grey[400]! : Colors.grey.shade700;
     final borderColor =
-        isDarkMode ? Colors.grey.shade800.withOpacity(0.5) : Colors.grey.shade200;
+        isDarkMode
+            ? Colors.grey.shade800.withOpacity(0.5)
+            : Colors.grey.shade200;
     final shadowColor =
         isDarkMode
             ? Colors.black.withOpacity(0.3)

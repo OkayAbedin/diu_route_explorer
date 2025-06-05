@@ -122,9 +122,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget _buildNameStep() {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
-    final primaryColor = Color.fromARGB(255, 88, 13, 218);    final textColor = isDarkMode ? Colors.white : Colors.black87;
+    final primaryColor = Color.fromARGB(255, 88, 13, 218);
+    final textColor = isDarkMode ? Colors.white : Colors.black87;
     final hintTextColor = isDarkMode ? Colors.grey[400] : Colors.grey;
-    final borderColor = isDarkMode ? Colors.grey[700]?.withOpacity(0.5) : primaryColor;
+    final borderColor =
+        isDarkMode ? Colors.grey[700]?.withOpacity(0.5) : primaryColor;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,9 +186,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget _buildRouteStep() {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
-    final primaryColor = Color.fromARGB(255, 88, 13, 218);    final textColor = isDarkMode ? Colors.white70 : Colors.grey[800]!;
+    final primaryColor = Color.fromARGB(255, 88, 13, 218);
+    final textColor = isDarkMode ? Colors.white70 : Colors.grey[800]!;
     final backgroundColor = isDarkMode ? Color(0xFF121212) : Colors.white;
-    final borderColor = isDarkMode ? Colors.grey[700]?.withOpacity(0.5) : primaryColor;
+    final borderColor =
+        isDarkMode ? Colors.grey[700]?.withOpacity(0.5) : primaryColor;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
