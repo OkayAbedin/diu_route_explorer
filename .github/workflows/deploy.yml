@@ -1,0 +1,45 @@
+name: Deploy to Firebase Hosting
+
+on:
+  push:
+    branches:
+      - main  # Deploy when pushing to main branch
+      - master  # Also deploy when pushing to master branch (if using master instead of main)
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.0'  # Use a stable Flutter version
+        channel: 'stable'
+        
+    - name: Get Flutter dependencies
+      run: flutter pub get
+      
+    - name: Analyze Flutter code
+      run: flutter analyze
+      
+    - name: Run Flutter tests
+      run: flutter test
+      
+    - name: Build Flutter web app
+      run: flutter build web --release
+      
+    - name: Deploy to Firebase Hosting
+      uses: FirebaseExtended/action-hosting-deploy@v0
+      with:
+        repoToken: '${{ secrets.GITHUB_TOKEN }}'
+        firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_DIUROUTEEXPLORER }}'
+        channelId: live
+        projectId: diurouteexplorer
