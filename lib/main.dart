@@ -20,12 +20,21 @@ void main() async {
   // Ensure Flutter is initialized before using platform plugins
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
+  // Initialize Firebase with optimized settings for web
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Initialize FCM notification service only for mobile platforms
+  // Initialize FCM notification service only for mobile platforms (lazy load for web)
   if (!kIsWeb) {
-    await FCMNotificationService.initialize();
+    // Use a microtask to avoid blocking the main thread
+    Future.microtask(() async {
+      try {
+        await FCMNotificationService.initialize();
+      } catch (e) {
+        if (kDebugMode) {
+          print('FCM initialization error: $e');
+        }
+      }
+    });
   }
 
   // Run the app

@@ -1,0 +1,16 @@
+{
+  "name": "diu-route-explorer-performance-test",
+  "version": "1.0.0",
+  "description": "Performance testing tool for DIU Route Explorer",
+  "main": "performance_test.js",
+  "scripts": {
+    "test": "node performance_test.js",
+    "test-performance": "node performance_test.js"
+  },
+  "dependencies": {
+    "puppeteer": "^21.0.0"
+  },
+  "keywords": ["flutter", "performance", "testing", "web"],
+  "author": "DIU Route Explorer Team",
+  "license": "MIT"
+}

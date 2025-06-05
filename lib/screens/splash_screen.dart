@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -40,13 +41,12 @@ class _SplashScreenState extends State<SplashScreen>
         parent: _animationController,
         curve: Interval(0.0, 0.6, curve: Curves.easeOut),
       ),
-    );
-
-    // Start animation
+    ); // Start animation
     _animationController.forward();
 
-    // Navigate to next screen after delay
-    Timer(Duration(milliseconds: 2500), () {
+    // Navigate to next screen after shorter delay for web
+    final delay = kIsWeb ? 1500 : 2500; // Reduced delay for web
+    Timer(Duration(milliseconds: delay), () {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => widget.nextScreen),
       );
