@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart';
 import '../providers/theme_provider.dart';
 import '../services/route_service.dart';
 import '../services/fcm_notification_service.dart';
@@ -67,13 +68,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('push_notifications', _pushNotifications);
-      await prefs.setString(_defaultRouteKey, _selectedDefaultRoute);
-
-      // Handle push notification subscription
-      if (_pushNotifications) {
-        await _subscribeToNotifications();
-      } else {
-        await _unsubscribeFromNotifications();
+      await prefs.setString(
+        _defaultRouteKey,
+        _selectedDefaultRoute,
+      ); // Handle push notification subscription (only on mobile platforms)
+      if (!kIsWeb) {
+        if (_pushNotifications) {
+          await _subscribeToNotifications();
+        } else {
+          await _unsubscribeFromNotifications();
+        }
       }
 
       // Show success message
@@ -100,6 +104,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _subscribeToNotifications() async {
+    // Skip subscription on web platform
+    if (kIsWeb) {
+      print('Push notifications not available on web platform');
+      return;
+    }
+
     try {
       // Subscribe to general topics for notifications
       await FCMNotificationService.subscribeToTopic('general_announcements');
@@ -113,6 +123,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _unsubscribeFromNotifications() async {
+    // Skip unsubscription on web platform
+    if (kIsWeb) {
+      print('Push notifications not available on web platform');
+      return;
+    }
+
     try {
       // Unsubscribe from all notification topics
       await FCMNotificationService.unsubscribeFromTopic(
@@ -359,36 +375,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   ),
                                 ),
                               ),
-
                               SizedBox(height: 24),
 
-                              // Push Notification Toggle
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Push Notification',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                      color: textColor,
+                              // Push Notification Toggle (only on mobile platforms)
+                              if (!kIsWeb) ...[
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Push Notifications',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: textColor,
+                                      ),
                                     ),
-                                  ),
-                                  Switch(
-                                    value: _pushNotifications,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _pushNotifications = value;
-                                      });
-                                      _saveSettings();
-                                    },
-                                    activeColor: primaryColor,
-                                  ),
-                                ],
-                              ),
-
-                              SizedBox(height: 16),
+                                    Switch(
+                                      value: _pushNotifications,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _pushNotifications = value;
+                                        });
+                                        _saveSettings();
+                                      },
+                                      activeColor: primaryColor,
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 16),
+                              ],
 
                               // Dark Mode Toggle
                               Row(

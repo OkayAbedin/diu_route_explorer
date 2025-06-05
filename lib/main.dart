@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'firebase_options.dart';
 import 'screens/login_screen.dart';
 import 'screens/route_information_screen.dart';
@@ -22,8 +23,10 @@ void main() async {
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Initialize FCM notification service
-  await FCMNotificationService.initialize();
+  // Initialize FCM notification service only for mobile platforms
+  if (!kIsWeb) {
+    await FCMNotificationService.initialize();
+  }
 
   // Run the app
   runApp(

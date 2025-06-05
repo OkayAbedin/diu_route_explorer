@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import '../services/notification_service.dart';
 
 class NotificationProvider with ChangeNotifier {
@@ -88,6 +89,11 @@ class NotificationProvider with ChangeNotifier {
 
   // Subscribe to default topics based on user preferences
   Future<void> _subscribeToDefaultTopics() async {
+    // Skip topic subscription on web platform
+    if (kIsWeb) {
+      return;
+    }
+
     try {
       // Removed hard-coded topic subscriptions
       // Topics should be managed dynamically based on user preferences

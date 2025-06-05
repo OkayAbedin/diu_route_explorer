@@ -26,9 +26,14 @@ class FCMNotificationService {
     description: '',
     importance: Importance.high,
   );
-
   // Initialize FCM notification service
   static Future<void> initialize() async {
+    // On web, skip most initialization but still set up basic Firebase Messaging
+    if (kIsWeb) {
+      await _initializeWebFirebaseMessaging();
+      return;
+    }
+
     // Request notification permissions
     await _requestPermissions();
 
@@ -40,8 +45,17 @@ class FCMNotificationService {
     _setupMessageHandlers();
 
     // Set background message handler (not supported on web)
-    if (!kIsWeb) {
-      FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  }
+
+  // Initialize Firebase Messaging for web (simplified)
+  static Future<void> _initializeWebFirebaseMessaging() async {
+    try {
+      // Only request basic permission on web
+      await _firebaseMessaging.requestPermission();
+      print('Firebase Messaging initialized for web');
+    } catch (e) {
+      print('Firebase Messaging initialization failed on web: $e');
     }
   }
 
@@ -378,6 +392,12 @@ class FCMNotificationService {
 
   // Subscribe to topic for receiving targeted notifications
   static Future<void> subscribeToTopic(String topic) async {
+    // Skip subscription on web platform
+    if (kIsWeb) {
+      print('Topic subscription not available on web platform: $topic');
+      return;
+    }
+
     try {
       await _firebaseMessaging.subscribeToTopic(topic);
       print('Subscribed to topic: $topic');
@@ -388,6 +408,12 @@ class FCMNotificationService {
 
   // Unsubscribe from topic
   static Future<void> unsubscribeFromTopic(String topic) async {
+    // Skip unsubscription on web platform
+    if (kIsWeb) {
+      print('Topic unsubscription not available on web platform: $topic');
+      return;
+    }
+
     try {
       await _firebaseMessaging.unsubscribeFromTopic(topic);
       print('Unsubscribed from topic: $topic');
