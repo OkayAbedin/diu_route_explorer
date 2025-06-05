@@ -9,6 +9,7 @@ import '../widgets/sidebar.dart';
 import '../services/auth_service.dart';
 import '../providers/theme_provider.dart';
 import '../utils/route_utils.dart';
+import '../utils/time_utils.dart';
 
 class BusScheduleScreen extends StatefulWidget {
   const BusScheduleScreen({super.key});
@@ -438,6 +439,199 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
     }
   }
 
+  // Build upcoming bus times section
+  Widget _buildUpcomingTimesSection(
+    bool isDarkMode,
+    Color primaryColor,
+    Color backgroundColor,
+    Color textColor,
+    Color borderColor,
+  ) {
+    // Get upcoming times for both directions
+    Map<String, Map<String, dynamic>?> upcomingTimes =
+        TimeUtils.findNextBusTimes(startTimes, departureTimes);
+
+    Map<String, dynamic>? nextToDSC = upcomingTimes['toDSC'];
+    Map<String, dynamic>? nextFromDSC = upcomingTimes['fromDSC'];
+
+    // If no upcoming times, don't show the section
+    if (nextToDSC == null && nextFromDSC == null) {
+      return SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: primaryColor,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          padding: EdgeInsets.symmetric(vertical: 12),
+          child: Center(
+            child: Text(
+              'Next Bus Times',
+              style: GoogleFonts.inter(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ),
+
+        // Upcoming times cards
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: borderColor),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(4),
+              bottomRight: Radius.circular(4),
+            ),
+          ),
+          child: Column(
+            children: [
+              // To DSC section
+              if (nextToDSC != null)
+                _buildUpcomingTimeCard(
+                  'To DSC',
+                  nextToDSC,
+                  Icons.directions_bus,
+                  Colors.green,
+                  isDarkMode,
+                  textColor,
+                  borderColor,
+                ),
+
+              // Divider if both sections exist
+              if (nextToDSC != null && nextFromDSC != null)
+                Divider(height: 1, color: borderColor),
+
+              // From DSC section
+              if (nextFromDSC != null)
+                _buildUpcomingTimeCard(
+                  'From DSC',
+                  nextFromDSC,
+                  Icons.home,
+                  Colors.orange,
+                  isDarkMode,
+                  textColor,
+                  borderColor,
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Build individual upcoming time card
+  Widget _buildUpcomingTimeCard(
+    String direction,
+    Map<String, dynamic> timeData,
+    IconData icon,
+    Color accentColor,
+    bool isDarkMode,
+    Color textColor,
+    Color borderColor,
+  ) {
+    Duration timeUntil = timeData['timeUntil'];
+    DateTime actualDateTime = timeData['actualDateTime'];
+    String timeString = timeData['time'] ?? '';
+    String note = timeData['note'] ?? '';
+
+    return Padding(
+      padding: EdgeInsets.all(16),
+      child: Row(
+        children: [
+          // Icon
+          Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: accentColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: accentColor, size: 24),
+          ),
+
+          SizedBox(width: 16),
+
+          // Time information
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      direction,
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        color: textColor,
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: accentColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: accentColor.withOpacity(0.3)),
+                      ),
+                      child: Text(
+                        TimeUtils.formatDuration(timeUntil),
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12,
+                          color: accentColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 4),
+
+                Text(
+                  'Next bus at $timeString',
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    color: textColor.withOpacity(0.8),
+                  ),
+                ),
+
+                if (note.isNotEmpty) ...[
+                  SizedBox(height: 4),
+                  Text(
+                    note,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: textColor.withOpacity(0.6),
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+
+                SizedBox(height: 4),
+
+                Text(
+                  '${TimeUtils.getRelativeDay(actualDateTime, DateTime.now())}',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    color: textColor.withOpacity(0.5),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Add theme provider
@@ -676,6 +870,17 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
                                               .toList(),
                                     ),
                                   ),
+                                ),
+
+                                SizedBox(height: 20),
+
+                                // Upcoming Bus Times Section
+                                _buildUpcomingTimesSection(
+                                  isDarkMode,
+                                  primaryColor,
+                                  backgroundColor,
+                                  textColor,
+                                  borderColor,
                                 ),
 
                                 SizedBox(height: 20),
