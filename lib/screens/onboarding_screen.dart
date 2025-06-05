@@ -428,14 +428,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                     _currentStep = 1;
                                   });
                                 } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        'Please enter your name first',
-                                      ),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  );
+                                  // No hard-coded message - just return
                                 }
                               },
                               child: Padding(

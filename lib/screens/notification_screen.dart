@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../services/notification_service.dart';
 import '../widgets/sidebar.dart';
 import '../providers/theme_provider.dart';
+import '../providers/notification_provider.dart';
 import 'dart:async';
 
 class NotificationScreen extends StatefulWidget {
@@ -14,9 +14,6 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  final NotificationService _notificationService = NotificationService();
-  List<dynamic> notifications = [];
-  bool isLoading = true;
   String currentTime = '';
   Timer? _timer;
 
@@ -25,7 +22,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
     super.initState();
     _updateTime();
     _timer = Timer.periodic(Duration(minutes: 1), (timer) => _updateTime());
-    _loadNotifications();
+
+    // Initialize notification provider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<NotificationProvider>().initialize();
+    });
   }
 
   void _updateTime() {
@@ -40,35 +41,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
     });
   }
 
-  Future<void> _loadNotifications() async {
-    try {
-      final data = await _notificationService.getNotifications();
-      setState(() {
-        notifications = data;
-        isLoading = false;
-      });
-    } catch (e) {
-      print('Error loading notifications: $e');
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
   Future<void> _refreshNotifications() async {
-    setState(() {
-      isLoading = true;
-    });
+    final notificationProvider = context.read<NotificationProvider>();
+    await notificationProvider.refresh();
 
-    try {
-      final data = await _notificationService.getNotifications(
-        forceRefresh: true,
-      );
-      setState(() {
-        notifications = data;
-        isLoading = false;
-      });
-
+    if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Notifications updated successfully'),
@@ -76,19 +53,58 @@ class _NotificationScreenState extends State<NotificationScreen> {
           duration: Duration(seconds: 2),
         ),
       );
-    } catch (e) {
-      print('Error refreshing notifications: $e');
-      setState(() {
-        isLoading = false;
-      });
+    }
+  }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to update notifications'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 2),
-        ),
-      );
+  String _formatNotificationDate(String timestamp) {
+    try {
+      final date = DateTime.parse(timestamp);
+      final now = DateTime.now();
+      final difference = now.difference(date);
+
+      if (difference.inDays == 0) {
+        return 'Today';
+      } else if (difference.inDays == 1) {
+        return 'Yesterday';
+      } else if (difference.inDays < 7) {
+        return '${difference.inDays} days ago';
+      } else {
+        return '${date.day}/${date.month}/${date.year}';
+      }
+    } catch (e) {
+      return 'Recent';
+    }
+  }
+
+  IconData _getNotificationIcon(String type) {
+    switch (type.toLowerCase()) {
+      case 'route_update':
+      case 'update':
+        return Icons.directions_bus;
+      case 'schedule_change':
+        return Icons.schedule;
+      case 'info':
+        return Icons.info_outline;
+      case 'warning':
+        return Icons.warning_amber_outlined;
+      default:
+        return Icons.notifications_outlined;
+    }
+  }
+
+  Color _getNotificationColor(String type, bool isDarkMode) {
+    switch (type.toLowerCase()) {
+      case 'route_update':
+      case 'update':
+        return Colors.blue;
+      case 'schedule_change':
+        return Colors.orange;
+      case 'info':
+        return Colors.green;
+      case 'warning':
+        return Colors.red;
+      default:
+        return isDarkMode ? Colors.grey[400]! : Colors.grey[600]!;
     }
   }
 
@@ -111,173 +127,344 @@ class _NotificationScreenState extends State<NotificationScreen> {
             ? Colors.grey.shade700.withOpacity(0.5)
             : Colors.grey.shade300;
 
-    return Scaffold(
-      backgroundColor: primaryColor,
-      endDrawer: Sidebar(),
-      body: Stack(
-        children: [
-          // Fixed purple header
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              width: double.infinity,
-              color: primaryColor,
-              padding: EdgeInsets.only(
-                top: 60,
-                bottom: 15,
-                left: 20,
-                right: 20,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+    return Consumer<NotificationProvider>(
+      builder: (context, notificationProvider, child) {
+        return Scaffold(
+          backgroundColor: primaryColor,
+          endDrawer: Sidebar(),
+          body: Stack(
+            children: [
+              // Fixed purple header
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  width: double.infinity,
+                  color: primaryColor,
+                  padding: EdgeInsets.only(
+                    top: 60,
+                    bottom: 15,
+                    left: 20,
+                    right: 20,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Notifications',
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          Icons.refresh,
-                          color: Colors.white,
-                          size: 26,
-                        ),
-                        onPressed: _refreshNotifications,
-                      ),
-                      Builder(
-                        builder:
-                            (context) => IconButton(
-                              icon: Icon(
-                                Icons.menu,
-                                color: Colors.white,
-                                size: 30,
-                              ),
-                              onPressed: () {
-                                Scaffold.of(context).openEndDrawer();
-                              },
-                            ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Scrollable content area
-          Positioned(
-            top: 140,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                color: primaryColor,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
-                ),
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: backgroundColor,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(30),
-                  ),
-                ),
-                child:
-                    isLoading
-                        ? Center(
-                          child: CircularProgressIndicator(color: primaryColor),
-                        )
-                        : notifications.isEmpty
-                        ? Center(
-                          child: Text(
-                            'No notifications available',
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Notifications',
                             style: GoogleFonts.inter(
-                              color:
-                                  isDarkMode ? Colors.grey[400] : Colors.grey,
-                              fontSize: 16,
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                        )
-                        : ListView.builder(
-                          padding: EdgeInsets.all(16),
-                          itemCount: notifications.length,
-                          itemBuilder: (context, index) {
-                            final notification = notifications[index];
-                            // Updated card design with dark mode support
-                            return Container(
-                              margin: EdgeInsets.only(bottom: 12),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: borderColor,
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(8),
+                          if (notificationProvider.unreadCount > 0)
+                            Text(
+                              '${notificationProvider.unreadCount} unread',
+                              style: GoogleFonts.inter(
+                                color: Colors.white70,
+                                fontSize: 14,
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Date header with purple background
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 8,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: primaryColor,
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(7),
-                                        topRight: Radius.circular(7),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          notification['date'] ?? '',
-                                          style: GoogleFonts.inter(
-                                            color: Colors.white,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
+                            ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.refresh,
+                              color: Colors.white,
+                              size: 26,
+                            ),
+                            onPressed:
+                                notificationProvider.isLoading
+                                    ? null
+                                    : _refreshNotifications,
+                          ),
+                          if (notificationProvider.notifications.isNotEmpty)
+                            IconButton(
+                              icon: Icon(
+                                Icons.clear_all,
+                                color: Colors.white,
+                                size: 26,
+                              ),
+                              onPressed: () async {
+                                final confirm = await showDialog<bool>(
+                                  context: context,
+                                  builder:
+                                      (context) => AlertDialog(
+                                        title: Text(''),
+                                        content: Text(''),
+                                        actions: [
+                                          TextButton(
+                                            onPressed:
+                                                () => Navigator.pop(
+                                                  context,
+                                                  false,
+                                                ),
+                                            child: Text('Cancel'),
                                           ),
-                                        ),
-                                      ],
+                                          TextButton(
+                                            onPressed:
+                                                () => Navigator.pop(
+                                                  context,
+                                                  true,
+                                                ),
+                                            child: Text('Clear All'),
+                                          ),
+                                        ],
+                                      ),
+                                );
+                                if (confirm == true) {
+                                  await notificationProvider.clearAll();
+                                }
+                              },
+                            ),
+                          Builder(
+                            builder:
+                                (context) => IconButton(
+                                  icon: Icon(
+                                    Icons.menu,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
+                                  onPressed: () {
+                                    Scaffold.of(context).openEndDrawer();
+                                  },
+                                ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Scrollable content area
+              Positioned(
+                top: 140,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: primaryColor,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(30),
+                    ),
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: backgroundColor,
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(30),
+                      ),
+                    ),
+                    child:
+                        notificationProvider.isLoading
+                            ? Center(
+                              child: CircularProgressIndicator(
+                                color: primaryColor,
+                              ),
+                            )
+                            : notificationProvider.notifications.isEmpty
+                            ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.notifications_none,
+                                    size: 64,
+                                    color:
+                                        isDarkMode
+                                            ? Colors.grey[600]
+                                            : Colors.grey[400],
+                                  ),
+                                  SizedBox(height: 16),
+                                  Text(
+                                    '',
+                                    style: GoogleFonts.inter(
+                                      color:
+                                          isDarkMode
+                                              ? Colors.grey[400]
+                                              : Colors.grey[600],
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                  // Notification title
-                                  Padding(
-                                    padding: EdgeInsets.all(16),
-                                    child: Text(
-                                      notification['title'] ?? '',
-                                      style: GoogleFonts.inter(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                        color: textColor,
-                                      ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    '',
+                                    style: GoogleFonts.inter(
+                                      color:
+                                          isDarkMode
+                                              ? Colors.grey[500]
+                                              : Colors.grey[500],
+                                      fontSize: 14,
                                     ),
                                   ),
                                 ],
                               ),
-                            );
-                          },
-                        ),
+                            )
+                            : ListView.builder(
+                              padding: EdgeInsets.all(16),
+                              itemCount:
+                                  notificationProvider.notifications.length,
+                              itemBuilder: (context, index) {
+                                final notification =
+                                    notificationProvider.notifications[index];
+                                final isRead = notification['isRead'] ?? false;
+                                final notificationType =
+                                    notification['type'] ?? 'general';
+
+                                return Container(
+                                  margin: EdgeInsets.only(bottom: 12),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        isRead
+                                            ? backgroundColor
+                                            : (isDarkMode
+                                                ? Colors.grey[800]
+                                                : Colors.blue[50]),
+                                    border: Border.all(
+                                      color:
+                                          isRead
+                                              ? borderColor
+                                              : primaryColor.withOpacity(0.3),
+                                      width: 1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.05),
+                                        blurRadius: 4,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(12),
+                                    onTap: () async {
+                                      if (!isRead) {
+                                        await notificationProvider.markAsRead(
+                                          notification['id'],
+                                        );
+                                      }
+                                    },
+                                    child: Padding(
+                                      padding: EdgeInsets.all(16),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // Notification icon
+                                          Container(
+                                            padding: EdgeInsets.all(8),
+                                            decoration: BoxDecoration(
+                                              color: _getNotificationColor(
+                                                notificationType,
+                                                isDarkMode,
+                                              ).withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: Icon(
+                                              _getNotificationIcon(
+                                                notificationType,
+                                              ),
+                                              color: _getNotificationColor(
+                                                notificationType,
+                                                isDarkMode,
+                                              ),
+                                              size: 20,
+                                            ),
+                                          ),
+                                          SizedBox(width: 12),
+                                          // Notification content
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                        notification['title'] ??
+                                                            '',
+                                                        style:
+                                                            GoogleFonts.inter(
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              color: textColor,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                    if (!isRead)
+                                                      Container(
+                                                        width: 8,
+                                                        height: 8,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                              color:
+                                                                  primaryColor,
+                                                              shape:
+                                                                  BoxShape
+                                                                      .circle,
+                                                            ),
+                                                      ),
+                                                  ],
+                                                ),
+                                                SizedBox(height: 4),
+                                                Text(
+                                                  notification['message'] ?? '',
+                                                  style: GoogleFonts.inter(
+                                                    fontSize: 14,
+                                                    color:
+                                                        isDarkMode
+                                                            ? Colors.grey[300]
+                                                            : Colors.grey[700],
+                                                    height: 1.4,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 8),
+                                                Text(
+                                                  _formatNotificationDate(
+                                                    notification['timestamp'] ??
+                                                        DateTime.now()
+                                                            .toIso8601String(),
+                                                  ),
+                                                  style: GoogleFonts.inter(
+                                                    fontSize: 12,
+                                                    color:
+                                                        isDarkMode
+                                                            ? Colors.grey[500]
+                                                            : Colors.grey[500],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

@@ -11,7 +11,9 @@ import 'screens/help_support_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/splash_screen.dart';
 import 'services/auth_service.dart';
+import 'services/fcm_notification_service.dart';
 import 'providers/theme_provider.dart';
+import 'providers/notification_provider.dart';
 
 void main() async {
   // Ensure Flutter is initialized before using platform plugins
@@ -20,9 +22,18 @@ void main() async {
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  // Initialize FCM notification service
+  await FCMNotificationService.initialize();
+
   // Run the app
   runApp(
-    ChangeNotifierProvider(create: (_) => ThemeProvider(), child: MyApp()),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
+      ],
+      child: MyApp(),
+    ),
   );
 }
 

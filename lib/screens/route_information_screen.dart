@@ -142,7 +142,6 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
     try {
       final data = await _routeService.getRoutes(forceRefresh: true);
       _cacheData(data);
-
       setState(() {
         routeData = data;
         _processRouteData();
@@ -178,7 +177,6 @@ class _RouteInformationScreenState extends State<RouteInformationScreen> {
         selectedRouteDetails['Route Map'] != null &&
         selectedRouteDetails['Route Map'].toString().isNotEmpty) {
       String mapUrl = selectedRouteDetails['Route Map'];
-
       if (await canLaunch(mapUrl)) {
         await launch(mapUrl);
       } else {

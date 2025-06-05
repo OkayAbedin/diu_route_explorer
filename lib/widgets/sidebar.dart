@@ -68,10 +68,7 @@ class Sidebar extends StatelessWidget {
 
           ListTile(
             contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(
-              Icons.route,
-              color: isDarkMode ? Colors.white : null,
-            ),
+            leading: Icon(Icons.route, color: isDarkMode ? Colors.white : null),
             title: Text(
               'Route Information',
               style: GoogleFonts.inter(fontSize: 16, color: textColor),
@@ -122,10 +119,7 @@ class Sidebar extends StatelessWidget {
 
           ListTile(
             contentPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            leading: Icon(
-              Icons.help,
-              color: isDarkMode ? Colors.white : null,
-            ),
+            leading: Icon(Icons.help, color: isDarkMode ? Colors.white : null),
             title: Text(
               'Help and Support',
               style: GoogleFonts.inter(fontSize: 16, color: textColor),

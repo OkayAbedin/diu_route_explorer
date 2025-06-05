@@ -2,53 +2,128 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationService {
-  // Mock notifications data since we're removing external dependencies
-  final List<dynamic> _mockNotifications = [
-    {
-      'id': '1',
-      'title': 'Welcome to DIU Route Explorer',
-      'message':
-          'Stay updated with the latest bus schedules and route information.',
-      'timestamp':
-          DateTime.now().subtract(Duration(hours: 1)).toIso8601String(),
-      'type': 'info',
-      'isRead': false,
-    },
-    {
-      'id': '2',
-      'title': 'Route Update',
-      'message':
-          'New shuttle routes have been added to improve campus connectivity.',
-      'timestamp': DateTime.now().subtract(Duration(days: 1)).toIso8601String(),
-      'type': 'update',
-      'isRead': false,
-    },
-  ];
+  // Empty notifications list - no hard-coded notifications
+  final List<dynamic> _mockNotifications = [];
 
   // Cache key for notifications
   final String _cacheKey = 'cached_notifications';
 
-  // Get notifications from cache or use mock data
+  // Get notifications - combines FCM notifications with mock data
   Future<List<dynamic>> getNotifications({bool forceRefresh = false}) async {
-    if (!forceRefresh) {
-      // Try to get from cache first
-      final cachedData = await _getFromCache();
-      if (cachedData != null) {
-        return cachedData;
-      }
-    }
-
     try {
-      // Use mock data instead of external API
+      // Get FCM notifications from local storage
+      final fcmNotifications = await _getLocalNotifications();
+
+      if (fcmNotifications.isNotEmpty) {
+        // If we have FCM notifications, return them
+        await _cacheData(fcmNotifications);
+        return fcmNotifications;
+      }
+
+      // Fallback to cached data or mock data
+      if (!forceRefresh) {
+        final cachedData = await _getFromCache();
+        if (cachedData != null) {
+          return cachedData;
+        }
+      }
+
+      // Use mock data as fallback
       final notifications = List<dynamic>.from(_mockNotifications);
-
-      // Cache the data
       await _cacheData(notifications);
-
       return notifications;
     } catch (e) {
-      // If caching fails, still return mock data
+      print('Error getting notifications: $e');
+      // Return mock data as final fallback
       return List<dynamic>.from(_mockNotifications);
+    }
+  }
+
+  // Get FCM notifications from local storage
+  Future<List<dynamic>> _getLocalNotifications() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final notificationsJson = prefs.getString('local_notifications') ?? '[]';
+      return json.decode(notificationsJson);
+    } catch (e) {
+      print('Error getting local FCM notifications: $e');
+      return [];
+    }
+  }
+
+  // Mark notification as read
+  Future<void> markAsRead(String notificationId) async {
+    try {
+      await _markNotificationAsRead(notificationId);
+    } catch (e) {
+      print('Error marking notification as read: $e');
+    }
+  }
+
+  // Mark notification as read in local storage
+  Future<void> _markNotificationAsRead(String notificationId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final notificationsJson = prefs.getString('local_notifications') ?? '[]';
+      final List<dynamic> notifications = json.decode(notificationsJson);
+
+      // Find and update notification
+      for (var notification in notifications) {
+        if (notification['id'] == notificationId) {
+          notification['isRead'] = true;
+          break;
+        }
+      }
+
+      // Save updated notifications
+      await prefs.setString('local_notifications', json.encode(notifications));
+    } catch (e) {
+      print('Error marking notification as read: $e');
+    }
+  }
+
+  // Get unread notification count
+  Future<int> getUnreadCount() async {
+    try {
+      final notifications = await _getLocalNotifications();
+      return notifications
+          .where((notification) => !notification['isRead'])
+          .length;
+    } catch (e) {
+      print('Error getting unread count: $e');
+      return 0;
+    }
+  }
+
+  // Clear all notifications
+  Future<void> clearAll() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('local_notifications', '[]');
+      // Also clear cache
+      await prefs.remove(_cacheKey);
+    } catch (e) {
+      print('Error clearing notifications: $e');
+    }
+  }
+
+  // Subscribe to notification topics
+  Future<void> subscribeToTopic(String topic) async {
+    try {
+      // This would typically call FCM subscribe method
+      print('Subscribing to topic: $topic');
+    } catch (e) {
+      print('Error subscribing to topic: $e');
+    }
+  }
+
+  // Unsubscribe from notification topics
+  Future<void> unsubscribeFromTopic(String topic) async {
+    try {
+      // This would typically call FCM unsubscribe method
+      print('Unsubscribing from topic: $topic');
+    } catch (e) {
+      print('Error unsubscribing from topic: $e');
     }
   }
 

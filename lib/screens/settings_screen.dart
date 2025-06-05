@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/theme_provider.dart';
 import '../services/route_service.dart';
+import '../services/fcm_notification_service.dart';
 import '../utils/route_utils.dart';
 import 'dart:convert';
 import 'dart:async';
@@ -68,6 +69,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
       await prefs.setBool('push_notifications', _pushNotifications);
       await prefs.setString(_defaultRouteKey, _selectedDefaultRoute);
 
+      // Handle push notification subscription
+      if (_pushNotifications) {
+        await _subscribeToNotifications();
+      } else {
+        await _unsubscribeFromNotifications();
+      }
+
       // Show success message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -88,6 +96,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         );
       }
+    }
+  }
+
+  Future<void> _subscribeToNotifications() async {
+    try {
+      // Subscribe to general topics for notifications
+      await FCMNotificationService.subscribeToTopic('general_announcements');
+      await FCMNotificationService.subscribeToTopic('route_updates');
+      await FCMNotificationService.subscribeToTopic('schedule_changes');
+
+      print('Subscribed to push notifications');
+    } catch (e) {
+      print('Error subscribing to notifications: $e');
+    }
+  }
+
+  Future<void> _unsubscribeFromNotifications() async {
+    try {
+      // Unsubscribe from all notification topics
+      await FCMNotificationService.unsubscribeFromTopic(
+        'general_announcements',
+      );
+      await FCMNotificationService.unsubscribeFromTopic('route_updates');
+      await FCMNotificationService.unsubscribeFromTopic('schedule_changes');
+
+      print('Unsubscribed from push notifications');
+    } catch (e) {
+      print('Error unsubscribing from notifications: $e');
     }
   }
 
@@ -340,18 +376,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     ),
                                   ),
                                   Switch(
-                                    value: false, // Force disabled state
+                                    value: _pushNotifications,
                                     onChanged: (value) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            'Push notifications coming soon!',
-                                          ),
-                                          duration: Duration(seconds: 2),
-                                        ),
-                                      );
+                                      setState(() {
+                                        _pushNotifications = value;
+                                      });
+                                      _saveSettings();
                                     },
                                     activeColor: primaryColor,
                                   ),

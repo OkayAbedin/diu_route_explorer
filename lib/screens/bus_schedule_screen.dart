@@ -136,10 +136,20 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
           // Set default route to first available route if no saved preference
           selectedRoute = availableRoutes.isNotEmpty ? availableRoutes[0] : '';
         }
-
         _updateScheduleData();
         isLoading = false;
       });
+
+      // Show success SnackBar
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Bus schedule data refreshed successfully'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
     } catch (e) {
       print('Error loading bus data: $e');
 
@@ -149,6 +159,17 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
       setState(() {
         isLoading = false;
       });
+
+      // Show error SnackBar
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to refresh data. Using cached data.'),
+            backgroundColor: Colors.orange,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
     }
   }
 
@@ -403,32 +424,17 @@ class _BusScheduleScreenState extends State<BusScheduleScreen> {
         // Set default route to first available route
         selectedRoute = availableRoutes.isNotEmpty ? availableRoutes[0] : '';
         _updateScheduleData();
-
         isLoading = false;
       });
 
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Schedule data updated successfully'),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 2),
-        ),
-      );
+      // Removed hard-coded success message
     } catch (e) {
       print('Error refreshing data: $e');
       setState(() {
         isLoading = false;
       });
 
-      // Show error message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to update schedule data'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 2),
-        ),
-      );
+      // Removed hard-coded error message
     }
   }
 
