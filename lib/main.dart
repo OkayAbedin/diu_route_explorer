@@ -20,10 +20,17 @@ void main() async {
   // Ensure Flutter is initialized before using platform plugins
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase with optimized settings for web
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // Initialize Firebase with error handling
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    print('Firebase initialization error: $e');
+    // Continue app execution even if Firebase fails
+  }
 
-  // Initialize FCM notification service only for mobile platforms (lazy load for web)
+  // Initialize FCM notification service in background for mobile platforms
   if (!kIsWeb) {
     // Use a microtask to avoid blocking the main thread
     Future.microtask(() async {
@@ -37,7 +44,7 @@ void main() async {
     });
   }
 
-  // Run the app
+  // Run the app immediately
   runApp(
     MultiProvider(
       providers: [
@@ -67,22 +74,36 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    // Start checking login state but don't block the UI
     _checkLoginState();
   }
 
   Future<void> _checkLoginState() async {
-    final isLoggedIn = await _authService.isLoggedIn();
-    final userType = await _authService.getUserType();
-    final isOnboardingCompleted = await _authService.isOnboardingCompleted();
-    final userId = await _authService.getUserId();
-
-    setState(() {
-      _isLoggedIn = isLoggedIn;
-      _userType = userType;
-      _isOnboardingCompleted = isOnboardingCompleted;
-      _userId = userId;
-      _isLoading = false;
-    });
+    try {
+      // Get all user data in a single call to reduce SharedPreferences overhead
+      final userData = await _authService.getAllUserData();
+      if (mounted) {
+        setState(() {
+          _isLoggedIn = userData['isLoggedIn'];
+          _userType = userData['userType'];
+          _isOnboardingCompleted = userData['isOnboardingCompleted'];
+          _userId = userData['userId'];
+          _isLoading = false; // This will trigger navigation from splash screen
+        });
+      }
+    } catch (e) {
+      print('Error checking login state: $e');
+      // Fallback to safe defaults
+      if (mounted) {
+        setState(() {
+          _isLoggedIn = false;
+          _userType = null;
+          _isOnboardingCompleted = false;
+          _userId = null;
+          _isLoading = false; // This will trigger navigation from splash screen
+        });
+      }
+    }
   }
 
   @override
@@ -95,9 +116,10 @@ class _MyAppState extends State<MyApp> {
       theme: themeProvider.lightTheme,
       darkTheme: themeProvider.darkTheme,
       themeMode: themeProvider.themeMode,
-      home: SplashScreen(
-        nextScreen: _isLoading ? _buildLoadingScreen() : _getInitialScreen(),
-      ),
+      home:
+          _isLoading
+              ? UnifiedSplashScreen(onLoadingComplete: _getInitialScreen)
+              : _getInitialScreen(),
       routes: {
         '/login': (context) => LoginScreen(),
         '/bus_schedule': (context) => BusScheduleScreen(),
@@ -106,16 +128,6 @@ class _MyAppState extends State<MyApp> {
         '/settings': (context) => SettingsScreen(),
         '/help_support': (context) => HelpSupportScreen(),
       },
-    );
-  }
-
-  Widget _buildLoadingScreen() {
-    return Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(
-          color: Color.fromARGB(255, 88, 13, 218),
-        ),
-      ),
     );
   }
 

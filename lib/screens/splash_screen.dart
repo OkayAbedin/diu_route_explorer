@@ -3,29 +3,37 @@ import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
 
-class SplashScreen extends StatefulWidget {
-  final Widget nextScreen;
+class UnifiedSplashScreen extends StatefulWidget {
+  final Widget Function() onLoadingComplete;
+  final Duration? minimumDuration;
 
-  const SplashScreen({super.key, required this.nextScreen});
+  const UnifiedSplashScreen({
+    super.key,
+    required this.onLoadingComplete,
+    this.minimumDuration,
+  });
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  _UnifiedSplashScreenState createState() => _UnifiedSplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class _UnifiedSplashScreenState extends State<UnifiedSplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
+  bool _isNavigated = false;
+  late DateTime _startTime;
 
   @override
   void initState() {
     super.initState();
+    _startTime = DateTime.now();
 
     // Initialize animation controller
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 1500),
+      duration: Duration(milliseconds: 1000), // Reduced animation duration
     );
 
     // Create animations
@@ -36,21 +44,56 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
       CurvedAnimation(
         parent: _animationController,
         curve: Interval(0.0, 0.6, curve: Curves.easeOut),
       ),
-    ); // Start animation
+    );
+
+    // Start animation
     _animationController.forward();
 
-    // Navigate to next screen after shorter delay for web
-    final delay = kIsWeb ? 1500 : 2500; // Reduced delay for web
-    Timer(Duration(milliseconds: delay), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => widget.nextScreen),
-      );
+    // Navigate when ready
+    _navigateWhenReady();
+  }
+
+  void _navigateWhenReady() {
+    // Wait for the next frame to ensure the next screen is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndNavigate();
     });
+  }
+
+  void _checkAndNavigate() async {
+    if (_isNavigated) return;
+
+    // Calculate elapsed time
+    final elapsed = DateTime.now().difference(_startTime);
+
+    // Set minimum display time (shorter for better UX)
+    final minimumDuration =
+        widget.minimumDuration ?? Duration(milliseconds: kIsWeb ? 800 : 1200);
+
+    if (elapsed < minimumDuration) {
+      // Wait for remaining time
+      final remainingTime = minimumDuration - elapsed;
+      await Future.delayed(remainingTime);
+    }
+
+    if (mounted && !_isNavigated) {
+      _isNavigated = true;
+      final nextScreen = widget.onLoadingComplete();
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
+          transitionDuration: Duration(milliseconds: 300),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        ),
+      );
+    }
   }
 
   @override
@@ -76,73 +119,81 @@ class _SplashScreenState extends State<SplashScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // App Logo/Icon
+                    // App Logo/Icon - Optimized for performance
                     Container(
-                      width: 120,
-                      height: 120,
+                      width: 100,
+                      height: 100,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 15,
-                            offset: Offset(0, 5),
+                            color: Colors.black.withOpacity(0.15),
+                            blurRadius: 10,
+                            offset: Offset(0, 3),
                           ),
                         ],
                       ),
                       child: Center(
                         child: Image.asset(
                           'assets/icons/Icon.png',
-                          width: 90,
-                          height: 90,
+                          width: 70,
+                          height: 70,
+                          // Add cache settings for better performance
+                          cacheWidth: 70,
+                          cacheHeight: 70,
                           errorBuilder: (context, error, stackTrace) {
                             return Icon(
                               Icons.directions_bus_rounded,
-                              size: 60,
+                              size: 50,
                               color: primaryColor,
                             );
                           },
                         ),
                       ),
                     ),
-                    SizedBox(height: 30),
-                    // App Name
+                    SizedBox(height: 25),
+                    // App Name - Optimized text rendering
                     Text(
                       'DIU Route Explorers',
                       style: GoogleFonts.inter(
                         color: Colors.white,
-                        fontSize: 24,
+                        fontSize: 22,
                         fontWeight: FontWeight.w600,
-                        letterSpacing: 0.5,
+                        letterSpacing: 0.3,
                       ),
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 8),
                     // Tagline
                     Text(
                       'Navigate Your Campus Journey',
                       style: GoogleFonts.inter(
                         color: Colors.white.withOpacity(0.9),
-                        fontSize: 16,
+                        fontSize: 15,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                    SizedBox(height: 50),
-                    // Loading indicator
-                    SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        strokeWidth: 3,
-                      ),
-                    ),
+                    SizedBox(height: 40),
+                    // Dynamic loading indicator based on state
+                    _buildLoadingIndicator(),
                   ],
                 ),
               ),
             );
           },
         ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    // Simple unified loading indicator
+    return SizedBox(
+      width: 30,
+      height: 30,
+      child: CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        strokeWidth: 2.5,
       ),
     );
   }
