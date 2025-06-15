@@ -1,8 +1,8 @@
 name: diu_route_explorer
-description: "A new Flutter project."
+description: "DIU Route Explorer - Your comprehensive navigation app for Daffodil International University transportation."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+1
+version: 2.0.1+201
 
 environment:
   sdk: ^3.7.0
