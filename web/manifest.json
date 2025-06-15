@@ -8,20 +8,34 @@
     "description": "Navigate Your Campus Journey - DIU Route Explorer helps students check bus routes, schedules, and timings for a smooth commuting experience.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
-    "categories": ["education", "travel", "utilities"],
+    "categories": [
+        "education",
+        "travel",
+        "utilities"
+    ],
     "lang": "en",
     "icons": [
         {
             "src": "icons/Icon-192.png",
             "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "any maskable"
+            "type": "image/png"
         },
         {
             "src": "icons/Icon-512.png",
             "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
             "type": "image/png",
-            "purpose": "any maskable"
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
         }
     ]
 }
