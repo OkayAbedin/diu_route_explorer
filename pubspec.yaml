@@ -42,11 +42,9 @@ flutter_icons:
   ios: true
   remove_alpha_ios: true  # Remove alpha channel for iOS App Store compliance
   image_path: "assets/icons/Icon.png"  # Main icon (light version)
-  adaptive_icon_background: "#580dda"
-  adaptive_icon_foreground: "assets/icons/Icon.png"
-  # For dark mode support (if Icon-dark.png is provided)
-  # image_path_android_dark: "assets/icons/Icon-dark.png"
-  # image_path_ios_dark: "assets/icons/Icon-dark.png"
+  adaptive_icon_background: "#f7f7f7"
+  # Use adaptive icon for Android to fix zoom issue
+  adaptive_icon_foreground: "assets/icons/Icon-adaptive.png"
   web:
     generate: true
     image_path: "assets/icons/Icon.png"

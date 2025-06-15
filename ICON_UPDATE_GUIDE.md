@@ -68,6 +68,16 @@ The following files have been updated to reference the new Icon.png:
 - `README.md` - Project documentation
 
 ## Troubleshooting
+
+### Android Icon Appears Zoomed In
+If the Android app icon appears zoomed in compared to web:
+1. **Root Cause**: Android adaptive icons use a smaller safe area (~66% of canvas)
+2. **Solution**: Create `assets/icons/Icon-adaptive.png` with your logo smaller and centered
+3. **Update pubspec.yaml** to use `adaptive_icon_foreground: "assets/icons/Icon-adaptive.png"`
+4. **Regenerate icons**: `flutter packages pub run flutter_launcher_icons:main`
+5. **See**: `ANDROID_ICON_FIX.md` for detailed instructions
+
+### General Icon Issues
 If icons don't appear correctly:
 1. Clean the project: `flutter clean`
 2. Get dependencies: `flutter packages get`
