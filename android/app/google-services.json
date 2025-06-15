@@ -7,9 +7,8 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1010202081140:android:1011f542f2ec42f5a09e21",
-        "android_client_info": {
-          "package_name": "com.example.diu_route_explorer"
+        "mobilesdk_app_id": "1:1010202081140:android:1011f542f2ec42f5a09e21",        "android_client_info": {
+          "package_name": "com.marslab.diu_route_explorer"
         }
       },
       "oauth_client": [],

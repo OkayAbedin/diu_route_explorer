@@ -25,27 +25,35 @@ class FCMNotificationService {
     'Default Notifications', // title
     description: '',
     importance: Importance.high,
-  );
-  // Initialize FCM notification service
+  ); // Initialize FCM notification service
   static Future<void> initialize() async {
-    // On web, skip most initialization but still set up basic Firebase Messaging
-    if (kIsWeb) {
-      await _initializeWebFirebaseMessaging();
-      return;
+    try {
+      // On web, skip most initialization but still set up basic Firebase Messaging
+      if (kIsWeb) {
+        await _initializeWebFirebaseMessaging();
+        return;
+      }
+
+      // Request notification permissions
+      await _requestPermissions();
+
+      // Initialize local notifications
+      await _initializeLocalNotifications();
+
+      // Get and save FCM token
+      await _getAndSaveToken();
+
+      // Set up message handlers
+      _setupMessageHandlers();
+
+      // Set background message handler (not supported on web)
+      FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+      print('FCM service initialization completed successfully');
+    } catch (e) {
+      print('FCM service initialization failed: $e');
+      // Don't rethrow to prevent app crashes
     }
-
-    // Request notification permissions
-    await _requestPermissions();
-
-    // Initialize local notifications
-    await _initializeLocalNotifications();
-
-    // Get and save FCM token
-    await _getAndSaveToken(); // Set up message handlers
-    _setupMessageHandlers();
-
-    // Set background message handler (not supported on web)
-    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   }
 
   // Initialize Firebase Messaging for web (simplified)
@@ -87,38 +95,46 @@ class FCMNotificationService {
 
   // Initialize local notifications
   static Future<void> _initializeLocalNotifications() async {
-    // Skip local notifications initialization on web
-    if (kIsWeb) {
-      return;
-    }
+    try {
+      // Skip local notifications initialization on web
+      if (kIsWeb) {
+        return;
+      }
 
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+      const AndroidInitializationSettings initializationSettingsAndroid =
+          AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const DarwinInitializationSettings initializationSettingsIOS =
-        DarwinInitializationSettings(
-          requestAlertPermission: true,
-          requestBadgePermission: true,
-          requestSoundPermission: true,
-        );
+      const DarwinInitializationSettings initializationSettingsIOS =
+          DarwinInitializationSettings(
+            requestAlertPermission: true,
+            requestBadgePermission: true,
+            requestSoundPermission: true,
+          );
 
-    const InitializationSettings initializationSettings =
-        InitializationSettings(
-          android: initializationSettingsAndroid,
-          iOS: initializationSettingsIOS,
-        );
-    await _localNotifications.initialize(
-      initializationSettings,
-      onDidReceiveNotificationResponse: _onNotificationTapped,
-    );
+      const InitializationSettings initializationSettings =
+          InitializationSettings(
+            android: initializationSettingsAndroid,
+            iOS: initializationSettingsIOS,
+          );
 
-    // Create notification channel for Android
-    if (!kIsWeb) {
-      await _localNotifications
-          .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin
-          >()
-          ?.createNotificationChannel(channel);
+      await _localNotifications.initialize(
+        initializationSettings,
+        onDidReceiveNotificationResponse: _onNotificationTapped,
+      );
+
+      // Create notification channel for Android
+      if (!kIsWeb) {
+        await _localNotifications
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >()
+            ?.createNotificationChannel(channel);
+      }
+
+      print('Local notifications initialized successfully');
+    } catch (e) {
+      print('Local notifications initialization failed: $e');
+      // Don't rethrow to prevent app crashes
     }
   }
 

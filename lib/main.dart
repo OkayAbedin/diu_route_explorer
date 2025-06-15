@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,11 +21,12 @@ void main() async {
   // Ensure Flutter is initialized before using platform plugins
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase with error handling
+  // Initialize Firebase with better error handling
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    print('Firebase initialized successfully');
   } catch (e) {
     print('Firebase initialization error: $e');
     // Continue app execution even if Firebase fails
@@ -36,23 +38,32 @@ void main() async {
     Future.microtask(() async {
       try {
         await FCMNotificationService.initialize();
+        print('FCM service initialized successfully');
       } catch (e) {
         if (kDebugMode) {
           print('FCM initialization error: $e');
         }
+        // Don't let FCM errors crash the app
       }
     });
   }
 
-  // Run the app immediately
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => NotificationProvider()),
-      ],
-      child: MyApp(),
+  // Run the app immediately with error boundary
+  runZonedGuarded(
+    () => runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => ThemeProvider()),
+          ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ],
+        child: MyApp(),
+      ),
     ),
+    (error, stackTrace) {
+      print('Uncaught error: $error');
+      print('Stack trace: $stackTrace');
+      // Log to crash reporting service if available
+    },
   );
 }
 
