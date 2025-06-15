@@ -5,7 +5,8 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-android {    namespace = "com.marslab.diu_route_explorer"
+android {
+    namespace = "com.marslab.diu_route_explorer"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -18,7 +19,9 @@ android {    namespace = "com.marslab.diu_route_explorer"
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
-    }    defaultConfig {
+    }
+
+    defaultConfig {
         // Unique Application ID for the app
         applicationId = "com.marslab.diu_route_explorer"
         // For more information, see: https://flutter.dev/to/review-gradle-config.
