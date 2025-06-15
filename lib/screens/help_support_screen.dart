@@ -353,7 +353,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                           ),
                           SizedBox(height: 12),
                           Text(
-                            'App Version: 1.0.1',
+                            'App Version: 2.0.1',
                             style: GoogleFonts.inter(
                               fontSize: 13,
                               color:

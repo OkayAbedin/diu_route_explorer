@@ -182,7 +182,7 @@ class Sidebar extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  'Version 1.0.1',
+                  'Version 2.0.1',
                   style: GoogleFonts.inter(color: Colors.grey, fontSize: 12),
                 ),
                 SizedBox(height: 6),
