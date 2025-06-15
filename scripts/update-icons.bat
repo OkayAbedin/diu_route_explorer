@@ -24,6 +24,12 @@ echo.
 flutter packages get
 flutter packages pub run flutter_launcher_icons:main
 
+echo Updating web favicons...
+copy "web\icons\Icon-192.png" "web\favicon.png"
+copy "web\icons\Icon-192.png" "web\favicon-16x16.png"
+copy "web\icons\Icon-192.png" "web\favicon-32x32.png"
+copy "web\favicon.png" "web\favicon.ico"
+
 echo.
 echo ========================================
 echo Icon update completed!

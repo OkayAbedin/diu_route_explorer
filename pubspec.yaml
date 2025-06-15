@@ -35,7 +35,6 @@ flutter:
   assets:
     - assets/icons/Icon.png
     - assets/icons/Icon-dark.png
-    - assets/icons/icon.png  # Keep old reference for backward compatibility
     - assets/database.json
 
 flutter_icons:
