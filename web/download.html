@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Download DIU Route Explorer">
+    <title>Download DIU Route Explorer</title>
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico"/>
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png"/>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: #580dda;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: white;
+            box-shadow: 0 10px 25px rgba(88, 13, 218, 0.2);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #580dda;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #4c0b9e;
+        }        .download-card {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #580dda, #7b1fa2);
+        }
+
+        .question {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .sub-question {
+            font-size: 1rem;
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 40px;
+            line-height: 1.5;
+        }        .options {
+            display: grid;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 20px 24px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .option:hover {
+            border-color: #580dda;
+            background: #faf9fc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(88, 13, 218, 0.15);
+        }
+
+        .option.selected {
+            border-color: #580dda;
+            background: linear-gradient(135deg, #f4f0ff 0%, #faf9fc 100%);
+            color: #580dda;
+            box-shadow: 0 4px 12px rgba(88, 13, 218, 0.2);
+        }
+
+        .option input[type="radio"] {
+            margin-right: 16px;
+            width: 20px;
+            height: 20px;
+            accent-color: #580dda;
+        }
+
+        .option-text {
+            flex: 1;
+        }
+
+        .option-main {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .option-desc {
+            font-size: 0.9rem;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .option.selected .option-desc {
+            color: #7b1fa2;
+        }
+
+        .download-btn {
+            width: 100%;
+            background: #580dda;
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .download-btn.enabled {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .download-btn.enabled:hover {
+            background: #4c0b9e;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(88, 13, 218, 0.3);
+        }        .file-info {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .back-section {
+            text-align: center;
+            margin-top: 40px;
+        }        .back-link-stylized {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            border: 1px solid #e2e8f0;
+            background: white;
+        }
+
+        .back-link-stylized:hover {
+            color: #580dda;
+            border-color: #580dda;
+            background: #faf9fc;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 20px 16px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .download-card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+       <div class="download-card">
+            <div class="question">Download DIU Route Explorer</div>
+            <div class="sub-question">Choose your device type to get the best version for your Android phone</div>
+            
+            <div class="options">                <label class="option selected" for="dont-know">
+                    <input type="radio" id="dont-know" name="architecture" value="universal" checked>
+                    <div class="option-text">
+                        <div class="option-main">I don't know my device type</div>
+                        <div class="option-desc">Recommended - Works on all Android devices</div>
+                    </div>
+                </label>
+                
+                <label class="option" for="arm64">
+                    <input type="radio" id="arm64" name="architecture" value="arm64">
+                    <div class="option-text">
+                        <div class="option-main">Modern Android Phone</div>
+                        <div class="option-desc">For phones from 2017+ (Samsung, Google Pixel, OnePlus, etc.)</div>
+                    </div>
+                </label>
+                
+                <label class="option" for="arm32">
+                    <input type="radio" id="arm32" name="architecture" value="arm32">
+                    <div class="option-text">
+                        <div class="option-main">Older Android Phone</div>
+                        <div class="option-desc">For budget phones or devices from before 2017</div>
+                    </div>
+                </label>
+                
+                <label class="option" for="x86">
+                    <input type="radio" id="x86" name="architecture" value="x86">
+                    <div class="option-text">
+                        <div class="option-main">Android Emulator</div>
+                        <div class="option-desc">For BlueStacks, NoxPlayer, or other emulators</div>
+                    </div>
+                </label>
+            </div>
+
+            <a href="#" id="download-link" class="download-btn">
+                Select an option to download
+            </a>
+            
+            <div class="file-info" id="file-info"></div>
+        </div>        <div class="back-section">
+            <a href="/" class="back-link-stylized">
+                <span>← Back to Web App</span>
+            </a>
+        </div>
+    </div>    <script>
+        const options = document.querySelectorAll('input[name="architecture"]');
+        const downloadBtn = document.getElementById('download-link');
+        const fileInfo = document.getElementById('file-info');
+        const downloadFiles = {
+            universal: { file: 'app-release.apk', size: '~55 MB', name: 'Universal APK' },
+            arm64: { file: 'app-arm64-v8a-release.apk', size: '~24 MB', name: 'ARM64 APK' },
+            arm32: { file: 'app-armeabi-v7a-release.apk', size: '~22 MB', name: 'ARM32 APK' },
+            x86: { file: 'app-x86_64-release.apk', size: '~26 MB', name: 'x86_64 APK' }
+        };
+
+        // Initialize with default selection (universal)
+        function initializeDefault() {
+            const defaultData = downloadFiles.universal;
+            downloadBtn.href = `apks/${defaultData.file}`;
+            downloadBtn.textContent = `Download ${defaultData.name}`;
+            downloadBtn.classList.add('enabled');
+            downloadBtn.setAttribute('download', '');
+            fileInfo.textContent = `File size: ${defaultData.size}`;
+        }
+
+        // Initialize on page load
+        initializeDefault();
+
+        options.forEach(option => {
+            option.addEventListener('change', function() {
+                // Remove selected class from all options
+                document.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Add selected class to current option
+                this.parentElement.classList.add('selected');
+                
+                // Update download button
+                const selectedValue = this.value;
+                const downloadData = downloadFiles[selectedValue];
+                
+                downloadBtn.href = `apks/${downloadData.file}`;
+                downloadBtn.textContent = `Download ${downloadData.name}`;
+                downloadBtn.classList.add('enabled');
+                downloadBtn.setAttribute('download', '');
+                
+                fileInfo.textContent = `File size: ${downloadData.size}`;
+            });
+        });
+
+        // Add download tracking
+        downloadBtn.addEventListener('click', function() {
+            if (this.classList.contains('enabled')) {
+                setTimeout(() => {
+                    alert('Download started! 📱\n\nRemember to enable "Install from Unknown Sources" in your Android settings.');
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>
