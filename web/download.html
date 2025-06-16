@@ -293,18 +293,31 @@
     </div>    <script>
         const options = document.querySelectorAll('input[name="architecture"]');
         const downloadBtn = document.getElementById('download-link');
-        const fileInfo = document.getElementById('file-info');
-        const downloadFiles = {
-            universal: { file: 'app-release.apk', size: '~55 MB', name: 'Universal APK' },
-            arm64: { file: 'app-arm64-v8a-release.apk', size: '~24 MB', name: 'ARM64 APK' },
-            arm32: { file: 'app-armeabi-v7a-release.apk', size: '~22 MB', name: 'ARM32 APK' },
-            x86: { file: 'app-x86_64-release.apk', size: '~26 MB', name: 'x86_64 APK' }
-        };
-
-        // Initialize with default selection (universal)
+        const fileInfo = document.getElementById('file-info');        const downloadFiles = {
+            universal: { 
+                file: 'https://raw.githubusercontent.com/OkayAbedin/diu_route_explorer/refs/heads/main/web/apks/app-release.apk', 
+                size: '~55 MB', 
+                name: 'Universal APK' 
+            },
+            arm64: { 
+                file: 'https://raw.githubusercontent.com/OkayAbedin/diu_route_explorer/refs/heads/main/web/apks/app-arm64-v8a-release.apk', 
+                size: '~24 MB', 
+                name: 'ARM64 APK' 
+            },
+            arm32: { 
+                file: 'https://raw.githubusercontent.com/OkayAbedin/diu_route_explorer/refs/heads/main/web/apks/app-armeabi-v7a-release.apk', 
+                size: '~22 MB', 
+                name: 'ARM32 APK' 
+            },
+            x86: { 
+                file: 'https://raw.githubusercontent.com/OkayAbedin/diu_route_explorer/refs/heads/main/web/apks/app-x86_64-release.apk', 
+                size: '~26 MB', 
+                name: 'x86_64 APK' 
+            }
+        };        // Initialize with default selection (universal)
         function initializeDefault() {
             const defaultData = downloadFiles.universal;
-            downloadBtn.href = `apks/${defaultData.file}`;
+            downloadBtn.href = defaultData.file;
             downloadBtn.textContent = `Download ${defaultData.name}`;
             downloadBtn.classList.add('enabled');
             downloadBtn.setAttribute('download', '');
@@ -323,12 +336,11 @@
                 
                 // Add selected class to current option
                 this.parentElement.classList.add('selected');
-                
-                // Update download button
+                  // Update download button
                 const selectedValue = this.value;
                 const downloadData = downloadFiles[selectedValue];
                 
-                downloadBtn.href = `apks/${downloadData.file}`;
+                downloadBtn.href = downloadData.file;
                 downloadBtn.textContent = `Download ${downloadData.name}`;
                 downloadBtn.classList.add('enabled');
                 downloadBtn.setAttribute('download', '');
