@@ -7,7 +7,7 @@
 [![Live Website](https://img.shields.io/badge/Live-Website-success.svg)](https://diurouteexplorer.web.app)
 
 <p align="center">
-  <img src="assets/icons/Icon.png" alt="DIU Route Explorer Logo" width="200"/>
+  <img src="assets/icons/icon.png" alt="DIU Route Explorer Logo" width="200"/>
 </p>
 
 DIU Route Explorer is a comprehensive mobile application designed to streamline bus transportation for Daffodil International University students, faculty, and staff. Version 2.0.1 brings significant improvements in performance, user interface, and adds new features to help users efficiently navigate university transportation with real-time information.
@@ -43,7 +43,7 @@ This project is automatically deployed to Firebase Hosting using GitHub Actions.
 
 ## Screenshots
 
-![image](https://github.com/user-attachments/assets/d91ad394-7a94-4017-910a-45d06de04b5e)
+![image](https://github.com/user-attachments/assets/baf97ef5-5859-4ac1-98f3-b1ff8b509580)
 
 ## Installation
 
