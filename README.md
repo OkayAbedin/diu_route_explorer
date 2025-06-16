@@ -43,7 +43,7 @@ This project is automatically deployed to Firebase Hosting using GitHub Actions.
 
 ## Screenshots
 
-![image](https://github.com/user-attachments/assets/d91ad394-7a94-4017-910a-45d06de04b5e)
+![image](https://github.com/user-attachments/assets/baf97ef5-5859-4ac1-98f3-b1ff8b509580)
 
 ## Installation
 
