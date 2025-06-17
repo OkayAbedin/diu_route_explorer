@@ -10,15 +10,33 @@
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      "**/apks/**"
     ],
     "headers": [
       {
-        "source": "**/*.apk",
+        "source": "**/*.html",
         "headers": [
           {
-            "key": "Content-Type",
-            "value": "application/vnd.android.package-archive"
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "X-Frame-Options", 
+            "value": "DENY"
+          },
+          {
+            "key": "X-XSS-Protection",
+            "value": "1; mode=block"
+          }
+        ]
+      },
+      {
+        "source": "/download.html",
+        "headers": [
+          {
+            "key": "X-Robots-Tag",
+            "value": "noindex, nofollow"
           }
         ]
       }

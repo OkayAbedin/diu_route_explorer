@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+<head>    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Download DIU Route Explorer">
-    <title>Download DIU Route Explorer</title>
+    <meta name="description" content="Download DIU Route Explorer - Official Android App">
+    <meta name="robots" content="noindex, nofollow">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
+    <title>Download DIU Route Explorer - Official App</title>
     
     <!-- Favicons -->
     <link rel="icon" type="image/x-icon" href="favicon.ico"/>
@@ -242,10 +243,15 @@
     </style>
 </head>
 <body>
-    <div class="container">
-       <div class="download-card">
+    <div class="container">        <div class="download-card">
             <div class="question">Download DIU Route Explorer</div>
             <div class="sub-question">Choose your device type to get the best version for your Android phone</div>
+            
+            <!-- Security Notice -->
+            <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 16px; margin-bottom: 24px; font-size: 0.9rem;">
+                <strong>🔒 Security Notice:</strong> This is the official DIU Route Explorer app. 
+                Only download from this official source. Enable "Install from unknown sources" in Android settings if prompted.
+            </div>
             
             <div class="options">                <label class="option selected" for="dont-know">
                     <input type="radio" id="dont-know" name="architecture" value="universal" checked>
@@ -295,26 +301,26 @@
         const downloadBtn = document.getElementById('download-link');
         const fileInfo = document.getElementById('file-info');        const downloadFiles = {
             universal: { 
-                file: 'https://raw.githubusercontent.com/OkayAbedin/diu_route_explorer/refs/heads/main/web/apks/app-release.apk', 
+                file: 'https://github.com/OkayAbedin/diu_route_explorer/releases/latest/download/app-release.apk', 
                 size: '~55 MB', 
                 name: 'Universal APK' 
             },
             arm64: { 
-                file: 'https://raw.githubusercontent.com/OkayAbedin/diu_route_explorer/refs/heads/main/web/apks/app-arm64-v8a-release.apk', 
+                file: 'https://github.com/OkayAbedin/diu_route_explorer/releases/latest/download/app-arm64-v8a-release.apk', 
                 size: '~24 MB', 
                 name: 'ARM64 APK' 
             },
             arm32: { 
-                file: 'https://raw.githubusercontent.com/OkayAbedin/diu_route_explorer/refs/heads/main/web/apks/app-armeabi-v7a-release.apk', 
+                file: 'https://github.com/OkayAbedin/diu_route_explorer/releases/latest/download/app-armeabi-v7a-release.apk', 
                 size: '~22 MB', 
                 name: 'ARM32 APK' 
             },
             x86: { 
-                file: 'https://raw.githubusercontent.com/OkayAbedin/diu_route_explorer/refs/heads/main/web/apks/app-x86_64-release.apk', 
+                file: 'https://github.com/OkayAbedin/diu_route_explorer/releases/latest/download/app-x86_64-release.apk', 
                 size: '~26 MB', 
                 name: 'x86_64 APK' 
             }
-        };        // Initialize with default selection (universal)
+        };// Initialize with default selection (universal)
         function initializeDefault() {
             const defaultData = downloadFiles.universal;
             downloadBtn.href = defaultData.file;
@@ -347,14 +353,10 @@
                 
                 fileInfo.textContent = `File size: ${downloadData.size}`;
             });
-        });
-
-        // Add download tracking
+        });        // Add download tracking
         downloadBtn.addEventListener('click', function() {
             if (this.classList.contains('enabled')) {
-                setTimeout(() => {
-                    alert('Download started! 📱\n\nRemember to enable "Install from Unknown Sources" in your Android settings.');
-                }, 100);
+                // Download will start automatically without popup
             }
         });
     </script>
