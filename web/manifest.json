@@ -1,11 +1,12 @@
 {
-    "name": "DIU Route Explorer",
+    "name": "DIU Route Explorer - Navigate Your Campus Journey",
     "short_name": "DIU Routes",
     "start_url": ".",
+    "scope": "/",
     "display": "standalone",
     "background_color": "#580dda",
     "theme_color": "#580dda",
-    "description": "Navigate Your Campus Journey - DIU Route Explorer helps students check bus routes, schedules, and timings for a smooth commuting experience.",
+    "description": "DIU Route Explorer helps students check bus routes, schedules, and timings for Daffodil International University. Get real-time updates, route information, and seamless navigation for your campus commute.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "categories": [
@@ -14,6 +15,32 @@
         "utilities"
     ],
     "lang": "en",
+    "dir": "ltr",
+    "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+    "shortcuts": [
+        {
+            "name": "Bus Routes",
+            "short_name": "Routes",
+            "description": "View available bus routes",
+            "url": "/#/routes",
+            "icons": [{ "src": "/icons/Icon-192.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "Bus Schedule",
+            "short_name": "Schedule",
+            "description": "Check bus timings",
+            "url": "/#/schedule",
+            "icons": [{ "src": "/icons/Icon-192.png", "sizes": "192x192" }]
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "form_factor": "narrow"
+        }
+    ],
     "icons": [
         {
             "src": "icons/Icon-192.png",
@@ -36,6 +63,16 @@
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
+        },
+        {
+            "src": "favicon-16x16.png",
+            "sizes": "16x16",
+            "type": "image/png"
+        },
+        {
+            "src": "favicon-32x32.png",
+            "sizes": "32x32",
+            "type": "image/png"
         }
     ]
 }

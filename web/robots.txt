@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /apks/
+
+# Sitemap
+Sitemap: https://diurouteexplorer.web.app/sitemap.xml
+
+# Crawl-delay for politeness
+Crawl-delay: 1

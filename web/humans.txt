@@ -1,0 +1,9 @@
+/* TEAM */
+    Developer: Minhazul Abedin and Sourav Garodia
+    Location: Dhaka, Bangladesh
+
+/* SITE */
+    Language: English
+    Doctype: HTML5
+    IDE: Visual Studio Code
+    Framework: Flutter
