@@ -16,6 +16,9 @@ copy web\download.html build\web\
 echo 📱 Copying APK files...
 xcopy web\apks build\web\apks\ /E /I /Y
 
+echo 🔍 Copying SEO and static files...
+call scripts\copy-seo-files.bat
+
 echo ✅ Build complete! Ready for Firebase deployment.
 echo.
 echo To deploy to Firebase hosting, run:
