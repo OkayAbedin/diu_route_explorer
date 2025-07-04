@@ -1,9 +1,13 @@
 /* TEAM */
     Developer: Minhazul Abedin and Sourav Garodia
     Location: Dhaka, Bangladesh
+    Project: DIU Transport - Daffodil University Bus Route App
 
 /* SITE */
     Language: English
     Doctype: HTML5
     IDE: Visual Studio Code
     Framework: Flutter
+    Purpose: DIU Transport, DIU Route, DIU Bus, Daffodil Transport, Daffodil Route, Daffodil Bus, Bus Time Daffodil, Bus Time DIU
+    University: Daffodil International University
+    Service: Campus Transportation and Bus Route Information

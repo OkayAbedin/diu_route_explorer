@@ -1,34 +1,35 @@
 {
-    "name": "DIU Route Explorer - Navigate Your Campus Journey",
-    "short_name": "DIU Routes",
+    "name": "DIU Transport - Daffodil University Bus Route & Schedule",
+    "short_name": "DIU Transport",
     "start_url": ".",
     "scope": "/",
     "display": "standalone",
     "background_color": "#580dda",
     "theme_color": "#580dda",
-    "description": "DIU Route Explorer helps students check bus routes, schedules, and timings for Daffodil International University. Get real-time updates, route information, and seamless navigation for your campus commute.",
+    "description": "Official DIU Transport app for Daffodil International University. Real-time DIU bus routes, Daffodil bus schedules, and campus transport information. Get live updates on Bus Time DIU and navigation assistance.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "categories": [
         "education",
         "travel",
-        "utilities"
+        "utilities",
+        "transportation"
     ],
     "lang": "en",
     "dir": "ltr",
     "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
     "shortcuts": [
         {
-            "name": "Bus Routes",
-            "short_name": "Routes",
-            "description": "View available bus routes",
+            "name": "DIU Bus Routes",
+            "short_name": "DIU Routes",
+            "description": "View DIU bus routes and schedules",
             "url": "/#/routes",
             "icons": [{ "src": "/icons/Icon-192.png", "sizes": "192x192" }]
         },
         {
-            "name": "Bus Schedule",
-            "short_name": "Schedule",
-            "description": "Check bus timings",
+            "name": "Daffodil Bus Schedule",
+            "short_name": "Bus Time",
+            "description": "Check Daffodil bus timings and DIU transport schedule",
             "url": "/#/schedule",
             "icons": [{ "src": "/icons/Icon-192.png", "sizes": "192x192" }]
         }
