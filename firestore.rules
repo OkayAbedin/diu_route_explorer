@@ -1,18 +1,183 @@
-rules_version='2'
+rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    
+    // Helper functions for user validation
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isValidUser() {
+      return isAuthenticated() && 
+             request.auth.uid != null && 
+             request.auth.uid.size() > 0;
+    }
+    
+    function isStudentId(userId) {
+      // Student ID formats: XXX-XX-XXXX or 16 digits total
+      return userId.matches('^[0-9]{3}-[0-9]{2}-[0-9]+$') || 
+             (userId.matches('^[0-9]{16}$'));
+    }
+    
+    function isEmployeeId(userId) {
+      // Employee ID format: 9 digits
+      return userId.matches('^[0-9]{9}$');
+    }
+    
+    function isValidDIUUser(userId) {
+      return isStudentId(userId) || isEmployeeId(userId);
+    }
+    
+    function isAdmin() {
+      // Define admin user IDs here (employee IDs for admins)
+      let adminIds = ['123456789', '987654321']; // Add actual admin employee IDs
+      return isAuthenticated() && 
+             request.auth.uid in adminIds;
+    }
+    
+    // Routes collection - Bus route data
+    match /routes/{routeId} {
+      // Anyone can read route data (public information)
+      allow read: if true;
+      
+      // Only admins can create, update, or delete routes
+      allow create, update, delete: if isAdmin();
+      
+      // Validate route data structure
+      allow write: if isAdmin() && 
+                   validateRouteData(resource == null ? request.resource.data : request.resource.data);
+    }
+    
+    // User tokens collection - FCM tokens for push notifications
+    match /user_tokens/{userId} {
+      // Users can only access their own token document
+      allow read, write: if isAuthenticated() && 
+                          request.auth.uid == userId &&
+                          isValidDIUUser(userId);
+      
+      // Admins can read all tokens for sending notifications
+      allow read: if isAdmin();
+      
+      // Validate token data structure
+      allow write: if validateTokenData(request.resource.data);
+    }
+    
+    // User preferences collection - User settings and preferences
+    match /user_preferences/{userId} {
+      // Users can only access their own preferences
+      allow read, write: if isAuthenticated() && 
+                          request.auth.uid == userId &&
+                          isValidDIUUser(userId);
+      
+      // Validate preferences data
+      allow write: if validateUserPreferences(request.resource.data);
+    }
+    
+    // Notifications collection - App notifications
+    match /notifications/{notificationId} {
+      // Users can read notifications
+      allow read: if isValidUser();
+      
+      // Only admins can create/update/delete notifications
+      allow create, update, delete: if isAdmin();
+      
+      // Validate notification data
+      allow write: if validateNotificationData(request.resource.data);
+    }
+    
+    // Analytics collection - App usage analytics (optional)
+    match /analytics/{analyticsId} {
+      // Users can create analytics data (anonymized)
+      allow create: if isValidUser() && validateAnalyticsData(request.resource.data);
+      
+      // Only admins can read analytics
+      allow read: if isAdmin();
+      
+      // No updates or deletes allowed
+      allow update, delete: if false;
+    }
+    
+    // Feedback collection - User feedback and support requests
+    match /feedback/{feedbackId} {
+      // Users can create feedback
+      allow create: if isValidUser() && validateFeedbackData(request.resource.data);
+      
+      // Users can read their own feedback
+      allow read: if isAuthenticated() && 
+                   request.auth.uid == resource.data.userId &&
+                   isValidDIUUser(request.auth.uid);
+      
+      // Admins can read all feedback
+      allow read: if isAdmin();
+      
+      // Only admins can update feedback (for responses)
+      allow update: if isAdmin();
+      
+      // No deletes allowed to maintain records
+      allow delete: if false;
+    }
+    
+    // Validation functions
+    function validateRouteData(data) {
+      return data.keys().hasAll(['Route', 'Route Name', 'Schedule', 'Trip Direction', 'Time']) &&
+             data.Route is string && data.Route.size() > 0 &&
+             data['Route Name'] is string && data['Route Name'].size() > 0 &&
+             data.Schedule in ['Regular', 'Shuttle', 'Friday'] &&
+             data['Trip Direction'] in ['To DSC', 'From DSC'] &&
+             data.Time is string && data.Time.size() > 0 &&
+             // Optional fields validation
+             (!('Note' in data) || data.Note is string) &&
+             (!('Stops' in data) || data.Stops is string);
+    }
+    
+    function validateTokenData(data) {
+      return data.keys().hasAll(['token', 'platform']) &&
+             data.token is string && data.token.size() > 0 &&
+             data.platform in ['android', 'ios', 'web'] &&
+             (!('updatedAt' in data) || data.updatedAt is timestamp);
+    }
+    
+    function validateUserPreferences(data) {
+      return (!('defaultRoute' in data) || data.defaultRoute is string) &&
+             (!('userName' in data) || data.userName is string) &&
+             (!('notificationsEnabled' in data) || data.notificationsEnabled is bool) &&
+             (!('themeMode' in data) || data.themeMode in ['light', 'dark', 'system']) &&
+             (!('language' in data) || data.language is string);
+    }
+    
+    function validateNotificationData(data) {
+      return data.keys().hasAll(['title', 'body', 'type']) &&
+             data.title is string && data.title.size() > 0 &&
+             data.body is string && data.body.size() > 0 &&
+             data.type in ['general', 'route_update', 'schedule_change', 'maintenance'] &&
+             (!('timestamp' in data) || data.timestamp is timestamp) &&
+             (!('targetUsers' in data) || data.targetUsers is list) &&
+             (!('isRead' in data) || data.isRead is bool);
+    }
+    
+    function validateAnalyticsData(data) {
+      return data.keys().hasAll(['event', 'timestamp']) &&
+             data.event is string && data.event.size() > 0 &&
+             data.timestamp is timestamp &&
+             (!('properties' in data) || data.properties is map) &&
+             // Ensure no personal data is stored
+             !('userId' in data) && !('email' in data) && !('phone' in data);
+    }
+    
+    function validateFeedbackData(data) {
+      return data.keys().hasAll(['userId', 'type', 'message', 'timestamp']) &&
+             data.userId is string && isValidDIUUser(data.userId) &&
+             data.type in ['bug_report', 'feature_request', 'general_feedback', 'support_request'] &&
+             data.message is string && data.message.size() > 0 && data.message.size() <= 1000 &&
+             data.timestamp is timestamp &&
+             (!('status' in data) || data.status in ['pending', 'in_progress', 'resolved', 'closed']) &&
+             (!('adminResponse' in data) || data.adminResponse is string);
+    }
+    
+    // Deny all other access
     match /{document=**} {
-      // This rule allows anyone with your database reference to view, edit,
-      // and delete all data in your database. It is useful for getting
-      // started, but it is configured to expire after 30 days because it
-      // leaves your app open to attackers. At that time, all client
-      // requests to your database will be denied.
-      //
-      // Make sure to write security rules for your app before that time, or
-      // else all client requests to your database will be denied until you
-      // update your rules.
-      allow read, write: if request.time < timestamp.date(2025, 7, 4);
+      allow read, write: if false;
     }
   }
 }
